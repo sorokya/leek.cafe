@@ -21,7 +21,10 @@ jobs:
           tool: zola@0.19.1
 
       - name: Build Site
-        run: zola build
+        run: |
+          # Temporary while waiting for https://github.com/isunjn/serene/pull/72
+          sed -i '264a\    headers: { "Content-Type": "application/json" },' themes/serene/static/js/main.js
+          zola build
 
       - name: Setup SSH
         env:
