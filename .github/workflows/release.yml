@@ -23,7 +23,7 @@ jobs:
       - name: Build Site
         run: zola build
 
-      - name: Setup SSH and Deploy
+      - name: Setup SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
@@ -31,4 +31,17 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan leek.cafe >> ~/.ssh/known_hosts
+
+      - name: Check for Changes
+        id: check_rsync
+        run: |
+          if rsync -avz --delete --dry-run public/ leekcafe@leek.cafe:/var/www/leek.cafe/ | grep -q '^>'; then
+            echo "changes=true" >> $GITHUB_ENV
+          else
+            echo "changes=false" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy with Rsync
+        if: env.changes == 'true'
+        run: |
           rsync -avz --delete public/ leekcafe@leek.cafe:/var/www/leek.cafe/
