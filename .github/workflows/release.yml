@@ -33,12 +33,14 @@ jobs:
           ssh-keyscan leek.cafe >> ~/.ssh/known_hosts
 
       - name: Check for Changes
-        id: check_rsync
+        id: check_changes
         run: |
-          if rsync -avz --delete --dry-run public/ leekcafe@leek.cafe:/var/www/leek.cafe/ | grep -q '^>'; then
-            echo "changes=true" >> $GITHUB_ENV
-          else
+          mkdir -p ~/remote_public
+          rsync -avz --delete leekcafe@leek.cafe:/var/www/leek.cafe/ ~/remote_public/ || true
+          if diff -qr public/ ~/remote_public/; then
             echo "changes=false" >> $GITHUB_ENV
+          else
+            echo "changes=true" >> $GITHUB_ENV
           fi
 
       - name: Deploy with Rsync
