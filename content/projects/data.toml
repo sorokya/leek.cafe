@@ -1,0 +1,39 @@
+[[project]]
+name = "reoserv"
+desc = "The rust powered endless online server emulator"
+tags = ["rust", "endless-online"]
+img = ""
+links = [
+  { name = "Homepage", url = "https://reoserv.net" },
+  { name = "GitHub", url = "https://github.com/sorokya/reoserv" },
+]
+
+[[project]]
+name = "same.actor"
+desc = "Search engine to find TV Series and Films with the same actors in it"
+tags = ["javascript", "react"]
+img = ""
+links = [
+  { name = "App", url = "https://same.actor" },
+  { name = "GitHub", url = "https://github.com/sorokya/same.actor" },
+]
+
+[[project]]
+name = "eolib-rs"
+desc = "A core rust library for writing applications related to Endless Online"
+tags = ["rust", "endless-online"]
+img = ""
+links = [
+  { name = "Crate", url = "https://crates.io/crates/eolib" },
+  { name = "Docs", url = "https://crates.io/crates/eolib" },
+  { name = "GitHub", url = "https://github.com/sorokya/eolib-rs" },
+]
+
+[[project]]
+name = "reaction"
+desc = "A Simple Emoji Reaction API"
+tags = ["rust"]
+img = ""
+links = [
+  { name = "GitHub", url = "https://github.com/sorokya/reaction" },
+]
