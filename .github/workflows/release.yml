@@ -39,7 +39,7 @@ jobs:
         id: check_changes
         run: |
           mkdir -p ~/remote_public
-          rsync -avz --delete leekcafe@leek.cafe:/var/www/leek.cafe/ ~/remote_public/ || true
+          rsync -avz --delete github@leek.cafe:/var/www/leek.cafe/ ~/remote_public/ || true
           if diff -qr public/ ~/remote_public/; then
             echo "changes=false" >> $GITHUB_ENV
           else
@@ -49,4 +49,4 @@ jobs:
       - name: Deploy with Rsync
         if: env.changes == 'true'
         run: |
-          rsync -avz --delete public/ leekcafe@leek.cafe:/var/www/leek.cafe/
+          rsync -avz --delete public/ github@leek.cafe:/var/www/leek.cafe/
