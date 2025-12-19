@@ -17,17 +17,17 @@ The app will be available at http://localhost:8000.
 ### 2) Install PHP dependencies (first time)
 
 ```sh
-docker compose run --rm app composer install
-docker compose run --rm app cp .env.example .env
-docker compose run --rm app php artisan key:generate
-docker compose run --rm app php artisan migrate
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
 ```
 
 ### 3) Frontend assets (Vite)
 
 ```sh
-docker compose run --rm node sh -lc "corepack enable && pnpm install"
-docker compose up node
+pnpm install
+pnpm dev
 ```
 
 Vite dev server runs on http://localhost:5173.
@@ -35,8 +35,7 @@ Vite dev server runs on http://localhost:5173.
 ### Lint / format (Biome)
 
 ```sh
-docker compose run --rm node sh -lc "corepack enable && pnpm lint"
-docker compose run --rm node sh -lc "corepack enable && pnpm format"
+pnpm format
 ```
 
 ## Xdebug
