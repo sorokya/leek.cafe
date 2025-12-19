@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
+    depends_on:
+      - db
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  db:
+    image: mariadb:12.1.2
+    environment:
+      MARIADB_DATABASE: leek
+      MARIADB_USER: leek
+      MARIADB_PASSWORD: secret
+      MARIADB_ROOT_PASSWORD: secretroot
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  node:
+    image: node:24-alpine
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "5173:5173"
+    command: sh -lc "corepack enable && pnpm install && pnpm dev --host 0.0.0.0 --port 5173"
+
+volumes:
+  mariadb_data:
