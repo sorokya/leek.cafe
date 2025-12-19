@@ -2,17 +2,13 @@
 
 Personal website built with Laravel.
 
-## Development (Docker)
+## Development
 
-This repo is set up to develop entirely inside Docker:
-
-### 1) Start the containers
+### 1) Start MariaDB (Docker)
 
 ```sh
-docker compose up --build
+docker compose up -d db
 ```
-
-The app will be available at http://localhost:8000.
 
 ### 2) Install PHP dependencies (first time)
 
@@ -40,12 +36,22 @@ pnpm format
 
 ## Xdebug
 
-Xdebug is installed in the PHP image but disabled by default.
+If you run the app inside Docker, the dev PHP image includes Xdebug and is enabled by default.
 
-To enable it for the current session:
+It is configured with `xdebug.start_with_request=trigger`, so it will only start debugging when your browser extension sets the trigger.
+
+Xdebug listens on port 9003 and connects to `host.docker.internal`.
+
+## PHP Docker images
+
+The PHP Dockerfile has two build targets:
+
+- `dev`: includes Xdebug
+- `prod`: no Xdebug
+
+Example:
 
 ```sh
-XDEBUG_MODE=debug,develop docker compose up --build
+docker build -f docker/php/Dockerfile --target dev -t leekcafe-php-dev .
+docker build -f docker/php/Dockerfile --target prod -t leekcafe-php-prod .
 ```
-
-It listens on port 9003 and connects to `host.docker.internal`.
