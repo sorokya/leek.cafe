@@ -1,0 +1,7 @@
+.site-main {
+  padding-block: 1.5rem 2.5rem;
+}
+
+.content {
+  min-height: calc(100dvh - 5rem);
+}
