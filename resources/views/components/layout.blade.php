@@ -17,12 +17,8 @@
     @endif
 </head>
 
-<body>
-    <div class="flex content-center items-center min-h-screen w-full">
-        <main class="w-full min-h-75vh p-4em">
-            {{ $slot }}
-        </main>
-    </div>
+<body data-theme="{{ $theme }}">
+    {{ $slot }}
 </body>
 
 </html>

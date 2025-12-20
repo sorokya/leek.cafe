@@ -14,6 +14,7 @@ class Layout extends Component
     public function __construct(
         public string $title = '',
         public string $description = 'Richard Leek\'s development blog',
+        public string $theme = 'dark',
     ) {
         //
     }
