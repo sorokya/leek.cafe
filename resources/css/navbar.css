@@ -79,6 +79,56 @@
   background: var(--accent-soft);
 }
 
+.theme-toggle {
+  display: inline-flex;
+}
+
+.theme-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.theme-toggle-button:hover {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.theme-toggle-button:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.theme-icon {
+  display: none;
+}
+
+body[data-theme="dark"] .theme-icon--dark {
+  display: block;
+}
+
+body[data-theme="light"] .theme-icon--light {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme]) .theme-icon--dark {
+    display: block;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  body:not([data-theme]) .theme-icon--light {
+    display: block;
+  }
+}
+
 @media (max-width: 40rem) {
   .header-inner {
     flex-wrap: wrap;
@@ -91,7 +141,7 @@
 
   .site-nav {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
 
   .nav-link {
