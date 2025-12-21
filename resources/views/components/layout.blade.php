@@ -3,7 +3,7 @@
 'description' => null,
 'theme' => null,
 'siteName' => 'Richard Leek',
-'tagline' => 'Software engineer — 10+ years building products',
+'tagline' => 'Software engineer — 10+ years building cool projects',
 'logoHref' => '/',
 'logoSrc' => '/img/apple-touch-icon.png',
 ])
@@ -37,13 +37,15 @@ $theme = $preferences->theme->value;
 <body @if ($theme !=='system' ) data-theme="{{ $theme }}" @endif>
     <header class="site-header">
         <div class="container header-inner">
-            <a class="brand" href="{{ $logoHref }}" aria-label="{{ $siteName }}">
-                <img class="brand-logo" src="{{ $logoSrc }}" alt="" width="40" height="40" loading="eager" decoding="async">
+            <div class="brand-container">
+                <a class="brand" href="{{ $logoHref }}" aria-label="{{ $siteName }}">
+                    <img class="brand-logo" src="{{ $logoSrc }}" alt="" width="40" height="40" loading="eager" decoding="async">
+                </a>
                 <div class="brand-text">
                     <div class="brand-name">{{ $siteName }}</div>
                     <div class="brand-tagline">{{ $tagline }}</div>
                 </div>
-            </a>
+            </div>
 
             <nav class="site-nav" aria-label="Primary">
                 <a class="nav-link {{ request()->is('/') ? 'is-active' : '' }}" href="/">Home</a>
