@@ -72,6 +72,21 @@ $theme = $preferences->theme->value;
             {{ $slot }}
         </div>
     </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <small class="footer-text">
+                &copy; {{ date('Y') }} {{ $siteName }}
+            </small>
+
+            @if (defined('LARAVEL_START'))
+            @php
+            $renderedInMs = (int) round((microtime(true) - LARAVEL_START) * 1000);
+            @endphp
+            <small class="footer-metric">Rendered in {{ $renderedInMs }}ms</small>
+            @endif
+        </div>
+    </footer>
 </body>
 
 </html>

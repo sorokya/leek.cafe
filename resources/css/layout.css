@@ -1,7 +1,36 @@
-.site-main {
-  padding-block: 1.5rem 2.5rem;
+.site-shell,
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
-.content {
-  min-height: calc(100dvh - 5rem);
+.site-main {
+  padding-block: 1.5rem 2.5rem;
+  flex: 1;
+}
+
+.site-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-block: 1.25rem;
+}
+
+.footer-text {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.footer-metric {
+  color: var(--muted);
+  font-size: 0.875rem;
 }
