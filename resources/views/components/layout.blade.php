@@ -2,7 +2,7 @@
 'title' => null,
 'description' => null,
 'theme' => null,
-'siteName' => config('app.name', 'Laravel'),
+'siteName' => 'Richard Leek',
 'tagline' => 'Software engineer — 10+ years building products',
 'logoHref' => '/',
 'logoSrc' => '/img/apple-touch-icon.png',
