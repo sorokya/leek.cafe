@@ -1,0 +1,55 @@
+/*
+  Post feed
+  - Styles used by the welcome page feed and anywhere else posts are listed.
+  - Uses existing theme tokens from variables.css
+*/
+
+.post-feed {
+  display: grid;
+  gap: 1rem;
+}
+
+.post-summary {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--bg);
+}
+
+.post-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.post-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.post-meta {
+  margin: 0.35rem 0 0;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.post-excerpt {
+  margin: 0.75rem 0 0;
+  color: color-mix(in oklab, var(--text) 85%, var(--muted));
+}
+
+.post-read-more {
+  display: inline-flex;
+  margin-top: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.post-read-more:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}

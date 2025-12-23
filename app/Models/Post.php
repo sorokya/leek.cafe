@@ -49,4 +49,25 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function excerpt(int $length = 200): string
+    {
+        // TODO: Render markdown to plain text before truncating
+        if (strlen($this->body) <= $length) {
+            return $this->body;
+        }
+
+        $truncated = substr($this->body, 0, $length);
+        $lastSpace = strrpos($truncated, ' ');
+        if ($lastSpace !== false) {
+            $truncated = substr($truncated, 0, $lastSpace);
+        }
+
+        return $truncated . '...';
+    }
+
+    public function link(): string
+    {
+        return "/posts/{$this->slug}";
+    }
 }

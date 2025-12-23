@@ -4,8 +4,77 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "19fcd6a9ea973f76234cd184c8d8e1f7",
+    "content-hash": "ea75747cd0f85f194749d2fba46a4b9d",
     "packages": [
+        {
+            "name": "blade-ui-kit/blade-heroicons",
+            "version": "2.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/driesvints/blade-heroicons.git",
+                "reference": "4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/driesvints/blade-heroicons/zipball/4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19",
+                "reference": "4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19",
+                "shasum": ""
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.6",
+                "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7.0|^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^9.0|^10.5|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "BladeUI\\Heroicons\\BladeHeroiconsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "BladeUI\\Heroicons\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dries Vints",
+                    "homepage": "https://driesvints.com"
+                }
+            ],
+            "description": "A package to easily make use of Heroicons in your Laravel Blade views.",
+            "homepage": "https://github.com/blade-ui-kit/blade-heroicons",
+            "keywords": [
+                "Heroicons",
+                "blade",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/driesvints/blade-heroicons/issues",
+                "source": "https://github.com/driesvints/blade-heroicons/tree/2.6.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/driesvints",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.paypal.com/paypalme/driesvints",
+                    "type": "paypal"
+                }
+            ],
+            "time": "2025-02-13T20:53:33+00:00"
+        },
         {
             "name": "blade-ui-kit/blade-icons",
             "version": "1.8.0",
@@ -1132,70 +1201,6 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
-        },
-        {
-            "name": "itsmalikjones/blade-iconic",
-            "version": "1.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ItsMalikJones/blade-iconic.git",
-                "reference": "f46e05a4edf4e020971e687153d7a4e1e707aa40"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ItsMalikJones/blade-iconic/zipball/f46e05a4edf4e020971e687153d7a4e1e707aa40",
-                "reference": "f46e05a4edf4e020971e687153d7a4e1e707aa40",
-                "shasum": ""
-            },
-            "require": {
-                "blade-ui-kit/blade-icons": "^1.0",
-                "php": "^7.4|^8.0|^8.1"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^6.15|^7.0|^8.0",
-                "phpunit/phpunit": "^9.3"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ItsMalikJones\\BladeIconic\\BladeIconicServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ItsMalikJones\\BladeIconic\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Malik Alleyne-Jones",
-                    "homepage": "https://twitter.com/ItsMalikJones"
-                }
-            ],
-            "description": "A package to easily make use of Iconic icons in your Laravel Blade views",
-            "homepage": "https://github.com/itsmalikjones/blade-iconic",
-            "keywords": [
-                "blade",
-                "iconic",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/itsmalikjones/blade-iconic/issues",
-                "source": "https://github.com/itsmalikjones/blade-iconic"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/ItsMalikJones",
-                    "type": "github"
-                }
-            ],
-            "time": "2023-02-21T15:07:49+00:00"
         },
         {
             "name": "laravel/framework",

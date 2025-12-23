@@ -64,10 +64,10 @@
             <form class="theme-toggle" method="POST" action="{{ route('theme.toggle') }}">
                 @csrf
                 <button class="theme-toggle-button" type="submit" aria-label="Toggle theme" title="Toggle theme">
-                    <x-iconic-moon class="theme-icon theme-icon--dark" width="18" height="18" aria-hidden="true"
-                        focusable="false" />
-                    <x-iconic-sun class="theme-icon theme-icon--light" width="18" height="18" aria-hidden="true"
-                        focusable="false" />
+                    <x-heroicon-o-moon class="theme-icon theme-icon--dark" width="18" height="18"
+                        aria-hidden="true" focusable="false" />
+                    <x-heroicon-o-sun class="theme-icon theme-icon--light" width="18" height="18"
+                        aria-hidden="true" focusable="false" />
                 </button>
             </form>
         </div>
