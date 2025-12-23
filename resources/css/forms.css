@@ -68,14 +68,14 @@
 }
 
 .form-hint--error {
-  color: color-mix(in oklab, var(--accent) 55%, var(--text));
+  color: var(--danger);
 }
 
 .form-errors {
   padding: 0.85rem 0.9rem;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in oklab, var(--danger) 35%, var(--border));
   border-radius: calc(var(--radius) - 6px);
-  background: var(--accent-soft);
+  background: var(--danger-soft);
 }
 
 .form-errors__title {
@@ -96,7 +96,7 @@
 }
 
 .form-input--invalid {
-  border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
+  border-color: color-mix(in oklab, var(--danger) 55%, var(--border));
 }
 
 .form-checkbox {
