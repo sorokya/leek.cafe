@@ -24,7 +24,7 @@ final class UserPreferences
     /**
      * Parses the preferences from the request cookie.
      */
-    public function parse_from_request(Request $request)
+    public function parse_from_request(Request $request): void
     {
         $value = $request->cookie(self::COOKIE_NAME);
 
@@ -44,7 +44,7 @@ final class UserPreferences
     /**
      * Toggles the current theme from light to dark or dark to light.
      */
-    public function toggleTheme()
+    public function toggleTheme(): void
     {
         $this->theme = $this->theme === Theme::Dark ? Theme::Light : Theme::Dark;
     }
@@ -57,11 +57,17 @@ final class UserPreferences
      */
     public function get_cookie(Request $request): HttpFoundationCookie
     {
+        $json = json_encode([
+            'theme' => $this->theme->value
+        ]);
+
+        if (!is_string($json)) {
+            throw new \RuntimeException('Failed to encode user preferences to JSON.');
+        }
+
         return Cookie::make(
             name: self::COOKIE_NAME,
-            value: json_encode([
-                'theme' => $this->theme->value
-            ]),
+            value: $json,
             minutes: 60 * 24 * 365,
             path: '/',
             secure: $request->isSecure(),

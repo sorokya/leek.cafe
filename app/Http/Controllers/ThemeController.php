@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Controllers;
 
 use App\Services\UserPreferences;
@@ -14,7 +12,7 @@ final class ThemeController extends Controller
     {
         $preferences->parse_from_request($request);
         $preferences->toggleTheme();
-        $previousUrl = url()->previous() ?? url('/');
+        $previousUrl = url()->previous('/');
 
         return redirect()->to($previousUrl)
             ->withCookie($preferences->get_cookie($request));

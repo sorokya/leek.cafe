@@ -1,5 +1,6 @@
 <x-layout title="Login">
-    <x-form title="Login" description="Use your username and password to continue.">
+    <x-form action="{{ route('auth.store-login') }}" title="Login"
+        description="Use your username and password to continue.">
         <x-slot name="fields">
             <div class="form-field">
                 <label class="form-label" for="username">Username</label>
