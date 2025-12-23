@@ -3,18 +3,11 @@
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThemeController;
+use App\Http\Controllers\WelcomeController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    $posts = Post::query()
-        ->whereNotNull('published_at')
-        ->orderByDesc('published_at')
-        ->with('user')
-        ->take(10)
-        ->get();
-    return view('welcome', ['posts' => $posts]);
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::controller(App\Http\Controllers\AuthController::class)->group(function () {
     Route::get('/login', 'showLogin')->name('auth.show-login');

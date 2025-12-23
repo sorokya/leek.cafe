@@ -10,7 +10,7 @@
         </header>
 
         <div class="post-detail__content">
-            {!! $post->render() !!}
+            {!! $renderedBody !!}
         </div>
     </article>
 </x-layout>

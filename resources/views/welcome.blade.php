@@ -15,15 +15,15 @@
                     @foreach ($posts as $post)
                         <article class="post-summary">
                             <h2 class="post-title">
-                                <a class="post-link" href="{{ $post->link() }}">{{ $post->title }}</a>
+                                <a class="post-link" href="{{ $post['link'] }}">{{ $post['title'] }}</a>
                             </h2>
                             <h4 class="post-meta">
-                                <time class="post-date" datetime="{{ $post->created_at->toW3cString() }}">
-                                    {{ $post->created_at->format('F j, Y') }}
+                                <time class="post-date" datetime="{{ $post['published_at']?->toW3cString() }}">
+                                    {{ $post['published_at']?->format('F j, Y') }}
                                 </time>
                             </h4>
-                            <p class="post-excerpt">{{ $post->excerpt() }}</p>
-                            <a class="post-read-more" href="{{ $post->link() }}">Read More</a>
+                            <p class="post-excerpt">{{ $post['excerpt'] }}</p>
+                            <a class="post-read-more" href="{{ $post['link'] }}">Read More</a>
                         </article>
                     @endforeach
                 </div>

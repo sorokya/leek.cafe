@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Services\PostRenderer;
 use Illuminate\View\View;
 
 class PostController extends Controller
 {
-    public function show(string $slug): View
+    public function show(string $slug, PostRenderer $renderer): View
     {
         $post = Post::query()
             ->where('slug', $slug)
@@ -20,6 +21,7 @@ class PostController extends Controller
 
         return view('post.show', [
             'post' => $post,
+            'renderedBody' => (string) $renderer->render($post->body),
         ]);
     }
 }

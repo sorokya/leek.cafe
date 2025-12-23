@@ -54,28 +54,6 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function render(): string
-    {
-        // TODO: Render HTML with commonmark
-        return $this->body;
-    }
-
-    public function excerpt(int $length = 200): string
-    {
-        $rendered = $this->render();
-        if (strlen($rendered) <= $length) {
-            return $rendered;
-        }
-
-        $truncated = substr($rendered, 0, $length);
-        $lastSpace = strrpos($truncated, ' ');
-        if ($lastSpace !== false) {
-            $truncated = substr($truncated, 0, $lastSpace);
-        }
-
-        return $truncated . '...';
-    }
-
     public function link(): string
     {
         return "/posts/{$this->slug}";
