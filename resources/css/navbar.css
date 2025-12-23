@@ -209,15 +209,15 @@ body[data-theme="light"] .theme-icon--light {
     flex: 1 1 0;
   }
 
-  html.js .nav-toggle {
+  .nav-toggle {
     display: inline-flex;
   }
 
-  html.js .site-nav--desktop {
+  .site-nav--desktop {
     display: none;
   }
 
-  html.js .site-nav--mobile {
+  .site-nav--mobile {
     width: 100%;
     border-radius: 1rem;
     padding: 0.5rem;
@@ -225,15 +225,15 @@ body[data-theme="light"] .theme-icon--light {
     gap: 0.25rem;
   }
 
-  html.js .site-nav--mobile[hidden] {
+  .site-nav--mobile[hidden] {
     display: none;
   }
 
-  html.js .site-nav--mobile:not([hidden]) {
+  .site-nav--mobile:not([hidden]) {
     display: flex;
   }
 
-  html.js .site-nav--mobile .nav-link {
+  .site-nav--mobile .nav-link {
     flex: 0 0 auto;
     justify-content: flex-start;
     width: 100%;
