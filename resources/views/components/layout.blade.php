@@ -48,30 +48,28 @@
                 </div>
             </div>
 
-            <nav class="site-nav" aria-label="Primary">
-                <a class="nav-link {{ request()->is('/') ? 'is-active' : '' }}" href="/">Home</a>
-                <a class="nav-link {{ request()->is('projects*') ? 'is-active' : '' }}" href="/projects">Projects</a>
-                <a class="nav-link {{ request()->is('posts*') ? 'is-active' : '' }}" href="/posts">Posts</a>
+            <button class="nav-toggle" type="button" data-nav-toggle aria-controls="primary-nav-mobile"
+                aria-expanded="false" aria-label="Toggle menu" title="Toggle menu">
+                <span class="nav-toggle-icon" aria-hidden="true"><span></span></span>
+            </button>
 
-                @auth
-                    <a class="nav-link" href="/settings">Settings</a>
-
-                    <form method="POST" action="{{ route('auth.logout') }}">
-                        @csrf
-                        <button class="nav-link" type="submit">Logout</button>
-                    </form>
-                @endauth
-
-                <form class="theme-toggle" method="POST" action="{{ route('theme.toggle') }}">
-                    @csrf
-                    <button class="theme-toggle-button" type="submit" aria-label="Toggle theme" title="Toggle theme">
-                        <x-iconic-moon class="theme-icon theme-icon--dark" width="18" height="18"
-                            aria-hidden="true" focusable="false" />
-                        <x-iconic-sun class="theme-icon theme-icon--light" width="18" height="18"
-                            aria-hidden="true" focusable="false" />
-                    </button>
-                </form>
+            <nav class="site-nav site-nav--desktop" aria-label="Primary">
+                <x-primary-nav-items />
             </nav>
+
+            <nav class="site-nav site-nav--mobile" id="primary-nav-mobile" aria-label="Primary" hidden>
+                <x-primary-nav-items />
+            </nav>
+
+            <form class="theme-toggle" method="POST" action="{{ route('theme.toggle') }}">
+                @csrf
+                <button class="theme-toggle-button" type="submit" aria-label="Toggle theme" title="Toggle theme">
+                    <x-iconic-moon class="theme-icon theme-icon--dark" width="18" height="18" aria-hidden="true"
+                        focusable="false" />
+                    <x-iconic-sun class="theme-icon theme-icon--light" width="18" height="18" aria-hidden="true"
+                        focusable="false" />
+                </button>
+            </form>
         </div>
     </header>
 
