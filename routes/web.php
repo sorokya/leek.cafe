@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThemeController;
 use App\Models\Post;
@@ -26,6 +27,10 @@ Route::controller(App\Http\Controllers\AuthController::class)->group(function ()
 Route::controller(ProfileController::class)->middleware('auth')->group(function () {
     Route::get('/settings', 'showSettings')->name('profile.show-settings');
     Route::post('/settings', 'updateSettings')->name('profile.update-settings');
+});
+
+Route::controller(PostController::class)->group(function () {
+    Route::get('/posts/{slug}', 'show')->name('posts.show');
 });
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $slug
  * @property string $title
  * @property string $body
- * @property string|null $published_at
+ * @property \Illuminate\Support\Carbon|null $published_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -44,20 +44,30 @@ class Post extends Model
         'published_at'
     ];
 
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    public function render(): string
+    {
+        // TODO: Render HTML with commonmark
+        return $this->body;
+    }
+
     public function excerpt(int $length = 200): string
     {
-        // TODO: Render markdown to plain text before truncating
-        if (strlen($this->body) <= $length) {
-            return $this->body;
+        $rendered = $this->render();
+        if (strlen($rendered) <= $length) {
+            return $rendered;
         }
 
-        $truncated = substr($this->body, 0, $length);
+        $truncated = substr($rendered, 0, $length);
         $lastSpace = strrpos($truncated, ' ');
         if ($lastSpace !== false) {
             $truncated = substr($truncated, 0, $lastSpace);
