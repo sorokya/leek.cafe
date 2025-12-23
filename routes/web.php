@@ -10,6 +10,7 @@ Route::get('/', function () {
 Route::controller(App\Http\Controllers\AuthController::class)->group(function () {
     Route::get('/login', 'showLogin')->name('auth.show-login');
     Route::post('/login', 'login')->name('auth.store-login');
+    Route::post('/logout', 'logout')->name('auth.logout');
     Route::get('/set-password', 'showSetPassword')->name('auth.show-set-password');
     Route::post('/set-password', 'setPassword')->name('auth.store-set-password');
 });

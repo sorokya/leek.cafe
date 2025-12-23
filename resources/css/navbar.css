@@ -66,6 +66,13 @@
   color: var(--muted);
 }
 
+button.nav-link {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
 .nav-link:hover {
   text-decoration: none;
   background: var(--accent-soft);
