@@ -77,7 +77,6 @@ class User extends Authenticatable
 
     static public function findByUsername(string $username): ?User
     {
-        $user = self::whereUsername($username)->first();
         return self::where('username', $username)->first();
     }
 }

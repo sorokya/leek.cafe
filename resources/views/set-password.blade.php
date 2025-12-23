@@ -2,6 +2,8 @@
     <x-form action="{{ route('auth.store-set-password') }}" title="Set Password"
         description="Create a password for your account.">
         <x-slot name="fields">
+            <input type="hidden" name="username" value="{{ $username ?? request('username') }}" />
+
             <div class="form-field">
                 <label class="form-label" for="password">New Password</label>
                 <input class="form-input" id="password" name="password" type="password" autocomplete="new-password"
