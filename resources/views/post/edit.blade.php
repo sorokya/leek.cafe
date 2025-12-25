@@ -17,7 +17,7 @@
                     Publish Date <button id="btn-unpublish" class="btn btn--sm" type="button">Clear</button>
                 </label>
                 <input type="datetime-local" id="published_at" name="published_at" class="form-input"
-                    value="{{ old('published_at', $post->published_at?->format('Y-m-d\TH:i')) }}">
+                    value="{{ old('published_at', $publishedAtLocal) }}">
             </div>
         </x-slot>
         <x-slot name="actions">
