@@ -14,6 +14,7 @@ class WelcomeController extends Controller
             ->whereNotNull('published_at')
             ->orderByDesc('published_at')
             ->with('user')
+            ->with('content')
             ->take(10)
             ->get();
 

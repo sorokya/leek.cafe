@@ -85,6 +85,19 @@ class PostController extends Controller
             ->with('status', 'Post updated successfully.');
     }
 
+    /**
+     * Handle image uploads for posts.
+     * @return array<string, mixed>
+     */
+    public function uploadImages(Request $request): array
+    {
+        $validated = $request->validate([
+            'images.*' => ['required', 'image', 'max:5120'], // Max 5MB per image
+        ]);
+
+        return [];
+    }
+
     private function resolveUserTimezone(Request $request): string
     {
         $timezone = $request->user()?->timezone;

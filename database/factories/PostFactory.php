@@ -16,11 +16,6 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'slug' => fake()->unique()->slug(),
-            'title' => fake()->sentence(),
-            'body' => fake()->paragraphs(3, true),
-            'published_at' => fake()->optional()->dateTimeThisYear(),
-        ];
+        return [];
     }
 }
