@@ -14,11 +14,12 @@ class Form extends Component
     public function __construct(
         public ?string $title = null,
         public ?string $description = null,
+        public string $method = 'POST',
         public ?string $action = null,
         public ?string $fields = null,
         public ?string $actions = null,
-    )
-    {
+        public ?string $class = null,
+    ) {
         //
     }
 

@@ -10,15 +10,22 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ProfileController extends Controller
 {
-    public function showSettings(): View
+    public function showSettings(): View | RedirectResponse
     {
         $user = Auth::user();
         if (!$user) {
-            throw new \RuntimeException('Authenticated user not found.');
+            abort(403);
+        }
+
+        if (!$user->password) {
+            return redirect()->route('auth.show-set-password', [
+                'username' => $user->username,
+            ]);
         }
 
         return view('settings', [
             'name' => $user->name,
+            'timezone' => $user->timezone,
         ]);
     }
 
@@ -26,13 +33,14 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->password) {
-            throw new \RuntimeException('Authenticated user not found.');
+            abort(403);
         }
 
         $validated = request()->validate([
             'name' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string'],
             'new_password' => ['nullable', 'confirmed', Password::default()],
+            'timezone' => ['required', 'string', 'max:255'],
         ]);
 
         if (!Hash::check($validated['password'], $user->password)) {
@@ -42,6 +50,7 @@ class ProfileController extends Controller
         }
 
         $user->name = $validated['name'];
+        $user->timezone = $validated['timezone'];
 
         if (!empty($validated['new_password'])) {
             $user->password = Hash::make($validated['new_password']);

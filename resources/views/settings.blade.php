@@ -40,6 +40,24 @@
             </div>
 
             <div class="form-field">
+                <label class="form-label" for="timezone">Time Zone</label>
+                <select class="form-input" id="timezone" name="timezone" required
+                    @error('timezone') aria-invalid="true" aria-describedby="timezone-error" @enderror
+                    @class([
+                        'form-input',
+                        'form-input--invalid' => $errors->has('timezone'),
+                    ])>
+                    @foreach (DateTimeZone::listIdentifiers() as $tz)
+                        <option value="{{ $tz }}" @if (old('timezone', $timezone) === $tz) selected @endif>
+                            {{ $tz }}</option>
+                    @endforeach
+                </select>
+                @error('timezone')
+                    <p class="form-hint form-hint--error" id="timezone-error">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="form-field">
                 <label class="form-label" for="password">Current Password</label>
                 <input class="form-input" id="password" name="password" type="password" inputmode="text"
                     value="{{ old('password') }}" required

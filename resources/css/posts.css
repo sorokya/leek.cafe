@@ -92,6 +92,14 @@
   color: var(--muted);
 }
 
+.post-detail__actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .post-detail__content {
   margin-top: 1.25rem;
   line-height: 1.75;

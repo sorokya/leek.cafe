@@ -7,6 +7,11 @@
                     {{ $post->published_at?->format('F j, Y') }}
                 </time>
             </h4>
+            @auth
+                <section class="post-detail__actions">
+                    <a href={{ route('posts.edit', $post->slug) }}>Edit</a>
+                </section>
+            @endauth
         </header>
 
         <div class="post-detail__content">

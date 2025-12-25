@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      overtype:
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.10
@@ -503,10 +507,16 @@ packages:
     resolution: {integrity: sha512-utfs7Pr5uJyyvDETitgsaqSyjCb2qNRAtuqUeWIAKztsOYdcACf2KtARYXg2pSvhkt+9NfoaNY7fxjl6nuMjIQ==}
     engines: {node: '>= 12.0.0'}
 
+  markdown-actions@1.1.2:
+    resolution: {integrity: sha512-U7rmgTvUP3neh3XaVblikslRWWhfpzF2SiI1A6z3az7IpYuAiVvdqtZrFCArV22TSj2Ht+r0ResohlsJ8/ntbw==}
+
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  overtype@2.1.1:
+    resolution: {integrity: sha512-2HXZVnlzv3XOBWHT8gPVJscP/azE6mmX4DQpCgxhRK5PaCnu8MqsVBDa0/fSf9naAMlN1dM228aMK5HDAglRLg==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -903,7 +913,13 @@ snapshots:
       lightningcss-win32-x64-msvc: 1.30.2
     optional: true
 
+  markdown-actions@1.1.2: {}
+
   nanoid@3.3.11: {}
+
+  overtype@2.1.1:
+    dependencies:
+      markdown-actions: 1.1.2
 
   picocolors@1.1.1: {}
 

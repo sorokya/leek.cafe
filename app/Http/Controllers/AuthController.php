@@ -21,12 +21,12 @@ class AuthController extends Controller
     {
         $username = $request->query('username');
         if (!is_string($username) || strlen($username) < 3) {
-            return redirect()->route('auth.show-login');
+            abort(400);
         }
 
         $user = User::findByUsername($username);
         if (!$user || $user->password !== null) {
-            return redirect()->route('auth.show-login');
+            abort(403);
         }
 
         return view('set-password', [
@@ -76,7 +76,7 @@ class AuthController extends Controller
 
         $user = User::findByUsername((string) $validated['username']);
         if (!$user || $user->password !== null) {
-            return redirect()->route('auth.show-login');
+            abort(403);
         }
 
         $user->password = (string) $validated['password'];

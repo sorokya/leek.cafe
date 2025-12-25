@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('name');
             $table->string('password')->nullable();
+            $table->string('timezone')->default('America/New_York');
             $table->rememberToken();
             $table->timestamps();
         });
