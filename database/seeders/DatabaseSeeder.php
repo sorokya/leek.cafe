@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Post;
+use App\Models\Content;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,11 +17,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()
-            ->has(Post::factory()->count(5))
-            ->create([
-                'username' => 'richard',
-                'name' => 'Richard Leek',
-            ]);
+        $user = User::factory()->create([
+            'username' => 'richard',
+            'name' => 'Richard Leek',
+        ]);
+
+        DB::table('content_types')->insert([
+            ['type' => 'post'],
+        ]);
+
+        Content::factory()
+            ->count(5)
+            ->for($user)
+            ->create();
     }
 }

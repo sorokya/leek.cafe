@@ -16,10 +16,10 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content> $content
+ * @property-read int|null $content_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Post> $posts
- * @property-read int|null $posts_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -72,11 +72,11 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<Post, $this>
+     * @return HasMany<Content, $this>
      */
-    public function posts(): HasMany
+    public function content(): HasMany
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Content::class);
     }
 
     static public function findByUsername(string $username): ?User

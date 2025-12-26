@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
+use App\Models\Content;
+use App\Models\ContentType;
 use App\Services\PostRenderer;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -14,47 +15,50 @@ class PostController extends Controller
 {
     public function show(string $slug, PostRenderer $renderer): View
     {
-        $post = Post::query()
+        $content = Content::query()
+            ->where('content_type_id', ContentType::Post->value)
             ->where('slug', $slug)
             ->whereNotNull('published_at')
             ->with('user')
             ->first();
-        if (!$post) {
+        if (!$content || !$content->body) {
             abort(404);
         }
 
         return view('post.show', [
-            'post' => $post,
-            'renderedBody' => (string) $renderer->render($post->body),
+            'content' => $content,
+            'renderedBody' => (string) $renderer->render($content->body),
         ]);
     }
 
     public function edit(Request $request, string $slug): View
     {
-        $post = Post::query()
-            ->where('slug', $slug)
+        $content = Content::query()
+            ->where('content_type_id', ContentType::Post->value)
             ->with('user')
+            ->where('slug', $slug)
             ->first();
-        if (!$post) {
+        if (!$content) {
             abort(404);
         }
 
         $userTimezone = $this->resolveUserTimezone($request);
-        $publishedAtLocal = $post->published_at?->copy()->setTimezone($userTimezone)->format('Y-m-d\\TH:i');
+        $publishedAtLocal = $content->published_at?->copy()->setTimezone($userTimezone)->format('Y-m-d\\TH:i');
 
         return view('post.edit', [
-            'post' => $post,
+            'content' => $content,
             'publishedAtLocal' => $publishedAtLocal,
         ]);
     }
 
     public function update(Request $request, string $slug): RedirectResponse
     {
-        $post = Post::query()
+        $content = Content::query()
+            ->where('content_type_id', ContentType::Post->value)
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$post) {
+        if (!$content) {
             abort(404);
         }
 
@@ -76,12 +80,12 @@ class PostController extends Controller
                 ->setTimezone('UTC');
         }
 
-        $post->title = $validated['title'];
-        $post->body = $validated['body'];
-        $post->published_at = $publishedAtUtc;
-        $post->save();
+        $content->title = $validated['title'];
+        $content->body = $validated['body'];
+        $content->published_at = $publishedAtUtc;
+        $content->save();
 
-        return redirect()->route('posts.edit', ['slug' => $post->slug])
+        return redirect()->route('posts.edit', ['slug' => $content->slug])
             ->with('status', 'Post updated successfully.');
     }
 

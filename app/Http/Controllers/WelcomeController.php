@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Content;
+use App\Models\ContentType;
 use App\Models\Post;
 use App\Services\PostRenderer;
 use Illuminate\View\View;
@@ -10,20 +12,20 @@ class WelcomeController extends Controller
 {
     public function index(PostRenderer $postRenderer): View
     {
-        $posts = Post::query()
-            ->whereNotNull('published_at')
-            ->orderByDesc('published_at')
+        $content = Content::query()
             ->with('user')
-            ->with('content')
+            ->where('content_type_id', ContentType::Post->value)
+            ->whereNotNull('published_at')
+            ->orderBy('published_at', 'desc')
             ->take(10)
             ->get();
 
-        return view('welcome', ['posts' => array_map(fn($post) => [
-            'title' => $post->title,
-            'link' => $post->link(),
-            'published_at' => $post->published_at,
-            'excerpt' => $this->generateExcerpt($post->body, $postRenderer),
-        ], $posts->all())]);
+        return view('welcome', ['posts' => array_map(fn($content) => [
+            'title' => $content->title,
+            'link' => "/posts/{$content->slug}",
+            'published_at' => $content->published_at,
+            'excerpt' => $content->body ? $this->generateExcerpt($content->body, $postRenderer) : null,
+        ], $content->all())]);
     }
 
     private function generateExcerpt(string $body, PostRenderer $renderer): string

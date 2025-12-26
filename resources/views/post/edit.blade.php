@@ -1,15 +1,16 @@
-<x-layout title="Edit: {{ $post->title }}">
+<x-layout title="Edit: {{ $content->title }}">
     <x-form title="Edit Post" description="Edit the details of your post below."
-        action="{{ route('posts.update', $post->slug) }}" method="PUT" class="wide">
+        action="{{ route('posts.update', $content->slug) }}" method="PUT" class="wide">
         <x-slot name="fields">
             <div class="form-group">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" id="title" name="title" class="form-input"
-                    value="{{ old('title', $post->title) }}" required>
+                    value="{{ old('title', $content->title) }}" required>
             </div>
             <div class="form-group">
                 <label for="body" class="form-label">Body (Markdown)</label>
-                <input type="hidden" id="body" name="body" required value="{{ old('body', $post->body) }}" />
+                <input type="hidden" id="body" name="body" required
+                    value="{{ old('body', $content->body) }}" />
                 <div id="body-editor"></div>
             </div>
             <div class="form-group">
@@ -22,7 +23,7 @@
         </x-slot>
         <x-slot name="actions">
             <button type="submit" class="btn btn--primary">Update Post</button>
-            <a href="{{ route('posts.show', $post->slug) }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ route('posts.show', $content->slug) }}" class="btn btn-secondary">Cancel</a>
         </x-slot>
     </x-form>
 
