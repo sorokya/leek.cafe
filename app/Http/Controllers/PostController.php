@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Content;
 use App\Models\ContentType;
+use App\Services\ImageUploader;
 use App\Services\PostRenderer;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -93,13 +94,20 @@ class PostController extends Controller
      * Handle image uploads for posts.
      * @return array<string, mixed>
      */
-    public function uploadImages(Request $request): array
+    public function uploadImages(Request $request, ImageUploader $imageUploader): array
     {
         $validated = $request->validate([
-            'images.*' => ['required', 'image', 'max:5120'], // Max 5MB per image
+            'image.*' => ['required', 'image', 'max:5120'], // Max 5MB per image
         ]);
 
-        return [];
+        $images = $validated['image'] ?? [];
+        $ids = [];
+
+        foreach ($images as $image) {
+            $ids[] = $imageUploader->upload($image);
+        }
+
+        return ['ids' => $ids];
     }
 
     private function resolveUserTimezone(Request $request): string

@@ -2203,11 +2203,12 @@ namespace PHPSTORM_META {
 'tinker.alias','tinker.dont_alias',);
         registerArgumentsSet('middleware', 
 'web','api',);
-        registerArgumentsSet('routes', 'auth.show-login','auth.store-login','auth.logout',
+        registerArgumentsSet('routes', 'welcome','auth.show-login','auth.store-login','auth.logout',
 'auth.show-set-password','auth.store-set-password','profile.show-settings','profile.update-settings','posts.show',
-'theme.toggle','storage.local',);
+'posts.edit','posts.upload-images','posts.update','theme.toggle','storage.local',);
         registerArgumentsSet('views', 
-'components.form','components.layout','components.primary-nav-items','login','post.show',
+'components.form','components.layout','components.primary-nav-items','errors.400','errors.403',
+'errors.404','errors.500','login','post.edit','post.show',
 'set-password','settings','welcome','laravel-exceptions-renderer::components.badge','laravel-exceptions-renderer::components.empty-state',
 'laravel-exceptions-renderer::components.file-with-line','laravel-exceptions-renderer::components.formatted-source','laravel-exceptions-renderer::components.frame','laravel-exceptions-renderer::components.frame-code','laravel-exceptions-renderer::components.header',
 'laravel-exceptions-renderer::components.http-method','laravel-exceptions-renderer::components.icons.alert','laravel-exceptions-renderer::components.icons.check','laravel-exceptions-renderer::components.icons.chevron-left','laravel-exceptions-renderer::components.icons.chevron-right',

@@ -18,19 +18,23 @@ export function initializeEditor() {
     const items = e.clipboardData?.items;
     if (!items) return;
 
+    const csrfToken = document.querySelector('[name="_token"]').value;
+    if (!csrfToken) return;
+
     const formData = new FormData();
+    formData.append('_token', csrfToken);
     for (const item of items) {
       if (item.type.startsWith('image/')) {
         e.preventDefault();
         const file = item.getAsFile();
         if (!file) continue;
 
-        formData.append('image', file);
+        formData.append('image[]', file);
       }
     }
 
     try {
-      const response = await fetch('./upload-image', {
+      const response = await fetch('./upload-images', {
         method: 'POST',
         body: formData,
       });

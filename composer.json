@@ -11,7 +11,8 @@
     "laravel/framework": "^12.0",
     "laravel/tinker": "^2.10.1",
     "league/commonmark": "^2.6",
-    "scrivo/highlight.php": "^9.18"
+    "scrivo/highlight.php": "^9.18",
+    "spatie/image-optimizer": "^1.8"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^3.6",
