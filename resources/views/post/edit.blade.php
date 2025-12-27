@@ -1,5 +1,5 @@
 <x-layout title="Edit: {{ $content->title }}">
-    <x-form title="Edit Post" description="Edit the details of your post below."
+    <x-form-card title="Edit Post" description="Edit the details of your post below."
         action="{{ route('posts.update', $content->slug) }}" method="PUT" class="wide">
         <x-slot name="fields">
             <div class="form-group">
@@ -25,7 +25,7 @@
             <button type="submit" class="btn btn--primary">Update Post</button>
             <a href="{{ route('posts.show', $content->slug) }}" class="btn btn-secondary">Cancel</a>
         </x-slot>
-    </x-form>
+    </x-form-card>
 
     @push('scripts')
         @vite('resources/js/edit-post.js')

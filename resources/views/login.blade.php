@@ -1,5 +1,5 @@
 <x-layout title="Login">
-    <x-form action="{{ route('auth.store-login') }}" title="Login"
+    <x-form-card action="{{ route('auth.store-login') }}" title="Login"
         description="Use your username and password to continue.">
         <x-slot name="fields">
             <div class="form-field">
@@ -45,5 +45,5 @@
             </div>
             <button class="btn btn--primary" type="submit">Login</button>
         </x-slot>
-    </x-form>
+    </x-form-card>
 </x-layout>

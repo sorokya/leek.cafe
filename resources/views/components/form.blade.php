@@ -1,22 +1,14 @@
-<section class="form-card {{ $class }}" aria-label="{{ $title ?? 'Form' }}">
-    @if ($title)
-        <h1 class="form-title">{{ $title }}</h1>
-    @endif
+@props([
+    'action' => '#',
+    'method' => 'POST',
+])
 
-    @if ($description)
-        <p class="form-description">{{ $description }}</p>
-    @endif
+<form {{ $attributes->merge(['class' => 'form']) }} method="post" action="{{ $action }}">
+    @csrf
 
-    <form class="form" method="post" action="{{ $action ?? '#' }}">
-        @csrf
+    @if (strtoupper($method) !== 'POST')
         @method($method)
+    @endif
 
-        {{ $fields }}
-
-        @if ($actions)
-            <div class="form-actions">
-                {{ $actions }}
-            </div>
-        @endif
-    </form>
-</section>
+    {{ $slot }}
+</form>

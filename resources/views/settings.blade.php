@@ -1,5 +1,6 @@
 <x-layout title="Settings">
-    <x-form title="User Settings" description="Update your user settings" action="{{ route('profile.update-settings') }}">
+    <x-form-card title="User Settings" description="Update your user settings"
+        action="{{ route('profile.update-settings') }}">
         <x-slot name="fields">
             @if (session('status'))
                 <div class="form-status" role="status" aria-live="polite">
@@ -75,5 +76,5 @@
         <x-slot name="actions">
             <button class="btn btn--primary" type="submit">Save Settings</button>
         </x-slot>
-    </x-form>
+    </x-form-card>
 </x-layout>
