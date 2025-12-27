@@ -116,10 +116,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   border-radius: 999px;
   font-size: 0.95rem;
   color: var(--muted);
+}
+
+.nav-link__icon {
+  display: block;
 }
 
 button.nav-link {

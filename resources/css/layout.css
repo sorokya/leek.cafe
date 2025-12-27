@@ -70,6 +70,10 @@ body {
     max-width: 100%;
     margin-inline: 0;
   }
+
+  .settings-grid > .form-card.wide {
+    grid-column: 1 / -1;
+  }
 }
 
 .section {

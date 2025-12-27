@@ -79,84 +79,6 @@
             </x-slot>
         </x-form-card>
 
-        <x-card title="Media Statuses" description="Manage media statuses." aria-label="Media statuses">
-            <div class="form">
-                <div class="form-field">
-                    <p class="form-label">Media status</p>
-
-                    <form method="post" action="{{ route('media-statuses.store') }}">
-                        @csrf
-                        <div class="form-actions">
-                            <input class="form-input" name="status" type="text" inputmode="text"
-                                value="{{ old('status') }}" placeholder="Status" required style="flex: 1" />
-                            <input class="form-input" name="icon" type="text" inputmode="text"
-                                value="{{ old('icon') }}" placeholder="Icon" style="flex: 1" />
-                            <input name="color" type="hidden" value="{{ old('color') }}" />
-                            <input class="form-color" type="color" value="{{ old('color') ?: '#FFFFFF' }}"
-                                aria-label="Color" title="Color"
-                                oninput="this.previousElementSibling.value = this.value" />
-                            <button class="btn btn--primary" type="submit">Add</button>
-                        </div>
-                        @error('status')
-                            <p class="form-hint form-hint--error">{{ $message }}</p>
-                        @enderror
-                        @error('icon')
-                            <p class="form-hint form-hint--error">{{ $message }}</p>
-                        @enderror
-                        @error('color')
-                            <p class="form-hint form-hint--error">{{ $message }}</p>
-                        @enderror
-                    </form>
-
-                    @if (($mediaStatuses ?? collect())->count() > 0)
-                        <div class="form-field">
-                            <p class="form-hint">Existing statuses</p>
-
-                            @foreach ($mediaStatuses as $mediaStatus)
-                                <div class="form-actions">
-                                    <form method="post" action="{{ route('media-statuses.update', $mediaStatus) }}"
-                                        style="display: flex; gap: 0.75rem; align-items: center; flex: 1">
-                                        @csrf
-                                        @method('PUT')
-
-                                        <input class="form-input" name="status_value" type="text"
-                                            placeholder="Status" inputmode="text" value="{{ $mediaStatus->status }}"
-                                            required style="flex: 1" />
-                                        <input class="form-input" name="icon_value" type="text" inputmode="text"
-                                            placeholder="Icon" value="{{ $mediaStatus->icon }}" style="flex: 1" />
-                                        <input name="color_value" type="hidden"
-                                            value="{{ $mediaStatus->color }}" />
-                                        <input class="form-color" type="color"
-                                            value="{{ $mediaStatus->color ?: '#FFFFFF' }}" aria-label="Color"
-                                            title="Color" oninput="this.previousElementSibling.value = this.value" />
-                                        <button class="btn" type="submit">Update</button>
-                                    </form>
-
-                                    <form method="post"
-                                        action="{{ route('media-statuses.destroy', $mediaStatus) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn--danger" type="submit">Delete</button>
-                                    </form>
-                                </div>
-                            @endforeach
-
-                            @error('status_value')
-                                <p class="form-hint form-hint--error">{{ $message }}</p>
-                            @enderror
-                            @error('icon_value')
-                                <p class="form-hint form-hint--error">{{ $message }}</p>
-                            @enderror
-                            @error('color_value')
-                                <p class="form-hint form-hint--error">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    @endif
-                </div>
-
-            </div>
-        </x-card>
-
         <x-card title="Media Types" description="Manage media types." aria-label="Media types">
             <div class="form">
                 <div class="form-field">
@@ -200,6 +122,91 @@
                             @endforeach
 
                             @error('type_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </x-card>
+
+        <x-card title="Media Statuses" description="Manage media statuses." aria-label="Media statuses"
+            class="wide">
+            <div class="form">
+                <div class="form-field">
+                    <p class="form-label">Media status</p>
+
+                    <form method="post" action="{{ route('media-statuses.store') }}">
+                        @csrf
+                        <div class="form-actions">
+                            <input class="form-input" name="status" type="text" inputmode="text"
+                                value="{{ old('status') }}" placeholder="Status" required style="flex: 1" />
+                            <input class="form-input" name="icon" type="text" inputmode="text"
+                                value="{{ old('icon') }}" placeholder="Icon" style="flex: 1" />
+                            <input name="color" type="hidden" value="{{ old('color') }}" />
+                            <input class="form-color" type="color" value="{{ old('color') ?: '#FFFFFF' }}"
+                                aria-label="Color" title="Color"
+                                oninput="this.previousElementSibling.value = this.value" />
+                            <button class="btn btn--primary" type="submit">Add</button>
+                        </div>
+                        @error('status')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('icon')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('color')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                    </form>
+
+                    @if (($mediaStatuses ?? collect())->count() > 0)
+                        <div class="form-field">
+                            <p class="form-hint">Existing statuses</p>
+
+                            @foreach ($mediaStatuses as $mediaStatus)
+                                <div class="form-actions">
+                                    <x-status-pill :icon="$mediaStatus->icon" :status="$mediaStatus->status" :bg="$mediaStatus->color
+                                        ? 'color-mix(in oklab, ' . $mediaStatus->color . ' 22%, var(--bg))'
+                                        : 'var(--surface)'"
+                                        :fg="$mediaStatus->color
+                                            ? 'color-mix(in oklab, ' . $mediaStatus->color . ' 30%, var(--text))'
+                                            : 'var(--text)'" />
+
+                                    <form method="post" action="{{ route('media-statuses.update', $mediaStatus) }}"
+                                        style="display: flex; gap: 0.75rem; align-items: center; flex: 1">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <input class="form-input" name="status_value" type="text"
+                                            placeholder="Status" inputmode="text" value="{{ $mediaStatus->status }}"
+                                            required style="flex: 1" />
+                                        <input class="form-input" name="icon_value" type="text" inputmode="text"
+                                            placeholder="Icon" value="{{ $mediaStatus->icon }}" style="flex: 1" />
+                                        <input name="color_value" type="hidden"
+                                            value="{{ $mediaStatus->color }}" />
+                                        <input class="form-color" type="color"
+                                            value="{{ $mediaStatus->color ?: '#FFFFFF' }}" aria-label="Color"
+                                            title="Color" oninput="this.previousElementSibling.value = this.value" />
+                                        <button class="btn" type="submit">Update</button>
+                                    </form>
+
+                                    <form method="post"
+                                        action="{{ route('media-statuses.destroy', $mediaStatus) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn--danger" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            @endforeach
+
+                            @error('status_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('icon_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('color_value')
                                 <p class="form-hint form-hint--error">{{ $message }}</p>
                             @enderror
                         </div>
