@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->string('filename');
-            $table->integer('width');
-            $table->integer('height');
+            $table->string('hash')->unique();
+            $table->string('extension', 4);
             $table->timestamps();
         });
 
         Schema::create('content_images', function (Blueprint $table) {
             $table->foreignId('content_id')->constrained()->onDelete('cascade');
             $table->foreignId('image_id')->constrained('images')->onDelete('cascade');
-            $table->timestamps();
         });
     }
 

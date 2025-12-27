@@ -8,24 +8,22 @@ use App\Models\Image;
 
 final class ImageUploader
 {
-    public function upload(UploadedFile $file): int
+    public function upload(UploadedFile $file): string
     {
         $this->optimize($file);
-        $filesize = getimagesize($file->getPathname());
-        $filename = $this->store($file);
+        $hash = $this->store($file);
 
-        $image = Image::query()->where('filename', $filename)->first();
+        $image = Image::query()->where('hash', $hash)->first();
         if ($image) {
-            return $image->id;
+            return substr($image->hash, 0, 12);
         }
 
         $image = new Image();
-        $image->filename = $filename;
-        $image->width = is_array($filesize) ? $filesize[0] : 0;
-        $image->height = is_array($filesize) ? $filesize[1] : 0;
+        $image->hash = $hash;
+        $image->extension = $this->getExtension($file);
         $image->save();
 
-        return $image->id;
+        return substr($image->hash, 0, 12);
     }
 
     private function optimize(UploadedFile $file): void
@@ -36,21 +34,26 @@ final class ImageUploader
 
     private function store(UploadedFile $file): string
     {
-        $filename = $this->getFileName($file);
-        $firstTwoChars = substr($filename, 0, 2);
+        $hash = $this->getHash($file);
+        $extension = $this->getExtension($file);
+        $firstTwoChars = substr($hash, 0, 2);
         $path = storage_path('app/public/uploads/' . $firstTwoChars . '/');
 
-        if (file_exists($path . $filename)) {
-            return $filename;
+        if (file_exists($path . $hash . '.' . $extension)) {
+            return $hash;
         }
 
-        $file->move($path, $filename);
-        return $filename;
+        $file->move($path, $hash . '.' . $extension);
+        return $hash;
     }
 
-    private function getFileName(UploadedFile $file): string
+    private function getHash(UploadedFile $file): string
     {
-        return hash_file('sha256', $file->getPathname()) . '.' . $this->getExtension($file);
+        $hash = hash_file('sha256', $file->getPathname());
+        if (!$hash) {
+            throw new \RuntimeException('Failed to compute file hash.');
+        }
+        return $hash;
     }
 
     private function getExtension(UploadedFile $file): string

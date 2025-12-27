@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThemeController;
@@ -30,3 +31,7 @@ Route::controller(PostController::class)->group(function () {
 });
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');
+
+Route::get('/img/{path}', ImageController::class)
+    ->middleware('cache.headers:public;max_age=31536000;etag')
+    ->name('image.serve')->where('path', '.*');

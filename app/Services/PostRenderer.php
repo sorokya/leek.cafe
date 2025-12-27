@@ -20,11 +20,10 @@ final class PostRenderer
 {
     private MarkdownConverter $markdown;
 
-    public function __construct()
+    public function __construct(bool $strip = false)
     {
         $environment = new Environment([
-            // Do not allow raw HTML from post bodies (prevents XSS when rendering)
-            'html_input' => 'strip',
+            'html_input' => $strip ? 'strip' : 'allow',
             'allow_unsafe_links' => false,
         ]);
         $environment->addExtension(new CommonMarkCoreExtension());
@@ -118,6 +117,27 @@ final class PostRenderer
 
     public function render(string $markdown): RenderedContentInterface
     {
+        $markdown = $this->replaceImages($markdown);
         return $this->markdown->convert($markdown);
+    }
+
+    private function replaceImages(string $markdown): string
+    {
+        // Img tags are (@img:hash) need to be /img/{hash} URLs
+        return preg_replace_callback(
+            '/!\[(.*?)\]\(@img:([a-f0-9]+)\)/',
+            function ($matches) {
+                [$full, $alt, $hash] = $matches;
+
+                $url = route('image.serve', ['path' => $hash]);
+
+                return sprintf(
+                    '<img src="%s" alt="%s" loading="lazy">',
+                    e($url),
+                    e($alt)
+                );
+            },
+            $markdown
+        ) ?? $markdown;
     }
 }

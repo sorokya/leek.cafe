@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
+ * @property-read int|null $images_count
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\ContentFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content newModelQuery()
@@ -59,5 +62,11 @@ class Content extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** @return BelongsToMany<Image, $this> */
+    public function images(): BelongsToMany
+    {
+        return $this->belongsToMany(Image::class, 'content_images');
     }
 }

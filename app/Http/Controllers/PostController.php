@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Content;
 use App\Models\ContentType;
+use App\Models\Image;
 use App\Services\ImageUploader;
 use App\Services\PostRenderer;
 use DateTimeZone;
@@ -86,8 +87,29 @@ class PostController extends Controller
         $content->published_at = $publishedAtUtc;
         $content->save();
 
+        $imageHashes = $this->extractImageHashes($content->body);
+        $imageIds = Image::query()
+            ->where(function ($q) use ($imageHashes) {
+                foreach ($imageHashes as $prefix) {
+                    $q->orWhere('hash', 'like', $prefix . '%');
+                }
+            })
+            ->pluck('id')
+            ->all();
+        $content->images()->sync($imageIds);
+
         return redirect()->route('posts.edit', ['slug' => $content->slug])
             ->with('status', 'Post updated successfully.');
+    }
+
+    /** Extract image hashes from markdown content.
+     * @return array<int, string>
+     */
+    private function extractImageHashes(string $markdown): array
+    {
+        preg_match_all('/@img:([a-f0-9]+)/i', $markdown, $matches);
+
+        return array_unique($matches[1]);
     }
 
     /**
@@ -97,17 +119,17 @@ class PostController extends Controller
     public function uploadImages(Request $request, ImageUploader $imageUploader): array
     {
         $validated = $request->validate([
-            'image.*' => ['required', 'image', 'max:5120'], // Max 5MB per image
+            'image.*' => ['required', 'image'],
         ]);
 
         $images = $validated['image'] ?? [];
-        $ids = [];
+        $hashes = [];
 
         foreach ($images as $image) {
-            $ids[] = $imageUploader->upload($image);
+            $hashes[] = $imageUploader->upload($image);
         }
 
-        return ['ids' => $ids];
+        return ['hashes' => $hashes];
     }
 
     private function resolveUserTimezone(Request $request): string

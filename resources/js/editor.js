@@ -15,28 +15,54 @@ export function initializeEditor() {
   });
 
   editor.textarea.addEventListener('paste', async (e) => {
-    const items = e.clipboardData?.items;
-    if (!items) return;
+    if (e?.clipboardData?.files?.length) {
+      e.preventDefault();
+    }
+    await handleDataTransfer(e.clipboardData);
+  });
+
+  editor.textarea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  editor.textarea.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    await handleDataTransfer(e.dataTransfer);
+  });
+
+  async function handleDataTransfer(dataTransfer) {
+    const files = dataTransfer?.files;
+    if (!files) return;
 
     const csrfToken = document.querySelector('[name="_token"]').value;
     if (!csrfToken) return;
 
     const formData = new FormData();
+    const placeholders = [];
     formData.append('_token', csrfToken);
-    for (const item of items) {
-      if (item.type.startsWith('image/')) {
-        e.preventDefault();
-        const file = item.getAsFile();
+    let index = 0;
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
         if (!file) continue;
 
+        const placeholder = `![](@img:uploading-${Date.now()}-${index})`;
+        placeholders.push(placeholder);
+        insertAtCursor(`${placeholder}\n`);
+
         formData.append('image[]', file);
+        index++;
       }
+    }
+
+    if (formData.getAll('image[]').length === 0) {
+      return;
     }
 
     try {
       const response = await fetch('./upload-images', {
         method: 'POST',
         body: formData,
+        accept: 'application/json',
       });
 
       if (!response.ok) {
@@ -44,9 +70,37 @@ export function initializeEditor() {
         return;
       }
 
-      const data = await response.json();
+      const { hashes } = await response.json();
+
+      hashes.forEach((hash) => {
+        const markdownImage = `![](@img:${hash})`;
+        const placeholder = placeholders.shift();
+        const content = editor.getValue();
+        const updatedContent = content.replace(placeholder, markdownImage);
+        editor.setValue(updatedContent);
+      });
     } catch (error) {
       console.error('Error uploading image:', error);
     }
-  });
+  }
+
+  function insertAtCursor(text) {
+    const start = editor.textarea.selectionStart;
+    const end = editor.textarea.selectionEnd;
+
+    // Try native method first (preserves undo history)
+    if (!document.execCommand('insertText', false, text)) {
+      // Fallback to direct manipulation
+      const before = editor.textarea.value.slice(0, start);
+      const after = editor.textarea.value.slice(end);
+      editor.textarea.value = before + text + after;
+      editor.textarea.setSelectionRange(
+        start + text.length,
+        start + text.length,
+      );
+    }
+
+    // Trigger input event to update preview
+    editor.textarea.dispatchEvent(new Event('input', { bubbles: true }));
+  }
 }
