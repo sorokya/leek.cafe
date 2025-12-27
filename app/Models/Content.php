@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\ContentTypeModel $contentType
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
  * @property-read int|null $images_count
  * @property-read \App\Models\User $user
@@ -68,5 +69,11 @@ class Content extends Model
     public function images(): BelongsToMany
     {
         return $this->belongsToMany(Image::class, 'content_images');
+    }
+
+    /** @return BelongsTo<ContentTypeModel, $this> */
+    public function contentType(): BelongsTo
+    {
+        return $this->belongsTo(ContentTypeModel::class, 'content_type_id');
     }
 }

@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+/**
+ * @property int $content_id
+ * @property int $media_type_id
+ * @property int $media_status_id
+ * @property numeric|null $rating
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $finished_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Content $content
+ * @property-read \App\Models\MediaStatusModel $mediaStatus
+ * @property-read \App\Models\MediaTypeModel $mediaType
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereContentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereFinishedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMediaStatusId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMediaTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereRating($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withoutTrashed()
+ * @mixin \Eloquent
+ */
+class Media extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'content_id',
+        'media_type_id',
+        'media_status_id',
+        'rating',
+        'started_at',
+        'finished_at',
+    ];
+
+    protected $casts = [
+        'started_at' => 'datetime',
+        'finished_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /** @return BelongsTo<Content, $this> */
+    public function content(): BelongsTo
+    {
+        return $this->belongsTo(Content::class, 'content_id');
+    }
+
+    /** @return BelongsTo<MediaTypeModel, $this> */
+    public function mediaType(): BelongsTo
+    {
+        return $this->belongsTo(MediaTypeModel::class, 'media_type_id');
+    }
+
+    /** @return BelongsTo<MediaStatusModel, $this> */
+    public function mediaStatus(): BelongsTo
+    {
+        return $this->belongsTo(MediaStatusModel::class, 'media_status_id');
+    }
+}

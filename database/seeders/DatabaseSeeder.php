@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('content_types')->insert([
             ['type' => 'post'],
+            ['type' => 'media'],
         ]);
 
         DB::table('media_types')->insert([
