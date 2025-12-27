@@ -6,7 +6,7 @@ use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\Image;
 use App\Services\ImageUploader;
-use App\Services\PostRenderer;
+use App\Services\ContentRenderer;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PostController extends Controller
 {
-    public function show(string $slug, PostRenderer $renderer): View
+    public function show(string $slug, ContentRenderer $renderer): View
     {
         $content = Content::query()
             ->where('content_type_id', ContentType::Post->value)

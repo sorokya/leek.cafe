@@ -26,6 +26,24 @@ class DatabaseSeeder extends Seeder
             ['type' => 'post'],
         ]);
 
+        DB::table('media_types')->insert([
+            ['type' => 'film'],
+            ['type' => 'series'],
+            ['type' => 'music'],
+            ['type' => 'book'],
+            ['type' => 'anime'],
+            ['type' => 'manga'],
+            ['type' => 'game'],
+        ]);
+
+        DB::table('media_statuses')->insert([
+            ['status' => 'planned'],
+            ['status' => 'in-progress'],
+            ['status' => 'completed'],
+            ['status' => 'on-hold'],
+            ['status' => 'dropped'],
+        ]);
+
         Content::factory()
             ->count(5)
             ->for($user)

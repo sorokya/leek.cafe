@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\Post;
-use App\Services\PostRenderer;
+use App\Services\ContentRenderer;
 use Illuminate\View\View;
 
 class WelcomeController extends Controller
 {
-    public function index(PostRenderer $postRenderer): View
+    public function index(ContentRenderer $renderer): View
     {
         $content = Content::query()
             ->with('user')
@@ -24,11 +24,11 @@ class WelcomeController extends Controller
             'title' => $content->title,
             'link' => "/posts/{$content->slug}",
             'published_at' => $content->published_at,
-            'excerpt' => $content->body ? $this->generateExcerpt($content->body, $postRenderer) : null,
+            'excerpt' => $content->body ? $this->generateExcerpt($content->body, $renderer) : null,
         ], $content->all())]);
     }
 
-    private function generateExcerpt(string $body, PostRenderer $renderer): string
+    private function generateExcerpt(string $body, ContentRenderer $renderer): string
     {
         $rendered = $renderer->render($body);
         $text = strip_tags((string) $rendered);

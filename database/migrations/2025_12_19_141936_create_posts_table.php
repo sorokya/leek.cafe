@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('content_types', function (Blueprint $table) {
             $table->id();
             $table->string('type')->unique();
-            $table->timestamps();
         });
 
         Schema::create('contents', function (Blueprint $table) {
@@ -28,6 +27,10 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('posts', function (Blueprint $table) {
+            $table->foreignId('content_id')->constrained('contents')->onDelete('cascade');
+        });
     }
 
     /**
@@ -35,7 +38,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('posts');
         Schema::dropIfExists('contents');
-        Schema::dropIfExists('content_type');
+        Schema::dropIfExists('content_types');
     }
 };

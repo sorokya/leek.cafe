@@ -16,7 +16,7 @@ use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
 use Highlight\Highlighter;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 
-final class PostRenderer
+final class ContentRenderer
 {
     private MarkdownConverter $markdown;
 
