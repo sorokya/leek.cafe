@@ -1,15 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-enum MediaType: int
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+/**
+ * @property MediaType $id
+ * @property string $type
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
+ * @property-read int|null $media_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType whereType($value)
+ * @mixin \Eloquent
+ */
+class MediaType extends Model
 {
-    case Film = 1;
-    case Series = 2;
-    case Music = 3;
-    case Book = 4;
-    case Anime = 5;
-    case Manga = 6;
-    case Game = 7;
-    // Future media types can be added here
+    protected $table = 'media_types';
+
+    protected $fillable = [
+        'type',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'id' => MediaType::class,
+        ];
+    }
+
+    /** @return HasMany<Media, $this> */
+    public function media(): HasMany
+    {
+        return $this->hasMany(Media::class, 'media_type_id');
+    }
 }

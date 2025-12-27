@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Content $content
- * @property-read \App\Models\MediaStatusModel $mediaStatus
- * @property-read \App\Models\MediaTypeModel $mediaType
+ * @property-read \App\Models\MediaStatus $mediaStatus
+ * @property-read \App\Models\MediaType $mediaType
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media onlyTrashed()
@@ -60,15 +60,15 @@ class Media extends Model
         return $this->belongsTo(Content::class, 'content_id');
     }
 
-    /** @return BelongsTo<MediaTypeModel, $this> */
+    /** @return BelongsTo<MediaType, $this> */
     public function mediaType(): BelongsTo
     {
-        return $this->belongsTo(MediaTypeModel::class, 'media_type_id');
+        return $this->belongsTo(MediaType::class, 'media_type_id');
     }
 
-    /** @return BelongsTo<MediaStatusModel, $this> */
+    /** @return BelongsTo<MediaStatus, $this> */
     public function mediaStatus(): BelongsTo
     {
-        return $this->belongsTo(MediaStatusModel::class, 'media_status_id');
+        return $this->belongsTo(MediaStatus::class, 'media_status_id');
     }
 }
