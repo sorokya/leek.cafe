@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MediaStatus;
+use App\Models\MediaType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -26,6 +28,8 @@ class ProfileController extends Controller
         return view('settings', [
             'name' => $user->name,
             'timezone' => $user->timezone,
+            'mediaStatuses' => MediaStatus::query()->get(),
+            'mediaTypes' => MediaType::query()->get(),
         ]);
     }
 

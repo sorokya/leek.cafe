@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property MediaType $id
+ * @property int $id
  * @property string $type
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
@@ -23,15 +23,15 @@ class MediaType extends Model
 {
     protected $table = 'media_types';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'type',
     ];
 
     protected function casts(): array
     {
-        return [
-            'id' => MediaType::class,
-        ];
+        return [];
     }
 
     /** @return HasMany<Media, $this> */

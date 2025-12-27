@@ -28,21 +28,21 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('media_types')->insert([
-            ['type' => 'film'],
-            ['type' => 'series'],
-            ['type' => 'music'],
-            ['type' => 'book'],
-            ['type' => 'anime'],
-            ['type' => 'manga'],
-            ['type' => 'game'],
+            ['type' => 'Film', 'slug' => 'film'],
+            ['type' => 'Series', 'slug' => 'series'],
+            ['type' => 'Music', 'slug' => 'music'],
+            ['type' => 'Book', 'slug' => 'book'],
+            ['type' => 'Anime', 'slug' => 'anime'],
+            ['type' => 'Manga', 'slug' => 'manga'],
+            ['type' => 'Game', 'slug' => 'game'],
         ]);
 
         DB::table('media_statuses')->insert([
-            ['status' => 'planned'],
-            ['status' => 'in-progress'],
-            ['status' => 'completed'],
-            ['status' => 'on-hold'],
-            ['status' => 'dropped'],
+            ['status' => 'Planned', 'slug' => 'planned', 'icon' => 'heroicon-s-clock', 'color' => '#6B7280'],
+            ['status' => 'In Progress', 'slug' => 'in-progress', 'icon' => 'heroicon-s-play', 'color' => '#3B82F6'],
+            ['status' => 'Completed', 'slug' => 'completed', 'icon' => 'heroicon-s-check', 'color' => '#10B981'],
+            ['status' => 'On Hold', 'slug' => 'on-hold', 'icon' => 'heroicon-s-pause', 'color' => '#F59E0B'],
+            ['status' => 'Dropped', 'slug' => 'dropped', 'icon' => 'heroicon-s-trash', 'color' => '#EF4444'],
         ]);
 
         Content::factory()

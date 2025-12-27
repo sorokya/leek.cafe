@@ -192,6 +192,21 @@
   background: color-mix(in oklab, var(--danger) 88%, black);
 }
 
+.form-color {
+  width: 2.75rem;
+  height: 2.5rem;
+  padding: 0.25rem;
+  border-radius: calc(var(--radius) - 6px);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.form-color:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+
 #body-editor {
   height: 600px;
 }

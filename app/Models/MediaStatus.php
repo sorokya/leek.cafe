@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property MediaStatus $id
+ * @property int $id
  * @property string $status
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
@@ -23,15 +23,18 @@ class MediaStatus extends Model
 {
     protected $table = 'media_statuses';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'status',
+        'slug',
+        'icon',
+        'color',
     ];
 
     protected function casts(): array
     {
-        return [
-            'id' => MediaStatus::class,
-        ];
+        return [];
     }
 
     /** @return HasMany<Media, $this> */

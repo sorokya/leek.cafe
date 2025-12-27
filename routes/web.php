@@ -5,6 +5,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\Api\MediaStatusController;
+use App\Http\Controllers\Api\MediaTypeController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +23,16 @@ Route::controller(App\Http\Controllers\AuthController::class)->group(function ()
 Route::controller(ProfileController::class)->middleware('auth')->group(function () {
     Route::get('/settings', 'showSettings')->name('profile.show-settings');
     Route::post('/settings', 'updateSettings')->name('profile.update-settings');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/settings/media-statuses', [MediaStatusController::class, 'store'])->name('media-statuses.store');
+    Route::put('/settings/media-statuses/{mediaStatus}', [MediaStatusController::class, 'update'])->name('media-statuses.update');
+    Route::delete('/settings/media-statuses/{mediaStatus}', [MediaStatusController::class, 'destroy'])->name('media-statuses.destroy');
+
+    Route::post('/settings/media-types', [MediaTypeController::class, 'store'])->name('media-types.store');
+    Route::put('/settings/media-types/{mediaType}', [MediaTypeController::class, 'update'])->name('media-types.update');
+    Route::delete('/settings/media-types/{mediaType}', [MediaTypeController::class, 'destroy'])->name('media-types.destroy');
 });
 
 Route::controller(PostController::class)->group(function () {
