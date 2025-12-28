@@ -1,7 +1,8 @@
-<x-layout title="{{ $content->title }}">
+@php($cover = $content->coverImage->first())
+
+<x-layout title="{{ $content->title }}" description="{{ $description }}" :image="$cover?->getUrl()" ogType="article">
     <article class="post-detail">
         <header class="post-detail__header">
-            @php($cover = $content->coverImage->first())
             @if ($cover)
                 <div class="post-detail__cover">
                     <img class="post-detail__cover-image" src="{{ $cover->getUrl() }}"

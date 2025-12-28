@@ -1,6 +1,9 @@
 @props([
     'title' => null,
     'description' => null,
+    'image' => null,
+    'ogType' => 'website',
+    'url' => null,
     'theme' => null,
     'siteName' => 'Leek Cafe',
     'tagline' => 'Software engineer — 10+ years building cool projects',
@@ -13,6 +16,17 @@
 @php
     $preferences->parse_from_request(request());
     $theme = $preferences->theme->value;
+
+    $pageTitle = $title ? $siteName . ' - ' . $title : $siteName;
+    $pageDescription = $description ?? "Richard Leek's development blog";
+    $pageUrl = $url ?? request()->fullUrl();
+
+    $defaultImage = $logoSrc
+        ? (str_starts_with($logoSrc, 'http://') || str_starts_with($logoSrc, 'https://')
+            ? $logoSrc
+            : url($logoSrc))
+        : null;
+    $pageImage = $image ?: $defaultImage;
 @endphp
 
 <!DOCTYPE html>
@@ -22,8 +36,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $title ? $siteName . ' - ' . $title : $siteName }}</title>
-    <meta name="description" content="{{ $description ?? 'Richard Leek\'s development blog' }}">
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
+
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:url" content="{{ $pageUrl }}">
+    @if ($pageImage)
+        <meta property="og:image" content="{{ $pageImage }}">
+    @endif
     <link rel="icon" sizes="32x32" href="/img/favicon-32x32.png" type="image/png">
     <link rel="icon" sizes="16x16" href="/img/favicon-16x16.png" type="image/png">
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
@@ -61,8 +84,8 @@
                 <x-primary-nav-items />
             </nav>
 
-            <a href="/feed.xml">
-                <x-heroicon-s-rss class="rss-icon" aria-hidden="true" focusable="false" width="18" height="18" />
+            <a href="/feed.xml" class="rss-icon" aria-label="RSS Feed" title="RSS Feed">
+                <x-heroicon-s-rss aria-hidden="true" focusable="false" width="18" height="18" />
             </a>
 
             <form class="theme-toggle" method="POST" action="{{ route('theme.toggle') }}">
@@ -86,7 +109,7 @@
     <footer class="site-footer">
         <div class="container footer-inner">
             <small class="footer-text">
-                &copy; {{ date('Y') }} {{ $siteName }}
+                &copy; {{ date('Y') }} Richard Leek. All rights reserved.
             </small>
 
             @if (defined('LARAVEL_START'))

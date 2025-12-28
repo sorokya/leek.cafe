@@ -66,6 +66,7 @@ class PostController extends Controller
         return view('post.show', [
             'content' => $content,
             'published_at' => $content->created_at,
+            'description' => $this->excerptGenerator->generate($content->body),
             'renderedBody' => (string) $this->renderer->render($content->body),
         ]);
     }

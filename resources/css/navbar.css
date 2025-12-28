@@ -175,6 +175,21 @@ button.nav-link {
   display: none;
 }
 
+.rss-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.rss-icon:hover {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
 body[data-theme="dark"] .theme-icon--dark {
   display: block;
 }
