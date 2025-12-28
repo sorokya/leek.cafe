@@ -1,16 +1,3 @@
-@props([
-    'title' => null,
-    'description' => null,
-    'image' => null,
-    'ogType' => 'website',
-    'url' => null,
-    'theme' => null,
-    'siteName' => 'Leek Cafe',
-    'tagline' => 'Software engineer — 10+ years building cool projects',
-    'logoHref' => '/',
-    'logoSrc' => '/img/apple-touch-icon.png',
-])
-
 @inject('preferences', 'App\\Services\\UserPreferences')
 
 @php

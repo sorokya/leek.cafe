@@ -1,8 +1,3 @@
-@props([
-    'action' => '#',
-    'method' => 'POST',
-])
-
 <form {{ $attributes->merge(['class' => 'form']) }} method="post" action="{{ $action }}"
     enctype="{{ $encType }}">
     @csrf
