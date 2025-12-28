@@ -13,8 +13,7 @@
     {{ $mobile || request()->is('projects*') ? 'Projects' : '' }}
 </a>
 <a class="nav-link {{ request()->is('posts*') ? 'is-active' : '' }}" href="/posts" aria-label="Posts" title="Posts">
-    <x-heroicon-o-document-text class="nav-link__icon" aria-hidden="true" focusable="false" width="18"
-        height="18" />
+    <x-heroicon-o-newspaper class="nav-link__icon" aria-hidden="true" focusable="false" width="18" height="18" />
     {{ $mobile || request()->is('posts*') ? 'Posts' : '' }}
 </a>
 <a class="nav-link {{ request()->is('media*') ? 'is-active' : '' }}" href="/media" aria-label="Media" title="Media">

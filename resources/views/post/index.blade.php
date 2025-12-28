@@ -2,7 +2,11 @@
     <div class="stack">
         <section class="section" aria-label="Post feed">
             <header class="section__header">
-                <h1 class="section__title">Posts</h1>
+                <h1 class="section__title">
+                    <x-heroicon-o-newspaper class="section__title-icon" aria-hidden="true" focusable="false" width="24"
+                        height="24" />
+                    Posts
+                </h1>
             </header>
 
             <div class="section__content">

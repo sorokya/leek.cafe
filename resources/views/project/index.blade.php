@@ -2,7 +2,11 @@
     <div class="stack">
         <section class="section" aria-label="Project list">
             <header class="section__header">
-                <h1 class="section__title">Projects</h1>
+                <h1 class="section__title">
+                    <x-heroicon-o-code-bracket class="section__title-icon" aria-hidden="true" focusable="false"
+                        width="24" height="24" />
+                    Projects
+                </h1>
             </header>
 
             <div class="section__content">
@@ -18,10 +22,7 @@
 
                 @if ($contents->isEmpty())
                     <p class="content-meta">
-                        No projects yet.
-                        @auth
-                            <a href="{{ route('projects.create') }}">Create the first one</a>.
-                        @endauth
+                        No projects yet. If there were projects, they'd be listed here!
                     </p>
                 @else
                     <div class="content-feed">

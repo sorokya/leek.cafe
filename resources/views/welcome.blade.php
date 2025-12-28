@@ -3,6 +3,8 @@
         <section class="section" aria-label="Post feed">
             <header class="section__header">
                 <h1 class="section__title">
+                    <x-heroicon-c-clock class="section__title-icon" aria-hidden="true" focusable="false" width="24"
+                        height="24" />
                     Recent Posts
                 </h1>
             </header>
