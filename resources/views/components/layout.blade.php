@@ -81,22 +81,25 @@
             </nav>
 
             <nav class="site-nav site-nav--mobile" id="primary-nav-mobile" aria-label="Primary" hidden>
-                <x-primary-nav-items />
+                <x-primary-nav-items mobile="true" />
             </nav>
 
-            <a href="/feed.xml" class="rss-icon" aria-label="RSS Feed" title="RSS Feed">
-                <x-heroicon-s-rss aria-hidden="true" focusable="false" width="18" height="18" />
-            </a>
+            <nav class="site-utils" aria-label="Site Utilities">
 
-            <form class="theme-toggle" method="POST" action="{{ route('theme.toggle') }}">
-                @csrf
-                <button class="theme-toggle-button" type="submit" aria-label="Toggle theme" title="Toggle theme">
-                    <x-heroicon-o-moon class="theme-icon theme-icon--dark" width="18" height="18"
-                        aria-hidden="true" focusable="false" />
-                    <x-heroicon-o-sun class="theme-icon theme-icon--light" width="18" height="18"
-                        aria-hidden="true" focusable="false" />
-                </button>
-            </form>
+                <a href="/feed.xml" class="rss-icon" aria-label="RSS Feed" title="RSS Feed">
+                    <x-heroicon-s-rss aria-hidden="true" focusable="false" width="18" height="18" />
+                </a>
+
+                <form class="theme-toggle" method="POST" action="{{ route('theme.toggle') }}">
+                    @csrf
+                    <button class="theme-toggle-button" type="submit" aria-label="Toggle theme" title="Toggle theme">
+                        <x-heroicon-o-moon class="theme-icon theme-icon--dark" width="18" height="18"
+                            aria-hidden="true" focusable="false" />
+                        <x-heroicon-o-sun class="theme-icon theme-icon--light" width="18" height="18"
+                            aria-hidden="true" focusable="false" />
+                    </button>
+                </form>
+            </nav>
         </div>
     </header>
 

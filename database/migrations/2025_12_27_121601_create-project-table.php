@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('content_id')->constrained('contents')->cascadeOnDelete();
             $table->string('url')->unique();
-            $table->foreignId('image_id')->nullable()->constrained('images')->nullOnDelete();
         });
     }
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\ImageRole;
 use App\Models\Content;
-use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
 use App\Services\ImageUploader;
 use App\Services\ContentRenderer;
@@ -12,14 +11,14 @@ use App\Services\InlineImageSyncer;
 use App\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class PostController extends Controller
+class ProjectController extends Controller
 {
     public function __construct(
-        private PostFeedQuery $postFeedQuery,
         private ContentRenderer $renderer,
         private ContentExcerptGenerator $excerptGenerator,
         private InlineImageSyncer $inlineImageSyncer,
@@ -28,9 +27,12 @@ class PostController extends Controller
 
     public function index(): View
     {
-        $query = Auth::check()
-            ? $this->postFeedQuery->all()
-            : $this->postFeedQuery->published();
+        $query = Content::query()
+            ->with('user', 'project', 'coverImage')
+            ->whereHas('project')
+            ->when(!Auth::check(), function ($q) {
+                $q->where('visibility', '!=', Visibility::PRIVATE->value);
+            });
 
         $contents = $query->paginate(10);
         $contents->getCollection()->transform(function (Content $content): Content {
@@ -42,7 +44,7 @@ class PostController extends Controller
             return $content;
         });
 
-        return view('post.index', [
+        return view('project.index', [
             'contents' => $contents,
         ]);
     }
@@ -50,9 +52,9 @@ class PostController extends Controller
     public function show(string $slug): View
     {
         $content = Content::query()
-            ->with('user', 'coverImage')
+            ->with('user', 'coverImage', 'project')
             ->where('slug', $slug)
-            ->whereHas('post')
+            ->whereHas('project')
             ->when(!Auth::check(), function ($q) {
                 $q->where('visibility', '!=', Visibility::PRIVATE->value);
             })
@@ -62,7 +64,7 @@ class PostController extends Controller
             abort(404);
         }
 
-        return view('post.show', [
+        return view('project.show', [
             'content' => $content,
             'published_at' => $content->created_at,
             'description' => $this->excerptGenerator->generate($content->body),
@@ -75,13 +77,14 @@ class PostController extends Controller
         $content = Content::query()
             ->with('user')
             ->with('coverImage')
+            ->with('project')
             ->where('slug', $slug)
             ->first();
         if (!$content) {
             abort(404);
         }
 
-        return view('post.edit', [
+        return view('project.edit', [
             'content' => $content,
         ]);
     }
@@ -91,6 +94,7 @@ class PostController extends Controller
         $content = Content::query()
             ->where('slug', $slug)
             ->with('user')
+            ->with('project')
             ->first();
         if (!$content) {
             abort(404);
@@ -98,6 +102,13 @@ class PostController extends Controller
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'url' => [
+                'required',
+                'string',
+                'max:2048',
+                'url',
+                Rule::unique('projects', 'url')->ignore($content->project?->id),
+            ],
             'body' => ['required', 'string'],
             'visibility' => ['required', 'integer'],
             'cover' => ['nullable', 'image'],
@@ -108,6 +119,16 @@ class PostController extends Controller
         $content->visibility = $validated['visibility'];
         $content->save();
 
+        if ($content->project) {
+            $content->project->update([
+                'url' => $validated['url'],
+            ]);
+        } else {
+            $content->project()->create([
+                'url' => $validated['url'],
+            ]);
+        }
+
         $content->coverImage()->detach();
         if (isset($validated['cover'])) {
             $img = $this->imageUploader->upload($validated['cover']);
@@ -116,13 +137,13 @@ class PostController extends Controller
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('posts.edit', ['slug' => $content->slug])
-            ->with('status', 'Post updated successfully.');
+        return redirect()->route('projects.edit', ['slug' => $content->slug])
+            ->with('status', 'Project updated successfully.');
     }
 
     public function create(): View
     {
-        return view('post.create');
+        return view('project.create');
     }
 
     public function store(Request $request): RedirectResponse
@@ -134,6 +155,7 @@ class PostController extends Controller
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'url' => ['required', 'string', 'max:2048', 'url', Rule::unique('projects', 'url')],
             'body' => ['required', 'string'],
             'visibility' => ['required', 'integer'],
             'cover' => ['nullable', 'image'],
@@ -146,7 +168,9 @@ class PostController extends Controller
         $content->slug = Str::slug($validated['title']);
         $content->visibility = $validated['visibility'];
         $content->save();
-        $content->post()->create([]);
+        $content->project()->create([
+            'url' => $validated['url'],
+        ]);
 
         if (isset($validated['cover'])) {
             $img = $this->imageUploader->upload($validated['cover']);
@@ -155,7 +179,7 @@ class PostController extends Controller
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('posts.show', ['slug' => $content->slug]);
+        return redirect()->route('projects.show', ['slug' => $content->slug]);
     }
 
     public function deleteConfirm(string $slug): View
@@ -168,7 +192,7 @@ class PostController extends Controller
             abort(404);
         }
 
-        return view('post.delete-confirm', [
+        return view('project.delete-confirm', [
             'content' => $content,
         ]);
     }
@@ -185,11 +209,11 @@ class PostController extends Controller
 
         $content->delete();
 
-        return redirect()->route('posts.index');
+        return redirect()->route('projects.index');
     }
 
     /**
-     * Handle image uploads for posts.
+     * Handle image uploads for projects.
      * @return array<string, mixed>
      */
     public function uploadImages(Request $request): array

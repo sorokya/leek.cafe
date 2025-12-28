@@ -80,6 +80,12 @@ class Content extends Model implements Feedable
         return $this->hasOne(Post::class, 'content_id');
     }
 
+    /** @return HasOne<Project, $this> */
+    public function project(): HasOne
+    {
+        return $this->hasOne(Project::class, 'content_id');
+    }
+
     /** @return BelongsToMany<Image, $this> */
     public function inlineImages(): BelongsToMany
     {

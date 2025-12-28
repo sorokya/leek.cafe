@@ -8,31 +8,31 @@
             </header>
 
             <div class="section__content">
-                <div class="post-feed">
+                <div class="content-feed">
                     @foreach ($contents as $content)
                         @php($cover = $content->coverImage->first())
                         @php($link = route('posts.show', ['slug' => $content->slug]))
-                        <article class="post-summary {{ $cover ? 'post-summary--has-cover' : '' }}">
+                        <article class="content-summary {{ $cover ? 'content-summary--has-cover' : '' }}">
                             @if ($cover)
-                                <a class="post-summary__cover" href="{{ $link }}"
+                                <a class="content-summary__cover" href="{{ $link }}"
                                     aria-label="Open {{ $content->title }}">
-                                    <img class="post-summary__cover-image" src="{{ $cover->getThumbnailUrl() }}"
+                                    <img class="content-summary__cover-image" src="{{ $cover->getThumbnailUrl() }}"
                                         alt="Cover image for {{ $content->title }}" loading="lazy" decoding="async" />
                                 </a>
                             @endif
-                            <div class="post-summary__body {{ $cover ? 'post-summary__body--has-cover' : '' }}">
-                                <h2 class="post-title">
-                                    <a class="post-link" href="{{ $link }}">{{ $content->title }}</a>
+                            <div class="content-summary__body {{ $cover ? 'content-summary__body--has-cover' : '' }}">
+                                <h2 class="content-title">
+                                    <a class="content-link" href="{{ $link }}">{{ $content->title }}</a>
                                 </h2>
-                                <h4 class="post-meta">
-                                    <time class="post-date" datetime="{{ $content->created_at?->toW3cString() }}">
+                                <h4 class="content-meta">
+                                    <time class="content-date" datetime="{{ $content->created_at?->toW3cString() }}">
                                         {{ $content->created_at?->format('F j, Y') }}
                                     </time>
                                 </h4>
                                 @if ($content->excerpt)
-                                    <p class="post-excerpt">{{ $content->excerpt }}</p>
+                                    <p class="content-excerpt">{{ $content->excerpt }}</p>
                                 @endif
-                                <a class="post-read-more" href="{{ $link }}">Read More</a>
+                                <a class="content-read-more" href="{{ $link }}">Read More</a>
                             </div>
                         </article>
                     @endforeach

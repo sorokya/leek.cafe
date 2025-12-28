@@ -8,6 +8,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\Api\MediaStatusController;
 use App\Http\Controllers\Api\MediaTypeController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SiteMapController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,18 @@ Route::controller(PostController::class)->group(function () {
     Route::delete('/posts/{slug}', 'destroy')->middleware('auth')->name('posts.destroy');
     Route::put('/posts/{slug}', 'update')->middleware('auth')->name('posts.update');
     Route::post('/posts/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('posts.upload-images');
+});
+
+Route::controller(ProjectController::class)->group(function () {
+    Route::get('/projects', 'index')->name('projects.index');
+    Route::get('/projects/new', 'create')->middleware('auth')->name('projects.create');
+    Route::post('/projects', 'store')->middleware('auth')->name('projects.store');
+    Route::get('/projects/{slug}', 'show')->name('projects.show');
+    Route::get('/projects/{slug}/edit', 'edit')->middleware('auth')->name('projects.edit');
+    Route::get('/projects/{slug}/delete-confirm', 'deleteConfirm')->middleware('auth')->name('projects.delete-confirm');
+    Route::delete('/projects/{slug}', 'destroy')->middleware('auth')->name('projects.destroy');
+    Route::put('/projects/{slug}', 'update')->middleware('auth')->name('projects.update');
+    Route::post('/projects/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('projects.upload-images');
 });
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');

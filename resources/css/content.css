@@ -1,22 +1,22 @@
 /*
-  Post feed
-  - Styles used by the welcome page feed and anywhere else posts are listed.
+  Content feed
+  - Styles used by the welcome page feed and anywhere else content is listed.
   - Uses existing theme tokens from variables.css
 */
 
-.post-feed {
+.content-feed {
   display: grid;
   gap: 1rem;
 }
 
-.post-summary {
+.content-summary {
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 4px);
   background: var(--bg);
 }
 
-.post-summary__cover {
+.content-summary__cover {
   display: block;
   width: 100%;
   overflow: hidden;
@@ -26,44 +26,44 @@
   aspect-ratio: 16 / 9;
 }
 
-.post-summary__cover-image {
+.content-summary__cover-image {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.post-summary__cover:focus-visible {
+.content-summary__cover:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.post-summary__body {
+.content-summary__body {
   min-width: 0;
 }
 
-.post-summary__body--has-cover {
+.content-summary__body--has-cover {
   margin-top: 0.75rem;
 }
 
 @media (min-width: 40rem) {
-  .post-summary--has-cover {
+  .content-summary--has-cover {
     display: grid;
     grid-template-columns: 10rem minmax(0, 1fr);
     gap: 1rem;
     align-items: start;
   }
 
-  .post-summary__cover {
+  .content-summary__cover {
     aspect-ratio: 1 / 1;
   }
 
-  .post-summary__body--has-cover {
+  .content-summary__body--has-cover {
     margin-top: 0;
   }
 }
 
-.post-title {
+.content-title {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
@@ -71,24 +71,24 @@
   line-height: 1.2;
 }
 
-.post-link:hover {
+.content-link:hover {
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
 
-.post-meta {
+.content-meta {
   margin: 0.35rem 0 0;
   font-weight: 500;
   font-size: 0.875rem;
   color: var(--muted);
 }
 
-.post-excerpt {
+.content-excerpt {
   margin: 0.75rem 0 0;
   color: color-mix(in oklab, var(--text) 85%, var(--muted));
 }
 
-.post-read-more {
+.content-read-more {
   display: inline-flex;
   margin-top: 0.85rem;
   font-weight: 700;
@@ -96,17 +96,17 @@
   text-decoration: none;
 }
 
-.post-read-more:hover {
+.content-read-more:hover {
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
 
 /*
-  Post detail
+  Content detail
   - Designed to match the feed card styling, but with a narrower reading width.
 */
 
-.post-detail {
+.content-detail {
   max-width: 44rem;
   margin-inline: auto;
   padding: 1.25rem;
@@ -114,17 +114,17 @@
 }
 
 @media (min-width: 48rem) {
-  .post-detail {
+  .content-detail {
     padding: 2rem;
   }
 }
 
-.post-detail__header {
+.content-detail__header {
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border);
 }
 
-.post-detail__cover {
+.content-detail__cover {
   margin-bottom: 1rem;
   overflow: hidden;
   border-radius: calc(var(--radius) - 6px);
@@ -133,14 +133,14 @@
   aspect-ratio: 16 / 9;
 }
 
-.post-detail__cover-image {
+.content-detail__cover-image {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.post-detail__title {
+.content-detail__title {
   margin: 0;
   font-size: 2rem;
   font-weight: 800;
@@ -148,14 +148,14 @@
   line-height: 1.1;
 }
 
-.post-detail__meta {
+.content-detail__meta {
   margin: 0.6rem 0 0;
   font-weight: 500;
   font-size: 0.95rem;
   color: var(--muted);
 }
 
-.post-detail__actions {
+.content-detail__actions {
   margin-top: 1rem;
   display: flex;
   gap: 0.75rem;
@@ -163,32 +163,33 @@
   text-decoration: underline;
 }
 
-.post-detail__content {
+.content-detail__content {
   margin-top: 1.25rem;
   line-height: 1.75;
 }
 
-.post-detail__content > * {
+.content-detail__content > * {
   margin: 0;
 }
 
-.post-detail__content > * + * {
+.content-detail__content > * + * {
   margin-top: 1rem;
 }
 
-.post-detail__content a {
+.content-detail__content a {
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
 
-.post-detail__content pre {
+.content-detail__content pre {
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 4px);
   background: color-mix(in oklab, var(--surface) 80%, transparent);
   overflow-x: auto;
 }
+
 .pagination-links {
   display: flex;
   justify-content: center;
@@ -248,11 +249,11 @@
   pointer-events: none;
 }
 
-.post-detail__content code {
+.content-detail__content code {
   font-size: 0.95em;
 }
 
-.post-detail__content blockquote {
+.content-detail__content blockquote {
   margin-inline: 0;
   padding-left: 1rem;
   border-left: 3px solid color-mix(in oklab, var(--accent) 45%, var(--border));
@@ -265,7 +266,7 @@
   - Colors are derived from the existing theme tokens so light/dark follows data-theme.
 */
 
-.post-detail__content pre {
+.content-detail__content pre {
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 4px);
@@ -273,7 +274,7 @@
   overflow-x: auto;
 }
 
-.post-detail__content pre code {
+.content-detail__content pre code {
   display: block;
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
@@ -281,59 +282,59 @@
   font-size: 0.95em;
 }
 
-.post-detail__content pre code.hljs {
+.content-detail__content pre code.hljs {
   color: var(--text);
 }
 
-.post-detail__content .hljs-comment,
-.post-detail__content .hljs-quote {
+.content-detail__content .hljs-comment,
+.content-detail__content .hljs-quote {
   color: var(--muted);
 }
 
-.post-detail__content .hljs-keyword,
-.post-detail__content .hljs-selector-tag,
-.post-detail__content .hljs-literal {
+.content-detail__content .hljs-keyword,
+.content-detail__content .hljs-selector-tag,
+.content-detail__content .hljs-literal {
   color: color-mix(in oklab, var(--accent) 80%, var(--text));
   font-weight: 700;
 }
 
-.post-detail__content .hljs-string,
-.post-detail__content .hljs-regexp,
-.post-detail__content .hljs-attr,
-.post-detail__content .hljs-attribute {
+.content-detail__content .hljs-string,
+.content-detail__content .hljs-regexp,
+.content-detail__content .hljs-attr,
+.content-detail__content .hljs-attribute {
   color: color-mix(in oklab, var(--accent) 55%, var(--text));
 }
 
-.post-detail__content .hljs-number,
-.post-detail__content .hljs-built_in,
-.post-detail__content .hljs-symbol,
-.post-detail__content .hljs-bullet {
+.content-detail__content .hljs-number,
+.content-detail__content .hljs-built_in,
+.content-detail__content .hljs-symbol,
+.content-detail__content .hljs-bullet {
   color: color-mix(in oklab, var(--accent) 65%, var(--text));
 }
 
-.post-detail__content .hljs-title,
-.post-detail__content .hljs-section,
-.post-detail__content .hljs-function {
+.content-detail__content .hljs-title,
+.content-detail__content .hljs-section,
+.content-detail__content .hljs-function {
   color: var(--text);
   font-weight: 700;
 }
 
-.post-detail__content .hljs-meta,
-.post-detail__content .hljs-subst {
+.content-detail__content .hljs-meta,
+.content-detail__content .hljs-subst {
   color: color-mix(in oklab, var(--text) 85%, var(--muted));
 }
 
-.post-detail__content .hljs-type,
-.post-detail__content .hljs-class,
-.post-detail__content .hljs-name {
+.content-detail__content .hljs-type,
+.content-detail__content .hljs-class,
+.content-detail__content .hljs-name {
   color: color-mix(in oklab, var(--accent) 70%, var(--text));
 }
 
-.post-detail__content .hljs-emphasis {
+.content-detail__content .hljs-emphasis {
   font-style: italic;
 }
 
-.post-detail__content .hljs-strong {
+.content-detail__content .hljs-strong {
   font-weight: 800;
 }
 
@@ -342,7 +343,7 @@
   - These show up when using the GFM/CommonMark extensions.
 */
 
-.post-detail__content table {
+.content-detail__content table {
   border-collapse: separate;
   border-spacing: 0;
   border: 1px solid var(--border);
@@ -351,31 +352,31 @@
   overflow: hidden;
 }
 
-.post-detail__content th,
-.post-detail__content td {
+.content-detail__content th,
+.content-detail__content td {
   padding: 0.65rem 0.75rem;
   border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
   vertical-align: top;
 }
 
-.post-detail__content th:last-child,
-.post-detail__content td:last-child {
+.content-detail__content th:last-child,
+.content-detail__content td:last-child {
   border-right: 0;
 }
 
-.post-detail__content tr:last-child > th,
-.post-detail__content tr:last-child > td {
+.content-detail__content tr:last-child > th,
+.content-detail__content tr:last-child > td {
   border-bottom: 0;
 }
 
-.post-detail__content th {
+.content-detail__content th {
   text-align: left;
   font-weight: 700;
   background: color-mix(in oklab, var(--surface) 85%, transparent);
 }
 
-.post-detail__content tbody tr:nth-child(even) td {
+.content-detail__content tbody tr:nth-child(even) td {
   background: color-mix(in oklab, var(--surface) 65%, transparent);
 }
 
@@ -385,17 +386,17 @@
   - Others emit plain ul/li with checkbox inputs.
 */
 
-.post-detail__content ul:where(:has(> li > input[type="checkbox"])) {
+.content-detail__content ul:where(:has(> li > input[type="checkbox"])) {
   padding-left: 0;
   margin-left: 0;
 }
 
-.post-detail__content ul.task-list {
+.content-detail__content ul.task-list {
   padding-left: 0;
   margin-left: 0;
 }
 
-.post-detail__content ul > li:where(:has(> input[type="checkbox"])) {
+.content-detail__content ul > li:where(:has(> input[type="checkbox"])) {
   list-style: none;
   padding-left: 0;
   margin-left: 0;
@@ -404,7 +405,7 @@
   gap: 0.6rem;
 }
 
-.post-detail__content li.task-list-item {
+.content-detail__content li.task-list-item {
   list-style: none;
   padding-left: 0;
   margin-left: 0;
@@ -413,8 +414,8 @@
   gap: 0.6rem;
 }
 
-.post-detail__content ul > li > input[type="checkbox"],
-.post-detail__content li.task-list-item > input[type="checkbox"] {
+.content-detail__content ul > li > input[type="checkbox"],
+.content-detail__content li.task-list-item > input[type="checkbox"] {
   margin-top: 0.25rem;
   width: 1rem;
   height: 1rem;
