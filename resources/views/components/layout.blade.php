@@ -2,7 +2,7 @@
     'title' => null,
     'description' => null,
     'theme' => null,
-    'siteName' => 'Richard Leek',
+    'siteName' => 'Leek Cafe',
     'tagline' => 'Software engineer — 10+ years building cool projects',
     'logoHref' => '/',
     'logoSrc' => '/img/apple-touch-icon.png',

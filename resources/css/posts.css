@@ -126,6 +126,64 @@
   background: color-mix(in oklab, var(--surface) 80%, transparent);
   overflow-x: auto;
 }
+.pagination-links {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.pagination-nav {
+  width: 100%;
+}
+
+.pagination-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 85%, var(--bg));
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.pagination-link:hover {
+  background: color-mix(in oklab, var(--surface) 70%, var(--bg));
+}
+
+.pagination-link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.pagination-link--active {
+  border-color: var(--border-strong);
+  background: color-mix(in oklab, var(--surface) 55%, var(--bg));
+  font-weight: 600;
+}
+
+.pagination-item--disabled {
+  opacity: 0.55;
+}
+
+.pagination-link--disabled {
+  pointer-events: none;
+}
 
 .post-detail__content code {
   font-size: 0.95em;

@@ -21,6 +21,9 @@
                             <a class="post-read-more" href="{{ $post['link'] }}">Read More</a>
                         </article>
                     @endforeach
+                    <div class="pagination-links">
+                        {!! $links !!}
+                    </div>
                 </div>
             </div>
         </section>

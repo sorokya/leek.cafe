@@ -28,16 +28,18 @@ class PostController extends Controller
             : $this->postFeedQuery->published();
 
         $content = $query
-            ->take(10)
-            ->get();
+            ->paginate(10);
 
-        return view('post.index', ['posts' => array_map(fn($content) => [
-            'title' => $content->title,
-            'link' => "/posts/{$content->slug}",
-            'published_at' => $content->updated_at ?? $content->created_at,
-            'visibility' => $content->visibility,
-            'excerpt' => $content->body ? $this->excerptGenerator->generate($content->body) : null,
-        ], $content->all())]);
+        return view('post.index', [
+            'posts' => array_map(fn($content) => [
+                'title' => $content->title,
+                'link' => "/posts/{$content->slug}",
+                'published_at' => $content->updated_at ?? $content->created_at,
+                'visibility' => $content->visibility,
+                'excerpt' => $content->body ? $this->excerptGenerator->generate($content->body) : null,
+            ], $content->all()),
+            'links' => $content->links(),
+        ]);
     }
 
     public function show(string $slug): View
