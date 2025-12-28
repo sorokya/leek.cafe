@@ -33,25 +33,25 @@ class PostController extends Controller
             ? $this->postFeedQuery->all()
             : $this->postFeedQuery->published();
 
-        $content = $query
-            ->paginate(10);
+        $contents = $query->paginate(10);
+        $contents->getCollection()->transform(function (Content $content): Content {
+            $content->setAttribute(
+                'excerpt',
+                $content->body ? $this->excerptGenerator->generate($content->body) : null
+            );
+
+            return $content;
+        });
 
         return view('post.index', [
-            'posts' => array_map(fn($content) => [
-                'title' => $content->title,
-                'link' => "/posts/{$content->slug}",
-                'published_at' => $content->created_at,
-                'visibility' => $content->visibility,
-                'excerpt' => $content->body ? $this->excerptGenerator->generate($content->body) : null,
-            ], $content->all()),
-            'links' => $content->links(),
+            'contents' => $contents,
         ]);
     }
 
     public function show(string $slug): View
     {
         $content = Content::query()
-            ->with('user')
+            ->with('user', 'coverImage')
             ->where('slug', $slug)
             ->whereHas('post')
             ->when(!Auth::check(), function ($q) {

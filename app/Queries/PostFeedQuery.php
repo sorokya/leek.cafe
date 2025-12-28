@@ -12,7 +12,7 @@ class PostFeedQuery
     public function published(): Builder
     {
         return Content::query()
-            ->with('user', 'post')
+            ->with('user', 'post', 'coverImage')
             ->whereHas('post')
             ->where('visibility', Visibility::PUBLIC->value)
             ->orderBy('created_at', 'desc');
@@ -22,7 +22,7 @@ class PostFeedQuery
     public function all(): Builder
     {
         return Content::query()
-            ->with('user', 'post')
+            ->with('user', 'post', 'coverImage')
             ->whereHas('post')
             ->orderBy('created_at', 'desc');
     }

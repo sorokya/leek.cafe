@@ -45,4 +45,9 @@ class Image extends Model
     {
         return route('image.serve', ['hash' => $this->getShortHash()]);
     }
+
+    public function getThumbnailUrl(): string
+    {
+        return route('image.serve-thumbnail', ['hash' => $this->getShortHash()]);
+    }
 }

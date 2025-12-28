@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 
 final class ImageController extends Controller
 {
-    public function __invoke(string $hash): Response
+    public function serve(string $hash): Response
     {
         $image = Image::query()
             ->where('hash', 'like', $hash . '%')

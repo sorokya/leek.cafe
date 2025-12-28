@@ -1,6 +1,13 @@
 <x-layout title="{{ $content->title }}">
     <article class="post-detail">
         <header class="post-detail__header">
+            @php($cover = $content->coverImage->first())
+            @if ($cover)
+                <div class="post-detail__cover">
+                    <img class="post-detail__cover-image" src="{{ $cover->getUrl() }}"
+                        alt="Cover image for {{ $content->title }}" loading="lazy" decoding="async" />
+                </div>
+            @endif
             <h1 class="post-detail__title">
                 {{ $content->title }}
             </h1>

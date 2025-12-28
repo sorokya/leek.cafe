@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Content;
 use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
 use Illuminate\Support\Facades\Auth;
@@ -17,16 +18,21 @@ class WelcomeController extends Controller
             ? $postFeedQuery->all()
             : $postFeedQuery->published();
 
-        $content = $query
+        $contents = $query
             ->take(10)
             ->get();
 
-        return view('welcome', ['posts' => array_map(fn($content) => [
-            'title' => $content->title,
-            'link' => "/posts/{$content->slug}",
-            'published_at' => $content->created_at,
-            'visibility' => $content->visibility,
-            'excerpt' => $content->body ? $excerptGenerator->generate($content->body) : null,
-        ], $content->all())]);
+        $contents->transform(function (Content $content) use ($excerptGenerator): Content {
+            $content->setAttribute(
+                'excerpt',
+                $content->body ? $excerptGenerator->generate($content->body) : null
+            );
+
+            return $content;
+        });
+
+        return view('welcome', [
+            'contents' => $contents,
+        ]);
     }
 }
