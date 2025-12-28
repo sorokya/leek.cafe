@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property string $type
+ * @property string $slug
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaType whereType($value)
  * @mixin \Eloquent
  */

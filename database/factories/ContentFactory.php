@@ -19,9 +19,8 @@ class ContentFactory extends Factory
         return [
             'slug' => fake()->unique()->slug(),
             'title' => fake()->sentence(),
-            'content_type_id' => 1,
             'body' => fake()->paragraphs(3, true),
-            'published_at' => fake()->optional()->dateTimeThisYear(),
+            'visibility' => fake()->numberBetween(0, 2),
         ];
     }
 }

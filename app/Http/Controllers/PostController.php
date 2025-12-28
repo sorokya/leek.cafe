@@ -3,40 +3,67 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
-use App\Models\ContentType;
 use App\Models\Image;
+use App\Queries\PostFeedQuery;
+use App\Services\ContentExcerptGenerator;
 use App\Services\ImageUploader;
 use App\Services\ContentRenderer;
-use DateTimeZone;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PostController extends Controller
 {
-    public function show(string $slug, ContentRenderer $renderer): View
+    public function __construct(
+        private PostFeedQuery $postFeedQuery,
+        private ContentRenderer $renderer,
+        private ContentExcerptGenerator $excerptGenerator,
+    ) {}
+
+    public function index(): View
     {
-        $content = Content::query()
-            ->where('content_type_id', ContentType::Post->value)
+        $query = Auth::check()
+            ? $this->postFeedQuery->all()
+            : $this->postFeedQuery->published();
+
+        $content = $query
+            ->take(10)
+            ->get();
+
+        return view('post.index', ['posts' => array_map(fn($content) => [
+            'title' => $content->title,
+            'link' => "/posts/{$content->slug}",
+            'published_at' => $content->updated_at ?? $content->created_at,
+            'visibility' => $content->visibility,
+            'excerpt' => $content->body ? $this->excerptGenerator->generate($content->body) : null,
+        ], $content->all())]);
+    }
+
+    public function show(string $slug): View
+    {
+        $query = Auth::check()
+            ? $this->postFeedQuery->all()
+            : $this->postFeedQuery->published();
+
+        $content = $query
             ->where('slug', $slug)
-            ->whereNotNull('published_at')
-            ->with('user')
             ->first();
+
         if (!$content || !$content->body) {
             abort(404);
         }
 
         return view('post.show', [
             'content' => $content,
-            'renderedBody' => (string) $renderer->render($content->body),
+            'published_at' => $content->updated_at ?? $content->created_at,
+            'renderedBody' => (string) $this->renderer->render($content->body),
         ]);
     }
 
-    public function edit(Request $request, string $slug): View
+    public function edit(string $slug): View
     {
         $content = Content::query()
-            ->where('content_type_id', ContentType::Post->value)
             ->with('user')
             ->where('slug', $slug)
             ->first();
@@ -44,19 +71,14 @@ class PostController extends Controller
             abort(404);
         }
 
-        $userTimezone = $this->resolveUserTimezone($request);
-        $publishedAtLocal = $content->published_at?->copy()->setTimezone($userTimezone)->format('Y-m-d\\TH:i');
-
         return view('post.edit', [
             'content' => $content,
-            'publishedAtLocal' => $publishedAtLocal,
         ]);
     }
 
     public function update(Request $request, string $slug): RedirectResponse
     {
         $content = Content::query()
-            ->where('content_type_id', ContentType::Post->value)
             ->where('slug', $slug)
             ->with('user')
             ->first();
@@ -64,27 +86,13 @@ class PostController extends Controller
             abort(404);
         }
 
-        if ($request->input('published_at') === '') {
-            $request->merge(['published_at' => null]);
-        }
-
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
-            'published_at' => ['nullable', 'date_format:Y-m-d\\TH:i'],
         ]);
-
-        $publishedAtUtc = null;
-        if ($validated['published_at'] !== null) {
-            $userTimezone = $this->resolveUserTimezone($request);
-
-            $publishedAtUtc = Carbon::parse($validated['published_at'], $userTimezone)
-                ->setTimezone('UTC');
-        }
 
         $content->title = $validated['title'];
         $content->body = $validated['body'];
-        $content->published_at = $publishedAtUtc;
         $content->save();
 
         $imageHashes = $this->extractImageHashes($content->body);
@@ -130,15 +138,5 @@ class PostController extends Controller
         }
 
         return ['hashes' => $hashes];
-    }
-
-    private function resolveUserTimezone(Request $request): string
-    {
-        $timezone = $request->user()?->timezone;
-        if (is_string($timezone) && $timezone !== '' && in_array($timezone, DateTimeZone::listIdentifiers(), true)) {
-            return $timezone;
-        }
-
-        return (string) config('app.timezone', 'UTC');
     }
 }

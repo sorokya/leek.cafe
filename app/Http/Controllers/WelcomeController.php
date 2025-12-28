@@ -2,46 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Content;
-use App\Models\ContentType;
-use App\Models\Post;
-use App\Services\ContentRenderer;
+use App\Queries\PostFeedQuery;
+use App\Services\ContentExcerptGenerator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class WelcomeController extends Controller
 {
-    public function index(ContentRenderer $renderer): View
-    {
-        $content = Content::query()
-            ->with('user')
-            ->where('content_type_id', ContentType::Post->value)
-            ->whereNotNull('published_at')
-            ->orderBy('published_at', 'desc')
+    public function index(
+        PostFeedQuery $postFeedQuery,
+        ContentExcerptGenerator $excerptGenerator
+    ): View {
+        $query = Auth::check()
+            ? $postFeedQuery->all()
+            : $postFeedQuery->published();
+
+        $content = $query
             ->take(10)
             ->get();
 
         return view('welcome', ['posts' => array_map(fn($content) => [
             'title' => $content->title,
             'link' => "/posts/{$content->slug}",
-            'published_at' => $content->published_at,
-            'excerpt' => $content->body ? $this->generateExcerpt($content->body, $renderer) : null,
+            'published_at' => $content->updated_at ?? $content->created_at,
+            'visibility' => $content->visibility,
+            'excerpt' => $content->body ? $excerptGenerator->generate($content->body) : null,
         ], $content->all())]);
-    }
-
-    private function generateExcerpt(string $body, ContentRenderer $renderer): string
-    {
-        $rendered = $renderer->render($body);
-        $text = strip_tags((string) $rendered);
-        if (strlen($text) <= 200) {
-            return $text;
-        }
-
-        $excerpt = substr($text, 0, 200);
-        $lastSpace = strrpos($excerpt, ' ');
-        if ($lastSpace !== false) {
-            $excerpt = substr($excerpt, 0, $lastSpace);
-        }
-
-        return $excerpt . '…';
     }
 }

@@ -32,7 +32,6 @@ return new class extends Migration
             $table->decimal('rating', 3, 2)->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
-            $table->timestamps();
         });
     }
 

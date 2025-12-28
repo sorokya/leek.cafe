@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property numeric|null $rating
  * @property \Illuminate\Support\Carbon|null $started_at
  * @property \Illuminate\Support\Carbon|null $finished_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Content $content
  * @property-read \App\Models\MediaStatus $mediaStatus
  * @property-read \App\Models\MediaType $mediaType
@@ -23,13 +21,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereContentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereFinishedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMediaStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMediaTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereRating($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereStartedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withoutTrashed()
  * @mixin \Eloquent
@@ -37,6 +33,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Media extends Model
 {
     use SoftDeletes;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'content_id',
@@ -50,8 +48,6 @@ class Media extends Model
     protected $casts = [
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 
     /** @return BelongsTo<Content, $this> */

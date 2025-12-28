@@ -22,11 +22,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Richard Leek',
         ]);
 
-        DB::table('content_types')->insert([
-            ['type' => 'post'],
-            ['type' => 'media'],
-        ]);
-
         DB::table('media_types')->insert([
             ['type' => 'Film', 'slug' => 'film'],
             ['type' => 'Series', 'slug' => 'series'],
@@ -48,6 +43,9 @@ class DatabaseSeeder extends Seeder
         Content::factory()
             ->count(5)
             ->for($user)
-            ->create();
+            ->create()
+            ->each(function (Content $content) {
+                $content->post()->create();
+            });
     }
 }

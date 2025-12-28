@@ -13,13 +13,6 @@
                     value="{{ old('body', $content->body) }}" />
                 <div id="body-editor"></div>
             </div>
-            <div class="form-group">
-                <label for="published_at" class="form-label">
-                    Publish Date <button id="btn-unpublish" class="btn btn--sm" type="button">Clear</button>
-                </label>
-                <input type="datetime-local" id="published_at" name="published_at" class="form-input"
-                    value="{{ old('published_at', $publishedAtLocal) }}">
-            </div>
         </x-slot>
         <x-slot name="actions">
             <button type="submit" class="btn btn--primary">Update Post</button>

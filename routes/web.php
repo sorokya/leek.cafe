@@ -40,6 +40,7 @@ Route::controller(PostController::class)->group(function () {
     Route::get('/posts/{slug}/edit', 'edit')->middleware('auth')->name('posts.edit');
     Route::post('/posts/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('posts.upload-images');
     Route::put('/posts/{slug}', 'update')->middleware('auth')->name('posts.update');
+    Route::get('/posts', 'index')->name('posts.index');
 });
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');
