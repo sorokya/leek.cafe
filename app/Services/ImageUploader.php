@@ -5,17 +5,20 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 use App\Models\Image;
+use Spatie\Image\Enums\Fit;
+use Spatie\ImageOptimizer\OptimizerChain;
+use Spatie\Image\Image as SpatieImage;
 
 final class ImageUploader
 {
-    public function upload(UploadedFile $file): string
+    public function upload(UploadedFile $file): Image
     {
         $this->optimize($file);
         $hash = $this->store($file);
 
         $image = Image::query()->where('hash', $hash)->first();
         if ($image) {
-            return substr($image->hash, 0, 12);
+            return $image;
         }
 
         $image = new Image();
@@ -23,7 +26,7 @@ final class ImageUploader
         $image->extension = $this->getExtension($file);
         $image->save();
 
-        return substr($image->hash, 0, 12);
+        return $image;
     }
 
     private function optimize(UploadedFile $file): void
@@ -44,6 +47,11 @@ final class ImageUploader
         }
 
         $file->move($path, $hash . '.' . $extension);
+
+        SpatieImage::load($path . $hash . '.' . $extension)
+            ->fit(Fit::Contain, 300, 200)
+            ->save($path . $hash . '_thumb.' . $extension);
+
         return $hash;
     }
 

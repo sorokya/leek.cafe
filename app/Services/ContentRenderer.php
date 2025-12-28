@@ -129,7 +129,7 @@ final class ContentRenderer
             function ($matches) {
                 [$full, $alt, $hash] = $matches;
 
-                $url = route('image.serve', ['path' => $hash]);
+                $url = route('image.serve', ['hash' => $hash]);
 
                 return sprintf(
                     '<img src="%s" alt="%s" loading="lazy">',

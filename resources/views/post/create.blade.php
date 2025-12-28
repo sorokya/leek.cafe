@@ -1,11 +1,15 @@
 <x-layout title="Create New Post">
     <x-form-card title="Create New Post" description="Enter the details of your new post below."
-        action="{{ route('posts.store') }}" method="POST" class="wide">
+        action="{{ route('posts.store') }}" method="POST" class="wide" encType="multipart/form-data">
         <x-slot name="fields">
             <div class="form-group">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" id="title" name="title" class="form-input" value="{{ old('title') }}"
                     required>
+            </div>
+            <div class="form-group">
+                <label for="cover" class="form-label">Cover Image</label>
+                <input type="file" id="cover" name="cover" class="form-input" accept="image/*">
             </div>
             <div class="form-group">
                 <label for="visibility" class="form-label">Visibility</label>

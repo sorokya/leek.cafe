@@ -1,11 +1,25 @@
 <x-layout title="Edit: {{ $content->title }}">
     <x-form-card title="Edit Post" description="Edit the details of your post below."
-        action="{{ route('posts.update', $content->slug) }}" method="PUT" class="wide">
+        action="{{ route('posts.update', $content->slug) }}" method="PUT" encType="multipart/form-data" class="wide">
         <x-slot name="fields">
             <div class="form-group">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" id="title" name="title" class="form-input"
                     value="{{ old('title', $content->title) }}" required>
+            </div>
+            <div class="form-group">
+                <label for="cover" class="form-label">Cover Image</label>
+                @if ($content->coverImage->first())
+                    <img src="{{ $content->coverImage->first()->getUrl() }}" alt="Current Cover Image"
+                        class="cover-image-preview" />
+                @endif
+                <input type="file" id="cover" name="cover" accept="image/*"
+                    @error('cover')
+                    aria-invalid="true" aria-describedby="cover-error" @enderror
+                    @class(['form-input', 'form-input--invalid' => $errors->has('cover')]) />
+                @error('cover')
+                    <p class="form-hint form-hint--error" id="cover-error">{{ $message }}</p>
+                @enderror
             </div>
             <div class="form-group">
                 <label for="visibility" class="form-label">Visibility</label>

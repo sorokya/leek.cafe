@@ -35,4 +35,14 @@ class Image extends Model
     {
         return $this->belongsToMany(Content::class, 'content_images');
     }
+
+    public function getShortHash(): string
+    {
+        return substr($this->hash, 0, 12);
+    }
+
+    public function getUrl(): string
+    {
+        return route('image.serve', ['hash' => $this->getShortHash()]);
+    }
 }

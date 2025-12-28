@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ImageRole;
 use App\Models\Content;
 use App\Models\Image;
 use App\Queries\PostFeedQuery;
@@ -23,6 +24,7 @@ class PostController extends Controller
         private ContentRenderer $renderer,
         private ContentExcerptGenerator $excerptGenerator,
         private InlineImageSyncer $inlineImageSyncer,
+        private ImageUploader $imageUploader,
     ) {}
 
     public function index(): View
@@ -72,6 +74,7 @@ class PostController extends Controller
     {
         $content = Content::query()
             ->with('user')
+            ->with('coverImage')
             ->where('slug', $slug)
             ->first();
         if (!$content) {
@@ -97,12 +100,19 @@ class PostController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'visibility' => ['required', 'integer'],
+            'cover' => ['nullable', 'image'],
         ]);
 
         $content->title = $validated['title'];
         $content->body = $validated['body'];
         $content->visibility = $validated['visibility'];
         $content->save();
+
+        $content->coverImage()->detach();
+        if (isset($validated['cover'])) {
+            $img = $this->imageUploader->upload($validated['cover']);
+            $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
+        }
 
         $this->inlineImageSyncer->sync($content);
 
@@ -126,6 +136,7 @@ class PostController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'visibility' => ['required', 'integer'],
+            'cover' => ['nullable', 'image'],
         ]);
 
         $content = new Content();
@@ -136,6 +147,12 @@ class PostController extends Controller
         $content->visibility = $validated['visibility'];
         $content->save();
         $content->post()->create([]);
+
+        if (isset($validated['cover'])) {
+            $img = $this->imageUploader->upload($validated['cover']);
+            $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
+        }
+
         $this->inlineImageSyncer->sync($content);
 
         return redirect()->route('posts.show', ['slug' => $content->slug]);
@@ -175,7 +192,7 @@ class PostController extends Controller
      * Handle image uploads for posts.
      * @return array<string, mixed>
      */
-    public function uploadImages(Request $request, ImageUploader $imageUploader): array
+    public function uploadImages(Request $request): array
     {
         $validated = $request->validate([
             'image.*' => ['required', 'image'],
@@ -185,7 +202,8 @@ class PostController extends Controller
         $hashes = [];
 
         foreach ($images as $image) {
-            $hashes[] = $imageUploader->upload($image);
+            $img = $this->imageUploader->upload($image);
+            $hashes[] = $img->getShortHash();
         }
 
         return ['hashes' => $hashes];

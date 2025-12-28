@@ -26,8 +26,8 @@ use Str;
  * @property int $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $converImage
- * @property-read int|null $conver_image_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $coverImage
+ * @property-read int|null $cover_image_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
  * @property-read int|null $images_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $inlineImages
@@ -95,7 +95,7 @@ class Content extends Model implements Feedable
     }
 
     /** @return BelongsToMany<Image, $this> */
-    public function converImage(): BelongsToMany
+    public function coverImage(): BelongsToMany
     {
         return $this->images()
             ->wherePivot('role', ImageRole::COVER->value);

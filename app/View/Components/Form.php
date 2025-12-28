@@ -15,6 +15,7 @@ class Form extends Component
         public ?string $title = null,
         public ?string $description = null,
         public string $method = 'POST',
+        public string $encType = 'application/x-www-form-urlencoded',
         public ?string $action = null,
         public ?string $fields = null,
         public ?string $actions = null,

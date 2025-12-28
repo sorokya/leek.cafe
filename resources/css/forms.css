@@ -265,3 +265,12 @@ a.btn {
 #body-editor {
   height: 600px;
 }
+
+.cover-image-preview {
+  display: block;
+  max-height: 30rem;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}

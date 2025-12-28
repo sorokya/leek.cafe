@@ -55,6 +55,10 @@ Route::controller(PostController::class)->group(function () {
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');
 
-Route::get('/img/{path}', ImageController::class)
+Route::get('/img/{hash}', ImageController::class)
     ->middleware('cache.headers:public;max_age=31536000;etag')
-    ->name('image.serve')->where('path', '.*');
+    ->name('image.serve')->where('hash', '.*');
+
+Route::get('/img/{hash}/thumbnail', [ImageController::class, 'serveThumbnail'])
+    ->middleware('cache.headers:public;max_age=31536000;etag')
+    ->name('image.serve-thumbnail')->where('hash', '.*');
