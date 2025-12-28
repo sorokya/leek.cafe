@@ -7,10 +7,16 @@ use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\Api\MediaStatusController;
 use App\Http\Controllers\Api\MediaTypeController;
-use App\Models\Post;
+use App\Http\Controllers\FeedController;
+use App\Http\Controllers\SiteMapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/sitemap.xml', SiteMapController::class)->name('sitemap');
+Route::feeds();
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+})->name('health');
 
 Route::controller(App\Http\Controllers\AuthController::class)->group(function () {
     Route::get('/login', 'showLogin')->name('auth.show-login');

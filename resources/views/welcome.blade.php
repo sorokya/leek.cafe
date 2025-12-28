@@ -4,9 +4,6 @@
             <header class="section__header">
                 <h1 class="section__title">
                     Recent Posts
-                    <a class="section__title-link" href="#" aria-label="RSS Feed">
-                        <x-heroicon-s-rss aria-hidden="true" focusable="false" width="24" height="24" />
-                    </a>
                 </h1>
             </header>
 

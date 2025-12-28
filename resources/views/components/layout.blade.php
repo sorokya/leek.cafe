@@ -61,6 +61,10 @@
                 <x-primary-nav-items />
             </nav>
 
+            <a href="/feed.xml">
+                <x-heroicon-s-rss class="rss-icon" aria-hidden="true" focusable="false" width="18" height="18" />
+            </a>
+
             <form class="theme-toggle" method="POST" action="{{ route('theme.toggle') }}">
                 @csrf
                 <button class="theme-toggle-button" type="submit" aria-label="Toggle theme" title="Toggle theme">
