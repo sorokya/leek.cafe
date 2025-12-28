@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('content_id')->constrained('contents')->onDelete('cascade');
+            $table->foreignId('content_id')->constrained('contents')->cascadeOnDelete();
             $table->string('url')->unique();
-            $table->foreignId('image_id')->nullable()->constrained('images')->onDelete('set null');
+            $table->foreignId('image_id')->nullable()->constrained('images')->nullOnDelete();
         });
     }
 

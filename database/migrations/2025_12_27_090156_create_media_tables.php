@@ -26,9 +26,9 @@ return new class extends Migration
         });
 
         Schema::create('media', function (Blueprint $table) {
-            $table->foreignId('content_id')->constrained('contents')->onDelete('cascade');
-            $table->foreignId('media_type_id')->constrained('media_types')->onDelete('restrict');
-            $table->foreignId('media_status_id')->constrained('media_statuses')->onDelete('restrict');
+            $table->foreignId('content_id')->constrained('contents')->cascadeOnDelete();
+            $table->foreignId('media_type_id')->constrained('media_types')->restrictOnDelete();
+            $table->foreignId('media_status_id')->constrained('media_statuses')->restrictOnDelete();
             $table->decimal('rating', 3, 2)->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();

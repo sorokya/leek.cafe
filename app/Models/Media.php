@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $content_id
@@ -18,7 +17,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \App\Models\MediaType $mediaType
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Media onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereContentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereFinishedAt($value)
@@ -26,14 +24,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMediaTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereRating($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereStartedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withoutTrashed()
  * @mixin \Eloquent
  */
 class Media extends Model
 {
-    use SoftDeletes;
-
     public $timestamps = false;
 
     protected $fillable = [

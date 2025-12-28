@@ -14,17 +14,16 @@ return new class extends Migration
     {
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('body')->nullable();
             $table->tinyInteger('visibility')->default(Visibility::PRIVATE->value);
             $table->timestamps();
-            $table->softDeletes();
         });
 
         Schema::create('posts', function (Blueprint $table) {
-            $table->foreignId('content_id')->constrained('contents')->onDelete('cascade');
+            $table->foreignId('content_id')->constrained('contents')->cascadeOnDelete();
         });
     }
 

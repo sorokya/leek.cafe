@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ImageRole;
 use App\Services\ContentExcerptGenerator;
 use App\Visibility;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Spatie\Feed\Feedable;
 use Spatie\Feed\FeedItem;
 use Str;
@@ -24,10 +26,15 @@ use Str;
  * @property int $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $converImage
+ * @property-read int|null $conver_image_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
  * @property-read int|null $images_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $inlineImages
+ * @property-read int|null $inline_images_count
  * @property-read \App\Models\Post|null $post
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $thumbnailImage
+ * @property-read int|null $thumbnail_image_count
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\ContentFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content newModelQuery()
@@ -35,7 +42,6 @@ use Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereBody($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereTitle($value)
@@ -72,6 +78,27 @@ class Content extends Model implements Feedable
     public function post(): HasOne
     {
         return $this->hasOne(Post::class, 'content_id');
+    }
+
+    /** @return BelongsToMany<Image, $this> */
+    public function inlineImages(): BelongsToMany
+    {
+        return $this->belongsToMany(Image::class, 'content_images')
+            ->wherePivot('role', ImageRole::INLINE->value);
+    }
+
+    /** @return BelongsToMany<Image, $this> */
+    public function thumbnailImage(): BelongsToMany
+    {
+        return $this->images()
+            ->wherePivot('role', ImageRole::THUMBNAIL->value);
+    }
+
+    /** @return BelongsToMany<Image, $this> */
+    public function converImage(): BelongsToMany
+    {
+        return $this->images()
+            ->wherePivot('role', ImageRole::COVER->value);
     }
 
     /** @return Collection<int, FeedItem> */

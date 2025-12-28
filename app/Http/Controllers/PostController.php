@@ -8,6 +8,7 @@ use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
 use App\Services\ImageUploader;
 use App\Services\ContentRenderer;
+use App\Services\InlineImageSyncer;
 use App\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ class PostController extends Controller
         private PostFeedQuery $postFeedQuery,
         private ContentRenderer $renderer,
         private ContentExcerptGenerator $excerptGenerator,
+        private InlineImageSyncer $inlineImageSyncer,
     ) {}
 
     public function index(): View
@@ -102,16 +104,7 @@ class PostController extends Controller
         $content->visibility = $validated['visibility'];
         $content->save();
 
-        $imageHashes = $this->extractImageHashes($content->body);
-        $imageIds = Image::query()
-            ->where(function ($q) use ($imageHashes) {
-                foreach ($imageHashes as $prefix) {
-                    $q->orWhere('hash', 'like', $prefix . '%');
-                }
-            })
-            ->pluck('id')
-            ->all();
-        $content->images()->sync($imageIds);
+        $this->inlineImageSyncer->sync($content);
 
         return redirect()->route('posts.edit', ['slug' => $content->slug])
             ->with('status', 'Post updated successfully.');
@@ -142,19 +135,8 @@ class PostController extends Controller
         $content->slug = Str::slug($validated['title']);
         $content->visibility = $validated['visibility'];
         $content->save();
-
         $content->post()->create([]);
-
-        $imageHashes = $this->extractImageHashes($content->body);
-        $imageIds = Image::query()
-            ->where(function ($q) use ($imageHashes) {
-                foreach ($imageHashes as $prefix) {
-                    $q->orWhere('hash', 'like', $prefix . '%');
-                }
-            })
-            ->pluck('id')
-            ->all();
-        $content->images()->sync($imageIds);
+        $this->inlineImageSyncer->sync($content);
 
         return redirect()->route('posts.show', ['slug' => $content->slug]);
     }
@@ -187,16 +169,6 @@ class PostController extends Controller
         $content->delete();
 
         return redirect()->route('posts.index');
-    }
-
-    /** Extract image hashes from markdown content.
-     * @return array<int, string>
-     */
-    private function extractImageHashes(string $markdown): array
-    {
-        preg_match_all('/@img:([a-f0-9]+)/i', $markdown, $matches);
-
-        return array_unique($matches[1]);
     }
 
     /**
