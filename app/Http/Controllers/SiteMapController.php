@@ -37,6 +37,23 @@ class SiteMapController extends Controller
                     }
                 });
 
+            Content::query()
+                ->whereHas('project')
+                ->where('visibility', Visibility::PUBLIC->value)
+                ->chunk(100, function ($contents) use ($sitemap) {
+                    foreach ($contents as $content) {
+                        $lastMod = $content->updated_at ?? $content->created_at;
+                        if ($lastMod === null) {
+                            continue;
+                        }
+
+                        $sitemap->add(
+                            Url::create("/projects/{$content->slug}")
+                                ->setLastModificationDate($lastMod)
+                        );
+                    }
+                });
+
 
             return $sitemap->toResponse(request());
         });
