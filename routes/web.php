@@ -8,8 +8,10 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\Api\MediaStatusController;
 use App\Http\Controllers\Api\MediaTypeController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SiteMapController;
+use App\Http\Controllers\ThoughtsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -64,6 +66,14 @@ Route::controller(ProjectController::class)->group(function () {
     Route::delete('/projects/{slug}', 'destroy')->middleware('auth')->name('projects.destroy');
     Route::put('/projects/{slug}', 'update')->middleware('auth')->name('projects.update');
     Route::post('/projects/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('projects.upload-images');
+});
+
+Route::controller(ThoughtsController::class)->group(function () {
+    Route::get('/thoughts', 'index')->name('thoughts.index');
+});
+
+Route::controller(MediaController::class)->group(function () {
+    Route::get('/media', 'index')->name('media.index');
 });
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');
