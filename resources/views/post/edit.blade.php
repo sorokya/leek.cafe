@@ -8,6 +8,10 @@
                     value="{{ old('title', $content->title) }}" required>
             </div>
             <div class="form-group">
+                <label for="visibility" class="form-label">Visibility</label>
+                <x-visibility-select :selected="old('visibility', $content->visibility)" />
+            </div>
+            <div class="form-group">
                 <label for="body" class="form-label">Body (Markdown)</label>
                 <input type="hidden" id="body" name="body" required
                     value="{{ old('body', $content->body) }}" />
@@ -15,8 +19,16 @@
             </div>
         </x-slot>
         <x-slot name="actions">
-            <button type="submit" class="btn btn--primary">Update Post</button>
-            <a href="{{ route('posts.show', $content->slug) }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn--primary">
+                <x-heroicon-c-check class="btn__icon" aria-hidden="true" focusable="false" width="16"
+                    height="16" />
+                Update Post
+            </button>
+            <a href="{{ route('posts.show', $content->slug) }}" class="btn btn-secondary">
+                <x-heroicon-c-arrow-uturn-left class="btn__icon" aria-hidden="true" focusable="false" width="16"
+                    height="16" />
+                Cancel
+            </a>
         </x-slot>
     </x-form-card>
 

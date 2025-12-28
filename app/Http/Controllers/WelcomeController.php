@@ -24,7 +24,7 @@ class WelcomeController extends Controller
         return view('welcome', ['posts' => array_map(fn($content) => [
             'title' => $content->title,
             'link' => "/posts/{$content->slug}",
-            'published_at' => $content->updated_at ?? $content->created_at,
+            'published_at' => $content->created_at,
             'visibility' => $content->visibility,
             'excerpt' => $content->body ? $excerptGenerator->generate($content->body) : null,
         ], $content->all())]);

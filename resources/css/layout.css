@@ -127,3 +127,9 @@ body {
 .section__content {
   padding: 1rem;
 }
+
+.section__actions {
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+}

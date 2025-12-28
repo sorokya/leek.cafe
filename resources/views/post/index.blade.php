@@ -6,6 +6,15 @@
             </header>
 
             <div class="section__content">
+                @auth
+                    <div class="section__actions">
+                        <a href="{{ route('posts.create') }}" class="btn btn--success btn--small">
+                            <x-heroicon-c-plus class="btn__icon" aria-hidden="true" focusable="false" width="16"
+                                height="16" />
+                            New Post
+                        </a>
+                    </div>
+                @endauth
                 <div class="post-feed">
                     @foreach ($posts as $post)
                         <article class="post-summary">

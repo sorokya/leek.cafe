@@ -15,7 +15,6 @@ class PostFeedQuery
             ->with('user', 'post')
             ->whereHas('post')
             ->where('visibility', Visibility::PUBLIC->value)
-            ->orderBy('updated_at', 'desc')
             ->orderBy('created_at', 'desc');
     }
 
@@ -25,7 +24,6 @@ class PostFeedQuery
         return Content::query()
             ->with('user', 'post')
             ->whereHas('post')
-            ->orderBy('updated_at', 'desc')
             ->orderBy('created_at', 'desc');
     }
 }

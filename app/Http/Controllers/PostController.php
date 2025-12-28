@@ -8,9 +8,11 @@ use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
 use App\Services\ImageUploader;
 use App\Services\ContentRenderer;
+use App\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PostController extends Controller
@@ -34,7 +36,7 @@ class PostController extends Controller
             'posts' => array_map(fn($content) => [
                 'title' => $content->title,
                 'link' => "/posts/{$content->slug}",
-                'published_at' => $content->updated_at ?? $content->created_at,
+                'published_at' => $content->created_at,
                 'visibility' => $content->visibility,
                 'excerpt' => $content->body ? $this->excerptGenerator->generate($content->body) : null,
             ], $content->all()),
@@ -44,12 +46,13 @@ class PostController extends Controller
 
     public function show(string $slug): View
     {
-        $query = Auth::check()
-            ? $this->postFeedQuery->all()
-            : $this->postFeedQuery->published();
-
-        $content = $query
+        $content = Content::query()
+            ->with('user')
             ->where('slug', $slug)
+            ->whereHas('post')
+            ->when(!Auth::check(), function ($q) {
+                $q->where('visibility', '!=', Visibility::PRIVATE->value);
+            })
             ->first();
 
         if (!$content || !$content->body) {
@@ -58,7 +61,7 @@ class PostController extends Controller
 
         return view('post.show', [
             'content' => $content,
-            'published_at' => $content->updated_at ?? $content->created_at,
+            'published_at' => $content->created_at,
             'renderedBody' => (string) $this->renderer->render($content->body),
         ]);
     }
@@ -91,10 +94,12 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
+            'visibility' => ['required', 'integer'],
         ]);
 
         $content->title = $validated['title'];
         $content->body = $validated['body'];
+        $content->visibility = $validated['visibility'];
         $content->save();
 
         $imageHashes = $this->extractImageHashes($content->body);
@@ -110,6 +115,78 @@ class PostController extends Controller
 
         return redirect()->route('posts.edit', ['slug' => $content->slug])
             ->with('status', 'Post updated successfully.');
+    }
+
+    public function create(): View
+    {
+        return view('post.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        if (!$user) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string'],
+            'visibility' => ['required', 'integer'],
+        ]);
+
+        $content = new Content();
+        $content->user_id = $user->id;
+        $content->title = $validated['title'];
+        $content->body = $validated['body'];
+        $content->slug = Str::slug($validated['title']);
+        $content->visibility = $validated['visibility'];
+        $content->save();
+
+        $content->post()->create([]);
+
+        $imageHashes = $this->extractImageHashes($content->body);
+        $imageIds = Image::query()
+            ->where(function ($q) use ($imageHashes) {
+                foreach ($imageHashes as $prefix) {
+                    $q->orWhere('hash', 'like', $prefix . '%');
+                }
+            })
+            ->pluck('id')
+            ->all();
+        $content->images()->sync($imageIds);
+
+        return redirect()->route('posts.show', ['slug' => $content->slug]);
+    }
+
+    public function deleteConfirm(string $slug): View
+    {
+        $content = Content::query()
+            ->where('slug', $slug)
+            ->with('user')
+            ->first();
+        if (!$content) {
+            abort(404);
+        }
+
+        return view('post.delete-confirm', [
+            'content' => $content,
+        ]);
+    }
+
+    public function destroy(string $slug): RedirectResponse
+    {
+        $content = Content::query()
+            ->where('slug', $slug)
+            ->with('user')
+            ->first();
+        if (!$content) {
+            abort(404);
+        }
+
+        $content->delete();
+
+        return redirect()->route('posts.index');
     }
 
     /** Extract image hashes from markdown content.

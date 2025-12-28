@@ -36,11 +36,15 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::controller(PostController::class)->group(function () {
+    Route::get('/posts', 'index')->name('posts.index');
+    Route::get('/posts/new', 'create')->middleware('auth')->name('posts.create');
+    Route::post('/posts', 'store')->middleware('auth')->name('posts.store');
     Route::get('/posts/{slug}', 'show')->name('posts.show');
     Route::get('/posts/{slug}/edit', 'edit')->middleware('auth')->name('posts.edit');
-    Route::post('/posts/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('posts.upload-images');
+    Route::get('/posts/{slug}/delete-confirm', 'deleteConfirm')->middleware('auth')->name('posts.delete-confirm');
+    Route::delete('/posts/{slug}', 'destroy')->middleware('auth')->name('posts.destroy');
     Route::put('/posts/{slug}', 'update')->middleware('auth')->name('posts.update');
-    Route::get('/posts', 'index')->name('posts.index');
+    Route::post('/posts/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('posts.upload-images');
 });
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');
