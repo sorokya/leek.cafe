@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +32,6 @@ class Project extends Model
     /** @return BelongsTo<Content, $this> */
     public function content(): BelongsTo
     {
-        return $this->belongsTo(Content::class, 'id', 'content_id');
+        return $this->belongsTo(Content::class, 'content_id');
     }
 }

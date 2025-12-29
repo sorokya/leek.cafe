@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\ImageRole;
@@ -7,7 +9,7 @@ use App\Models\Content;
 use App\Models\Image;
 use Illuminate\Support\Facades\DB;
 
-class InlineImageSyncer
+final class InlineImageSyncer
 {
     public function sync(Content $content): void
     {

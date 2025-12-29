@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-class ContentExcerptGenerator
+final class ContentExcerptGenerator
 {
     public function __construct(
         private ContentRenderer $renderer,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -79,7 +81,7 @@ class User extends Authenticatable
         return $this->hasMany(Content::class);
     }
 
-    static public function findByUsername(string $username): ?User
+    static public function findByUsername(string $username): ?self
     {
         return self::where('username', $username)->first();
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\ImageRole;
@@ -61,6 +63,13 @@ class Content extends Model implements Feedable
         'body',
         'visibility',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'visibility' => Visibility::class,
+        ];
+    }
 
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
