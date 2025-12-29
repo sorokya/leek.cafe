@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\MediaStatus;
 use App\Models\MediaType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -35,19 +35,14 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function updateSettings(): RedirectResponse
+    public function updateSettings(UpdateProfileRequest $request): RedirectResponse
     {
         $user = Auth::user();
         if (!$user || !$user->password) {
             abort(403);
         }
 
-        $validated = request()->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string'],
-            'new_password' => ['nullable', 'confirmed', Password::default()],
-            'timezone' => ['required', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         if (!Hash::check($validated['password'], $user->password)) {
             return back()->withErrors([

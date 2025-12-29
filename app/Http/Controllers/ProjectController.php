@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\ImageRole;
 use App\Models\Content;
 use App\Services\ContentExcerptGenerator;
@@ -13,7 +15,6 @@ use App\Services\InlineImageSyncer;
 use App\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -91,7 +92,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $slug): RedirectResponse
+    public function update(UpdateProjectRequest $request, string $slug): RedirectResponse
     {
         $content = Content::query()
             ->where('slug', $slug)
@@ -102,19 +103,7 @@ class ProjectController extends Controller
             abort(404);
         }
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'url' => [
-                'required',
-                'string',
-                'max:2048',
-                'url',
-                Rule::unique('projects', 'url')->ignore($content->project?->id),
-            ],
-            'body' => ['required', 'string'],
-            'visibility' => ['required', 'integer'],
-            'cover' => ['nullable', 'image'],
-        ]);
+        $validated = $request->validated();
 
         $content->title = $validated['title'];
         $content->body = $validated['body'];
@@ -148,20 +137,14 @@ class ProjectController extends Controller
         return view('project.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProjectRequest $request): RedirectResponse
     {
         $user = Auth::user();
         if (!$user) {
             abort(403);
         }
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'url' => ['required', 'string', 'max:2048', 'url', Rule::unique('projects', 'url')],
-            'body' => ['required', 'string'],
-            'visibility' => ['required', 'integer'],
-            'cover' => ['nullable', 'image'],
-        ]);
+        $validated = $request->validated();
 
         $content = new Content();
         $content->user_id = $user->id;
