@@ -150,7 +150,7 @@ class Content extends Model implements Feedable
      */
     public function scopePublic(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
-        return $query->where('visibility', Visibility::PUBLIC);
+        return $query->where('visibility', Visibility::PUBLIC->value);
     }
 
     /**
@@ -161,6 +161,6 @@ class Content extends Model implements Feedable
      */
     public function scopeVisibleToGuests(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
-        return $query->where('visibility', '!=', Visibility::PRIVATE);
+        return $query->where('visibility', '!=', Visibility::PRIVATE->value);
     }
 }
