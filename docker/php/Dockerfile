@@ -1,4 +1,20 @@
 ARG PHP_IMAGE=php:8.5.1-fpm-alpine3.23
+ARG NODE_IMAGE=node:24-alpine
+
+FROM ${NODE_IMAGE} AS assets-builder
+
+WORKDIR /var/www/html
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+RUN corepack enable \
+    && pnpm install --frozen-lockfile
+
+COPY vite.config.js ./
+COPY resources ./resources
+COPY public ./public
+
+RUN pnpm run build
 
 FROM ${PHP_IMAGE} AS php-ext-builder
 
@@ -54,6 +70,9 @@ COPY docker/php/php.base.ini /usr/local/etc/php/conf.d/zz-app.ini
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
 EXPOSE 8000
 
 FROM base AS dev
@@ -64,7 +83,13 @@ COPY --from=php-ext-builder-dev /usr/local/etc/php/conf.d/ /usr/local/etc/php/co
 COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/zz-xdebug.ini
 COPY docker/php/php.dev.ini /usr/local/etc/php/conf.d/zz-env.ini
 
+COPY composer.json composer.lock /var/www/html/
+
+RUN composer install --no-interaction --no-progress --prefer-dist --no-scripts
+
 COPY . /var/www/html
+
+COPY --from=assets-builder /var/www/html/public/build /var/www/html/public/build
 
 RUN mkdir -p \
         /var/www/html/bootstrap/cache \
@@ -73,17 +98,22 @@ RUN mkdir -p \
         /var/www/html/storage/framework/sessions \
         /var/www/html/storage/framework/views \
         /var/www/html/storage/logs \
-    && composer install --no-interaction --no-progress --prefer-dist \
-    && (php artisan storage:link || true) \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 
 FROM base AS prod
 
 COPY docker/php/php.prod.ini /usr/local/etc/php/conf.d/zz-env.ini
 
+COPY composer.json composer.lock /var/www/html/
+
+RUN composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --no-dev
+
 COPY . /var/www/html
+
+COPY --from=assets-builder /var/www/html/public/build /var/www/html/public/build
 
 RUN mkdir -p \
         /var/www/html/bootstrap/cache \
@@ -92,8 +122,7 @@ RUN mkdir -p \
         /var/www/html/storage/framework/sessions \
         /var/www/html/storage/framework/views \
         /var/www/html/storage/logs \
-    && composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-dev \
-    && (php artisan storage:link || true) \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
