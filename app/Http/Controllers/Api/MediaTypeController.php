@@ -11,7 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class MediaTypeController extends Controller
+final class MediaTypeController extends Controller
 {
     public function store(Request $request): JsonResponse|RedirectResponse
     {

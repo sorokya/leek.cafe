@@ -19,7 +19,7 @@ use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ProjectController extends Controller
+final class ProjectController extends Controller
 {
     public function __construct(
         private ContentRenderer $renderer,
@@ -33,9 +33,7 @@ class ProjectController extends Controller
         $query = Content::query()
             ->with('user', 'project', 'coverImage')
             ->whereHas('project')
-            ->when(!Auth::check(), function ($q) {
-                $q->where('visibility', '!=', Visibility::PRIVATE->value);
-            });
+            ->when(!Auth::check(), fn($q) => $q->visibleToGuests());
 
         $contents = $query->paginate(10);
         $contents->getCollection()->transform(function (Content $content): Content {
@@ -58,9 +56,7 @@ class ProjectController extends Controller
             ->with('user', 'coverImage', 'project')
             ->where('slug', $slug)
             ->whereHas('project')
-            ->when(!Auth::check(), function ($q) {
-                $q->where('visibility', '!=', Visibility::PRIVATE->value);
-            })
+            ->when(!Auth::check(), fn($q) => $q->visibleToGuests())
             ->first();
 
         if (!$content || !$content->body) {

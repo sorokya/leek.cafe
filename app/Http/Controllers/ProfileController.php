@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ProfileController extends Controller
+final class ProfileController extends Controller
 {
     public function showSettings(): View | RedirectResponse
     {

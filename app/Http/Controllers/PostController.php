@@ -20,7 +20,7 @@ use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class PostController extends Controller
+final class PostController extends Controller
 {
     public function __construct(
         private PostFeedQuery $postFeedQuery,
@@ -57,9 +57,7 @@ class PostController extends Controller
             ->with('user', 'coverImage')
             ->where('slug', $slug)
             ->whereHas('post')
-            ->when(!Auth::check(), function ($q) {
-                $q->where('visibility', '!=', Visibility::PRIVATE->value);
-            })
+            ->when(!Auth::check(), fn($q) => $q->visibleToGuests())
             ->first();
 
         if (!$content || !$content->body) {

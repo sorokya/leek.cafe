@@ -122,7 +122,7 @@ class Content extends Model implements Feedable
         return static::query()
             ->with('user')
             ->whereHas('post')
-            ->where('visibility', Visibility::PUBLIC->value)
+            ->public()
             ->orderBy('created_at', 'desc')
             ->take(20)
             ->get()
@@ -140,5 +140,27 @@ class Content extends Model implements Feedable
             'link' => url("/posts/{$this->slug}"),
             'authorName' => $this->user->name,
         ]);
+    }
+
+    /**
+     * Scope a query to only include public content.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Content> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Content>
+     */
+    public function scopePublic(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where('visibility', Visibility::PUBLIC);
+    }
+
+    /**
+     * Scope a query to exclude private content when not authenticated.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Content> $query
+     * @return \Illuminate\Database\Eloquent\Builder<Content>
+     */
+    public function scopeVisibleToGuests(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where('visibility', '!=', Visibility::PRIVATE);
     }
 }

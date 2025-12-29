@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
-class SiteMapController extends Controller
+final class SiteMapController extends Controller
 {
     public function __invoke(): Response
     {
@@ -24,7 +24,7 @@ class SiteMapController extends Controller
 
             Content::query()
                 ->whereHas('post')
-                ->where('visibility', Visibility::PUBLIC->value)
+                ->public()
                 ->chunk(100, function ($contents) use ($sitemap) {
                     foreach ($contents as $content) {
                         $lastMod = $content->updated_at ?? $content->created_at;
@@ -41,7 +41,7 @@ class SiteMapController extends Controller
 
             Content::query()
                 ->whereHas('project')
-                ->where('visibility', Visibility::PUBLIC->value)
+                ->public()
                 ->chunk(100, function ($contents) use ($sitemap) {
                     foreach ($contents as $content) {
                         $lastMod = $content->updated_at ?? $content->created_at;

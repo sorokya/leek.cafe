@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Str;
 
-class MediaStatusController extends Controller
+final class MediaStatusController extends Controller
 {
     public function store(Request $request): JsonResponse|RedirectResponse
     {

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Queries;
 
 use App\Models\Content;
-use App\Visibility;
 use Illuminate\Database\Eloquent\Builder;
 
-class PostFeedQuery
+final class PostFeedQuery
 {
     /** @return Builder<Content> */
     public function published(): Builder
@@ -16,7 +15,7 @@ class PostFeedQuery
         return Content::query()
             ->with('user', 'post', 'coverImage')
             ->whereHas('post')
-            ->where('visibility', Visibility::PUBLIC->value)
+            ->public()
             ->orderBy('created_at', 'desc');
     }
 

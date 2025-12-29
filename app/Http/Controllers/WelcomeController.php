@@ -10,7 +10,7 @@ use App\Services\ContentExcerptGenerator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class WelcomeController extends Controller
+final class WelcomeController extends Controller
 {
     public function index(
         PostFeedQuery $postFeedQuery,
