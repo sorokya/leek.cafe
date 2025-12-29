@@ -5,5 +5,16 @@ parameters:
     paths:
         - app/
 
-    # Level 10 is the highest level
-    level: 8
+    # Level 9 for stricter type checking
+    level: 9
+
+    # Ignore generated IDE helper files
+    excludePaths:
+        - _ide_helper.php
+        - .phpstorm.meta.php
+
+    # Report unused private elements
+    reportUnmatchedIgnoredErrors: false
+    
+    # Check missing typehints
+    checkMissingIterableValueType: true

@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 final class ProfileController extends Controller
 {
-    public function showSettings(): View | RedirectResponse
+    public function showSettings(): View|RedirectResponse
     {
         $user = Auth::user();
         if (!$user) {
