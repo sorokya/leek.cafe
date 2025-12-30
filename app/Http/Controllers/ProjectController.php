@@ -1,28 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\ImageRole;
 use App\Models\Content;
+use App\Models\User;
 use App\Services\ContentExcerptGenerator;
-use App\Services\ImageUploader;
 use App\Services\ContentRenderer;
+use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
-use App\Visibility;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ProjectController extends Controller
+final class ProjectController extends Controller
 {
     public function __construct(
-        private ContentRenderer $renderer,
-        private ContentExcerptGenerator $excerptGenerator,
-        private InlineImageSyncer $inlineImageSyncer,
-        private ImageUploader $imageUploader,
+        private readonly ContentRenderer $renderer,
+        private readonly ContentExcerptGenerator $excerptGenerator,
+        private readonly InlineImageSyncer $inlineImageSyncer,
+        private readonly ImageUploader $imageUploader,
     ) {}
 
     public function index(): View
@@ -30,15 +35,13 @@ class ProjectController extends Controller
         $query = Content::query()
             ->with('user', 'project', 'coverImage')
             ->whereHas('project')
-            ->when(!Auth::check(), function ($q) {
-                $q->where('visibility', '!=', Visibility::PRIVATE->value);
-            });
+            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests());
 
         $contents = $query->paginate(10);
         $contents->getCollection()->transform(function (Content $content): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $this->excerptGenerator->generate($content->body) : null
+                $content->body ? $this->excerptGenerator->generate($content->body) : null,
             );
 
             return $content;
@@ -55,14 +58,10 @@ class ProjectController extends Controller
             ->with('user', 'coverImage', 'project')
             ->where('slug', $slug)
             ->whereHas('project')
-            ->when(!Auth::check(), function ($q) {
-                $q->where('visibility', '!=', Visibility::PRIVATE->value);
-            })
+            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
-        if (!$content || !$content->body) {
-            abort(404);
-        }
+        abort_if(! $content || ! $content->body, 404);
 
         return view('project.show', [
             'content' => $content,
@@ -80,64 +79,44 @@ class ProjectController extends Controller
             ->with('project')
             ->where('slug', $slug)
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
         return view('project.edit', [
             'content' => $content,
         ]);
     }
 
-    public function update(Request $request, string $slug): RedirectResponse
+    public function update(UpdateProjectRequest $request, string $slug): RedirectResponse
     {
         $content = Content::query()
             ->where('slug', $slug)
             ->with('user')
             ->with('project')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'url' => [
-                'required',
-                'string',
-                'max:2048',
-                'url',
-                Rule::unique('projects', 'url')->ignore($content->project?->id),
-            ],
-            'body' => ['required', 'string'],
-            'visibility' => ['required', 'integer'],
-            'cover' => ['nullable', 'image'],
+        $validated = $request->validated();
+
+        $content->update([
+            'title' => $validated['title'],
+            'body' => $validated['body'],
+            'visibility' => $validated['visibility'],
         ]);
 
-        $content->title = $validated['title'];
-        $content->body = $validated['body'];
-        $content->visibility = $validated['visibility'];
-        $content->save();
+        $content->project()->updateOrCreate(
+            [],
+            ['url' => $validated['url']],
+        );
 
-        if ($content->project) {
-            $content->project->update([
-                'url' => $validated['url'],
-            ]);
-        } else {
-            $content->project()->create([
-                'url' => $validated['url'],
-            ]);
-        }
-
-        $content->coverImage()->detach();
-        if (isset($validated['cover'])) {
+        if ($validated['cover'] instanceof UploadedFile) {
+            $content->coverImage()->detach();
             $img = $this->imageUploader->upload($validated['cover']);
             $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
         }
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('projects.edit', ['slug' => $content->slug])
+        return to_route('projects.edit', ['slug' => $content->slug])
             ->with('status', 'Project updated successfully.');
     }
 
@@ -146,40 +125,39 @@ class ProjectController extends Controller
         return view('project.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProjectRequest $request): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user) {
-            abort(403);
-        }
+        abort_unless($user instanceof User, 403);
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'url' => ['required', 'string', 'max:2048', 'url', Rule::unique('projects', 'url')],
-            'body' => ['required', 'string'],
-            'visibility' => ['required', 'integer'],
-            'cover' => ['nullable', 'image'],
-        ]);
+        $validated = $request->validated();
 
-        $content = new Content();
-        $content->user_id = $user->id;
-        $content->title = $validated['title'];
-        $content->body = $validated['body'];
-        $content->slug = Str::slug($validated['title']);
-        $content->visibility = $validated['visibility'];
-        $content->save();
-        $content->project()->create([
-            'url' => $validated['url'],
-        ]);
+        abort_if(! is_string($validated['title']), 400);
 
-        if (isset($validated['cover'])) {
-            $img = $this->imageUploader->upload($validated['cover']);
-            $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
-        }
+        $content = DB::transaction(function () use ($validated, $user) {
+            $content = Content::create([
+                'user_id' => $user->id,
+                'title' => $validated['title'],
+                'body' => $validated['body'],
+                'slug' => Str::slug($validated['title']),
+                'visibility' => $validated['visibility'],
+            ]);
 
-        $this->inlineImageSyncer->sync($content);
+            $content->project()->create([
+                'url' => $validated['url'],
+            ]);
 
-        return redirect()->route('projects.show', ['slug' => $content->slug]);
+            if (array_key_exists('cover', $validated) && $validated['cover'] instanceof UploadedFile) {
+                $img = $this->imageUploader->upload($validated['cover']);
+                $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
+            }
+
+            $this->inlineImageSyncer->sync($content);
+
+            return $content;
+        });
+
+        return to_route('projects.show', ['slug' => $content->slug]);
     }
 
     public function deleteConfirm(string $slug): View
@@ -188,9 +166,7 @@ class ProjectController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
         return view('project.delete-confirm', [
             'content' => $content,
@@ -203,17 +179,16 @@ class ProjectController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
         $content->delete();
 
-        return redirect()->route('projects.index');
+        return to_route('projects.index');
     }
 
     /**
      * Handle image uploads for projects.
+     *
      * @return array<string, mixed>
      */
     public function uploadImages(Request $request): array

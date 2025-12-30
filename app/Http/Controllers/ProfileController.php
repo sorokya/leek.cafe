@@ -1,26 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\MediaStatus;
 use App\Models\MediaType;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ProfileController extends Controller
+final class ProfileController extends Controller
 {
-    public function showSettings(): View | RedirectResponse
+    public function showSettings(): View|RedirectResponse
     {
         $user = Auth::user();
-        if (!$user) {
-            abort(403);
-        }
+        abort_unless($user instanceof User, 403);
 
-        if (!$user->password) {
-            return redirect()->route('auth.show-set-password', [
+        if (! $user->password) {
+            return to_route('auth.show-set-password', [
                 'username' => $user->username,
             ]);
         }
@@ -33,35 +34,27 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function updateSettings(): RedirectResponse
+    public function updateSettings(UpdateProfileRequest $request): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user || !$user->password) {
-            abort(403);
-        }
+        abort_if(! $user || ! $user->password, 403);
 
-        $validated = request()->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string'],
-            'new_password' => ['nullable', 'confirmed', Password::default()],
-            'timezone' => ['required', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
-        if (!Hash::check($validated['password'], $user->password)) {
+        if (! is_string($validated['password']) || ! Hash::check($validated['password'], $user->password)) {
             return back()->withErrors([
                 'password' => 'The provided password is incorrect.',
             ]);
         }
 
-        $user->name = $validated['name'];
-        $user->timezone = $validated['timezone'];
+        $data = $request->only(['name', 'timezone']);
 
-        if (!empty($validated['new_password'])) {
-            $user->password = Hash::make($validated['new_password']);
+        if (is_string($validated['new_password'])) {
+            $data['password'] = Hash::make($validated['new_password']);
         }
 
-        $user->save();
+        $user->update($data);
 
-        return redirect()->route('profile.show-settings')->with('status', 'Settings updated successfully.');
+        return to_route('profile.show-settings')->with('status', 'Settings updated successfully.');
     }
 }

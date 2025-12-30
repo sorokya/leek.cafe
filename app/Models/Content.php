@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\ImageRole;
@@ -9,13 +11,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Spatie\Feed\Feedable;
 use Spatie\Feed\FeedItem;
-use Str;
 
 /**
  * @property int $id
@@ -36,6 +35,7 @@ use Str;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $thumbnailImage
  * @property-read int|null $thumbnail_image_count
  * @property-read \App\Models\User $user
+ *
  * @method static \Database\Factories\ContentFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content newQuery()
@@ -48,19 +48,28 @@ use Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereVisibility($value)
+ *
  * @mixin \Eloquent
  */
-class Content extends Model implements Feedable
+final class Content extends Model implements Feedable
 {
     /** @use HasFactory<\Database\Factories\ContentFactory> */
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'slug',
         'title',
         'body',
         'visibility',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'visibility' => Visibility::class,
+        ];
+    }
 
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
@@ -110,26 +119,53 @@ class Content extends Model implements Feedable
     /** @return Collection<int, FeedItem> */
     public static function getFeedItems(): Collection
     {
-        return static::query()
+        return self::query()
             ->with('user')
             ->whereHas('post')
-            ->where('visibility', Visibility::PUBLIC->value)
+            ->public()
             ->orderBy('created_at', 'desc')
             ->take(20)
             ->get()
-            ->map(fn(Content $content) => $content->toFeedItem());
+            ->map(fn (Content $content): \Spatie\Feed\FeedItem => $content->toFeedItem());
     }
 
     public function toFeedItem(): FeedItem
     {
-        $summary = app(ContentExcerptGenerator::class)->generate($this->body ?? '');
+        $summary = resolve(ContentExcerptGenerator::class)->generate($this->body ?? '');
+
         return FeedItem::create([
             'id' => $this->id,
             'title' => $this->title,
             'summary' => $summary,
             'updated' => $this->updated_at,
-            'link' => url("/posts/{$this->slug}"),
+            'link' => url('/posts/' . $this->slug),
             'authorName' => $this->user->name,
         ]);
+    }
+
+    /**
+     * Scope a query to only include public content.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Content> $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<Content>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function public(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where('visibility', Visibility::PUBLIC->value);
+    }
+
+    /**
+     * Scope a query to exclude private content when not authenticated.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Content> $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<Content>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function visibleToGuests(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where('visibility', '!=', Visibility::PRIVATE->value);
     }
 }

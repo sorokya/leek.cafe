@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use Illuminate\Http\UploadedFile;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
 use App\Models\Image;
+use Illuminate\Http\UploadedFile;
 use Spatie\Image\Enums\Fit;
-use Spatie\ImageOptimizer\OptimizerChain;
 use Spatie\Image\Image as SpatieImage;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 final class ImageUploader
 {
@@ -21,12 +22,10 @@ final class ImageUploader
             return $image;
         }
 
-        $image = new Image();
-        $image->hash = $hash;
-        $image->extension = $this->getExtension($file);
-        $image->save();
-
-        return $image;
+        return Image::create([
+            'hash' => $hash,
+            'extension' => $this->getExtension($file),
+        ]);
     }
 
     private function optimize(UploadedFile $file): void
@@ -58,9 +57,8 @@ final class ImageUploader
     private function getHash(UploadedFile $file): string
     {
         $hash = hash_file('sha256', $file->getPathname());
-        if (!$hash) {
-            throw new \RuntimeException('Failed to compute file hash.');
-        }
+        throw_unless($hash, \RuntimeException::class, 'Failed to compute file hash.');
+
         return $hash;
     }
 

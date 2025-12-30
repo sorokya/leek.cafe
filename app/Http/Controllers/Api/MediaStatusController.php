@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Str;
 
-class MediaStatusController extends Controller
+final class MediaStatusController extends Controller
 {
     public function store(Request $request): JsonResponse|RedirectResponse
     {
@@ -39,8 +39,7 @@ class MediaStatusController extends Controller
             ], 201);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media status added.');
     }
 
@@ -57,10 +56,13 @@ class MediaStatusController extends Controller
             'color_value' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
         ]);
 
-        $mediaStatus->status = (string) $validated['status_value'];
-        $mediaStatus->icon = isset($validated['icon_value']) ? (string) $validated['icon_value'] : null;
-        $mediaStatus->color = isset($validated['color_value']) ? (string) $validated['color_value'] : null;
-        $mediaStatus->save();
+        abort_unless(is_string($validated['status_value']), 400);
+
+        $mediaStatus->update([
+            'status' => $validated['status_value'],
+            'icon' => is_string($validated['icon_value']) ? $validated['icon_value'] : null,
+            'color' => is_string($validated['color_value']) ? $validated['color_value'] : null,
+        ]);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -71,8 +73,7 @@ class MediaStatusController extends Controller
             ]);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media status updated.');
     }
 
@@ -84,8 +85,7 @@ class MediaStatusController extends Controller
             return response()->json([], 204);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media status deleted.');
     }
 }

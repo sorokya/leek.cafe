@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Content;
@@ -8,11 +10,11 @@ use App\Services\ContentExcerptGenerator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class WelcomeController extends Controller
+final class WelcomeController extends Controller
 {
     public function index(
         PostFeedQuery $postFeedQuery,
-        ContentExcerptGenerator $excerptGenerator
+        ContentExcerptGenerator $excerptGenerator,
     ): View {
         $query = Auth::check()
             ? $postFeedQuery->all()
@@ -25,7 +27,7 @@ class WelcomeController extends Controller
         $contents->transform(function (Content $content) use ($excerptGenerator): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $excerptGenerator->generate($content->body) : null
+                $content->body ? $excerptGenerator->generate($content->body) : null,
             );
 
             return $content;

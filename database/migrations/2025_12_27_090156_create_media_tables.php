@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,13 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media_types', function (Blueprint $table) {
+        Schema::create('media_types', function (Blueprint $table): void {
             $table->id();
             $table->string('type')->unique();
             $table->string('slug')->unique();
         });
 
-        Schema::create('media_statuses', function (Blueprint $table) {
+        Schema::create('media_statuses', function (Blueprint $table): void {
             $table->id();
             $table->string('status')->unique();
             $table->string('slug')->unique();
@@ -25,7 +27,7 @@ return new class extends Migration
             $table->string('color')->nullable();
         });
 
-        Schema::create('media', function (Blueprint $table) {
+        Schema::create('media', function (Blueprint $table): void {
             $table->foreignId('content_id')->constrained('contents')->cascadeOnDelete();
             $table->foreignId('media_type_id')->constrained('media_types')->restrictOnDelete();
             $table->foreignId('media_status_id')->constrained('media_statuses')->restrictOnDelete();

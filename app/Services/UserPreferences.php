@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use Illuminate\Http\Request;
@@ -28,16 +30,16 @@ final class UserPreferences
     {
         $value = $request->cookie(self::COOKIE_NAME);
 
-        if (!is_string($value) || $value === '') {
+        if (! is_string($value) || $value === '') {
             return;
         }
 
         $decoded = json_decode($value, true);
-        if (!is_array($decoded)) {
+        if (! is_array($decoded)) {
             return;
         }
 
-        $theme_str = $decoded['theme'] ?? 'system';
+        $theme_str = is_string($decoded['theme']) ? $decoded['theme'] : 'system';
         $this->theme = Theme::tryFrom($theme_str) ?? Theme::System;
     }
 
@@ -51,19 +53,14 @@ final class UserPreferences
 
     /**
      * Returns the cookie representing the user preferences.
-     *
-     * @param Request $request
-     * @return HttpFoundationCookie
      */
     public function get_cookie(Request $request): HttpFoundationCookie
     {
         $json = json_encode([
-            'theme' => $this->theme->value
+            'theme' => $this->theme->value,
         ]);
 
-        if (!is_string($json)) {
-            throw new \RuntimeException('Failed to encode user preferences to JSON.');
-        }
+        throw_unless(is_string($json), \RuntimeException::class, 'Failed to encode user preferences to JSON.');
 
         return Cookie::make(
             name: self::COOKIE_NAME,

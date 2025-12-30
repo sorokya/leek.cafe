@@ -1,29 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\ImageRole;
 use App\Models\Content;
+use App\Models\User;
 use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
-use App\Services\ImageUploader;
 use App\Services\ContentRenderer;
+use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
-use App\Visibility;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class PostController extends Controller
+final class PostController extends Controller
 {
     public function __construct(
-        private PostFeedQuery $postFeedQuery,
-        private ContentRenderer $renderer,
-        private ContentExcerptGenerator $excerptGenerator,
-        private InlineImageSyncer $inlineImageSyncer,
-        private ImageUploader $imageUploader,
+        private readonly PostFeedQuery $postFeedQuery,
+        private readonly ContentRenderer $renderer,
+        private readonly ContentExcerptGenerator $excerptGenerator,
+        private readonly InlineImageSyncer $inlineImageSyncer,
+        private readonly ImageUploader $imageUploader,
     ) {}
 
     public function index(): View
@@ -36,7 +42,7 @@ class PostController extends Controller
         $contents->getCollection()->transform(function (Content $content): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $this->excerptGenerator->generate($content->body) : null
+                $content->body ? $this->excerptGenerator->generate($content->body) : null,
             );
 
             return $content;
@@ -53,14 +59,10 @@ class PostController extends Controller
             ->with('user', 'coverImage')
             ->where('slug', $slug)
             ->whereHas('post')
-            ->when(!Auth::check(), function ($q) {
-                $q->where('visibility', '!=', Visibility::PRIVATE->value);
-            })
+            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
-        if (!$content || !$content->body) {
-            abort(404);
-        }
+        abort_if(! $content || ! $content->body, 404);
 
         return view('post.show', [
             'content' => $content,
@@ -77,46 +79,38 @@ class PostController extends Controller
             ->with('coverImage')
             ->where('slug', $slug)
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
         return view('post.edit', [
             'content' => $content,
         ]);
     }
 
-    public function update(Request $request, string $slug): RedirectResponse
+    public function update(UpdatePostRequest $request, string $slug): RedirectResponse
     {
         $content = Content::query()
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'visibility' => ['required', 'integer'],
-            'cover' => ['nullable', 'image'],
+        $validated = $request->validated();
+
+        $content->update([
+            'title' => $validated['title'],
+            'body' => $validated['body'],
+            'visibility' => $validated['visibility'],
         ]);
 
-        $content->title = $validated['title'];
-        $content->body = $validated['body'];
-        $content->visibility = $validated['visibility'];
-        $content->save();
-
-        $content->coverImage()->detach();
-        if (isset($validated['cover'])) {
+        if (array_key_exists('cover', $validated) && $validated['cover'] instanceof UploadedFile) {
+            $content->coverImage()->detach();
             $img = $this->imageUploader->upload($validated['cover']);
             $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
         }
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('posts.edit', ['slug' => $content->slug])
+        return to_route('posts.edit', ['slug' => $content->slug])
             ->with('status', 'Post updated successfully.');
     }
 
@@ -125,37 +119,37 @@ class PostController extends Controller
         return view('post.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StorePostRequest $request): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user) {
-            abort(403);
-        }
+        abort_unless($user instanceof User, 403);
 
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
-            'visibility' => ['required', 'integer'],
-            'cover' => ['nullable', 'image'],
-        ]);
+        $validated = $request->validated();
 
-        $content = new Content();
-        $content->user_id = $user->id;
-        $content->title = $validated['title'];
-        $content->body = $validated['body'];
-        $content->slug = Str::slug($validated['title']);
-        $content->visibility = $validated['visibility'];
-        $content->save();
-        $content->post()->create([]);
+        abort_unless(is_string($validated['title']), 400);
 
-        if (isset($validated['cover'])) {
-            $img = $this->imageUploader->upload($validated['cover']);
-            $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
-        }
+        $content = DB::transaction(function () use ($validated, $user) {
+            $content = Content::create([
+                'user_id' => $user->id,
+                'visibility' => $validated['visibility'],
+                'title' => $validated['title'],
+                'slug' => Str::slug($validated['title']),
+                'body' => $validated['body'],
+            ]);
 
-        $this->inlineImageSyncer->sync($content);
+            $content->post()->create();
 
-        return redirect()->route('posts.show', ['slug' => $content->slug]);
+            if ($validated['cover'] instanceof UploadedFile) {
+                $img = $this->imageUploader->upload($validated['cover']);
+                $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
+            }
+
+            $this->inlineImageSyncer->sync($content);
+
+            return $content;
+        });
+
+        return to_route('posts.show', ['slug' => $content->slug]);
     }
 
     public function deleteConfirm(string $slug): View
@@ -164,9 +158,7 @@ class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
         return view('post.delete-confirm', [
             'content' => $content,
@@ -179,17 +171,16 @@ class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content instanceof Content, 404);
 
         $content->delete();
 
-        return redirect()->route('posts.index');
+        return to_route('posts.index');
     }
 
     /**
      * Handle image uploads for posts.
+     *
      * @return array<string, mixed>
      */
     public function uploadImages(Request $request): array

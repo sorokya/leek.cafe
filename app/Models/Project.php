@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,15 +12,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $content_id
  * @property string $url
  * @property-read \App\Models\Content|null $content
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Project newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Project newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Project query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereContentId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Project whereUrl($value)
+ *
  * @mixin \Eloquent
  */
-class Project extends Model
+final class Project extends Model
 {
     public $timestamps = false;
 
@@ -30,6 +34,6 @@ class Project extends Model
     /** @return BelongsTo<Content, $this> */
     public function content(): BelongsTo
     {
-        return $this->belongsTo(Content::class, 'id', 'content_id');
+        return $this->belongsTo(Content::class, 'content_id');
     }
 }

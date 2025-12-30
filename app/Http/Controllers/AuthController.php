@@ -1,33 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SetPasswordRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class AuthController extends Controller
+final class AuthController extends Controller
 {
     public function showLogin(): View
     {
         return view('login');
     }
 
-    public function showSetPassword(Request $request): View|RedirectResponse
+    public function showSetPassword(Request $request): View
     {
         $username = $request->query('username');
-        if (!is_string($username) || strlen($username) < 3) {
-            abort(400);
-        }
+        abort_if(! is_string($username) || strlen($username) < 3, 400);
 
         $user = User::findByUsername($username);
-        if (!$user || $user->password !== null) {
-            abort(403);
-        }
+        abort_if(! $user instanceof \App\Models\User || $user->password !== null, 403);
 
         return view('set-password', [
             'username' => $user->username,
@@ -47,15 +45,15 @@ class AuthController extends Controller
         $remember = (bool) ($validated['remember'] ?? false);
 
         $user = User::findByUsername($username);
-        if (!$user) {
+        if (! $user instanceof \App\Models\User) {
             return $this->fakeHashAndBail();
         }
 
         if ($user->password === null) {
-            return redirect()->route('auth.show-set-password', ['username' => $user->username]);
+            return to_route('auth.show-set-password', ['username' => $user->username]);
         }
 
-        if (!Hash::check($password, $user->password)) {
+        if (! Hash::check($password, $user->password)) {
             return back()->withErrors([
                 'username' => 'The provided credentials do not match our records.',
             ])->onlyInput('username');
@@ -67,20 +65,19 @@ class AuthController extends Controller
         return redirect()->intended('/');
     }
 
-    public function setPassword(Request $request): RedirectResponse
+    public function setPassword(SetPasswordRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'username' => ['required', 'string', 'min:3'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+        $validated = $request->validated();
+
+        abort_unless(is_string($validated['username']) && is_string($validated['password']), 400);
+
+        $user = User::findByUsername($validated['username']);
+
+        abort_unless($user instanceof \App\Models\User, 403);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
         ]);
-
-        $user = User::findByUsername((string) $validated['username']);
-        if (!$user || $user->password !== null) {
-            abort(403);
-        }
-
-        $user->password = (string) $validated['password'];
-        $user->save();
 
         Auth::login($user);
         $request->session()->regenerate();

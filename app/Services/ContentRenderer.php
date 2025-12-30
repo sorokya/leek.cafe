@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Highlight\Highlighter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
+use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\MarkdownConverter;
+use League\CommonMark\Node\Node;
 use League\CommonMark\Output\RenderedContentInterface;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
 use League\CommonMark\Renderer\NodeRendererInterface;
-use League\CommonMark\Node\Node;
-use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
-use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
-use Highlight\Highlighter;
-use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 
-final class ContentRenderer
+final readonly class ContentRenderer
 {
     private MarkdownConverter $markdown;
 
@@ -26,10 +26,10 @@ final class ContentRenderer
             'html_input' => $strip ? 'strip' : 'allow',
             'allow_unsafe_links' => false,
         ]);
-        $environment->addExtension(new CommonMarkCoreExtension());
-        $environment->addExtension(new GithubFlavoredMarkdownExtension());
+        $environment->addExtension(new CommonMarkCoreExtension);
+        $environment->addExtension(new GithubFlavoredMarkdownExtension);
 
-        $highlighter = new Highlighter();
+        $highlighter = new Highlighter;
 
         $renderCodeBlock = static function (string $code, ?string $language) use ($highlighter): \Stringable {
             $code = rtrim($code, "\n");
@@ -40,10 +40,11 @@ final class ContentRenderer
                     : $highlighter->highlightAuto($code);
 
                 $languageClass = $highlighted->language !== ''
-                    ? ' language-' . htmlspecialchars($highlighted->language, ENT_QUOTES, 'UTF-8')
+                    ? ' language-' . htmlspecialchars((string) $highlighted->language, ENT_QUOTES, 'UTF-8')
                     : '';
 
-                return new class($highlighted->value, $languageClass) implements \Stringable {
+                return new class($highlighted->value, $languageClass) implements \Stringable
+                {
                     public function __construct(
                         private readonly string $value,
                         private readonly string $languageClass,
@@ -58,7 +59,8 @@ final class ContentRenderer
                 // Fallback: render as plain code, safely escaped.
                 $escaped = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
 
-                return new class($escaped) implements \Stringable {
+                return new class($escaped) implements \Stringable
+                {
                     public function __construct(private readonly string $escaped) {}
 
                     public function __toString(): string
@@ -69,15 +71,10 @@ final class ContentRenderer
             }
         };
 
-        $environment->addRenderer(FencedCode::class, new class($renderCodeBlock) implements NodeRendererInterface {
-            /** @var \Closure(string, string|null): \Stringable */
-            private \Closure $renderCodeBlock;
-
+        $environment->addRenderer(FencedCode::class, new class($renderCodeBlock) implements NodeRendererInterface
+        {
             /** @param \Closure(string, string|null): \Stringable $renderCodeBlock */
-            public function __construct(\Closure $renderCodeBlock)
-            {
-                $this->renderCodeBlock = $renderCodeBlock;
-            }
+            public function __construct(private readonly \Closure $renderCodeBlock) {}
 
             public function render(Node $node, ChildNodeRendererInterface $childRenderer): \Stringable
             {
@@ -92,15 +89,10 @@ final class ContentRenderer
             }
         });
 
-        $environment->addRenderer(IndentedCode::class, new class($renderCodeBlock) implements NodeRendererInterface {
-            /** @var \Closure(string, string|null): \Stringable */
-            private \Closure $renderCodeBlock;
-
+        $environment->addRenderer(IndentedCode::class, new class($renderCodeBlock) implements NodeRendererInterface
+        {
             /** @param \Closure(string, string|null): \Stringable $renderCodeBlock */
-            public function __construct(\Closure $renderCodeBlock)
-            {
-                $this->renderCodeBlock = $renderCodeBlock;
-            }
+            public function __construct(private readonly \Closure $renderCodeBlock) {}
 
             public function render(Node $node, ChildNodeRendererInterface $childRenderer): \Stringable
             {
@@ -118,6 +110,7 @@ final class ContentRenderer
     public function render(string $markdown): RenderedContentInterface
     {
         $markdown = $this->replaceImages($markdown);
+
         return $this->markdown->convert($markdown);
     }
 
@@ -126,7 +119,7 @@ final class ContentRenderer
         // Img tags are (@img:hash) need to be /img/{hash} URLs
         return preg_replace_callback(
             '/!\[(.*?)\]\(@img:([a-f0-9]+)\)/',
-            function ($matches) {
+            function ($matches): string {
                 [$full, $alt, $hash] = $matches;
 
                 $url = route('image.serve', ['hash' => $hash]);
@@ -134,10 +127,10 @@ final class ContentRenderer
                 return sprintf(
                     '<img src="%s" alt="%s" loading="lazy">',
                     e($url),
-                    e($alt)
+                    e($alt),
                 );
             },
-            $markdown
+            $markdown,
         ) ?? $markdown;
     }
 }

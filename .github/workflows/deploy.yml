@@ -58,7 +58,7 @@ jobs:
               --name ${{ env.CONTAINER_NAME }} \
               --restart unless-stopped \
               --network ${{ secrets.VPS_DOCKER_NETWORK }} \
-              -v /opt/leekcafe/storage:/var/www/html/storage \
+              -v /opt/leekcafe/storage:/app/storage \
               -e APP_ENV=production \
               -e APP_KEY=${{ secrets.APP_KEY }} \
               -e APP_DEBUG=false \

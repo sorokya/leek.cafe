@@ -10,8 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Str;
 
-class MediaTypeController extends Controller
+final class MediaTypeController extends Controller
 {
     public function store(Request $request): JsonResponse|RedirectResponse
     {
@@ -19,8 +20,11 @@ class MediaTypeController extends Controller
             'type' => ['required', 'string', 'max:255', 'unique:media_types,type'],
         ]);
 
+        abort_unless(is_string($validated['type']), 400);
+
         $mediaType = MediaType::query()->create([
-            'type' => (string) $validated['type'],
+            'type' => $validated['type'],
+            'slug' => Str::slug($validated['type']),
         ]);
 
         if ($request->expectsJson()) {
@@ -30,8 +34,7 @@ class MediaTypeController extends Controller
             ], 201);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media type added.');
     }
 
@@ -46,8 +49,9 @@ class MediaTypeController extends Controller
             ],
         ]);
 
-        $mediaType->type = (string) $validated['type_value'];
-        $mediaType->save();
+        $mediaType->update([
+            'type' => $validated['type_value'],
+        ]);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -56,8 +60,7 @@ class MediaTypeController extends Controller
             ]);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media type updated.');
     }
 
@@ -69,8 +72,7 @@ class MediaTypeController extends Controller
             return response()->json([], 204);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media type deleted.');
     }
 }
