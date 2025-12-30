@@ -4,9 +4,11 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
       target: dev
-    working_dir: /var/www/html
     env_file:
       - .env
+    working_dir: /app
+    volumes:
+      - .:/app
     ports:
       - "8000:8000"
     depends_on:

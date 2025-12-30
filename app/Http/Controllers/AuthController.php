@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SetPasswordRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -65,18 +65,19 @@ final class AuthController extends Controller
         return redirect()->intended('/');
     }
 
-    public function setPassword(Request $request): RedirectResponse
+    public function setPassword(SetPasswordRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'username' => ['required', 'string', 'min:3'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+        $validated = $request->validated();
+
+        abort_unless(is_string($validated['username']) && is_string($validated['password']), 400);
+
+        $user = User::findByUsername($validated['username']);
+
+        abort_unless($user instanceof \App\Models\User, 403);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
         ]);
-
-        $user = User::findByUsername((string) $validated['username']);
-        abort_if(! $user instanceof \App\Models\User || $user->password !== null, 403);
-
-        $user->password = (string) $validated['password'];
-        $user->save();
 
         Auth::login($user);
         $request->session()->regenerate();

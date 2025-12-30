@@ -56,10 +56,13 @@ final class MediaStatusController extends Controller
             'color_value' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
         ]);
 
-        $mediaStatus->status = (string) $validated['status_value'];
-        $mediaStatus->icon = isset($validated['icon_value']) ? (string) $validated['icon_value'] : null;
-        $mediaStatus->color = isset($validated['color_value']) ? (string) $validated['color_value'] : null;
-        $mediaStatus->save();
+        abort_unless(is_string($validated['status_value']), 400);
+
+        $mediaStatus->update([
+            'status' => $validated['status_value'],
+            'icon' => is_string($validated['icon_value']) ? $validated['icon_value'] : null,
+            'color' => is_string($validated['color_value']) ? $validated['color_value'] : null,
+        ]);
 
         if ($request->expectsJson()) {
             return response()->json([

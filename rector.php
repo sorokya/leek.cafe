@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Php81\Rector\Array_\ArrayToFirstClassCallableRector;
 use Rector\Set\ValueObject\SetList;
 use RectorLaravel\Set\LaravelSetList;
 use RectorLaravel\Set\LaravelSetProvider;
@@ -19,6 +20,8 @@ return RectorConfig::configure()
         __DIR__ . '/bootstrap',
         __DIR__ . '/storage',
         __DIR__ . '/vendor',
+        __DIR__ . '/_ide_helper.php',
+        __DIR__ . '/.phpstorm.meta.php',
     ])
     ->withPhpSets(php85: true)
     ->withPreparedSets(
@@ -38,4 +41,9 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_IF_HELPERS,
         LaravelSetList::LARAVEL_COLLECTION,
         LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
+    ])
+    ->withSkip([
+        ArrayToFirstClassCallableRector::class => [
+            __DIR__ . '/config/feed.php',
+        ],
     ]);

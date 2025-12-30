@@ -5,12 +5,15 @@ pre-commit:
       run: npx @biomejs/biome check --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
     pint:
       glob: "*.php"
+      exclude: ["_ide_helper.php", ".phpstorm.meta.php"]
       run: vendor/bin/pint --test {staged_files}
 
     phpstan:
       glob: "*.php"
+      exclude: ["_ide_helper.php", ".phpstorm.meta.php"]
       run: vendor/bin/phpstan analyse --memory-limit=2G {staged_files}
 
     rector:
       glob: "*.php"
+      exclude: ["_ide_helper.php", ".phpstorm.meta.php"]
       run: vendor/bin/rector process --dry-run {staged_files}

@@ -31,6 +31,7 @@ final class MediaType extends Model
 
     protected $fillable = [
         'type',
+        'slug',
     ];
 
     protected function casts(): array

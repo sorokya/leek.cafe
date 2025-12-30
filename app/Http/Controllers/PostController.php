@@ -101,8 +101,6 @@ final class PostController extends Controller
             'visibility' => $validated['visibility'],
         ]);
 
-        $content->save();
-
         // TODO: Add checkbox for deleting current cover image
 
         if ($validated['cover'] instanceof UploadedFile) {
@@ -131,15 +129,13 @@ final class PostController extends Controller
 
         abort_unless(is_string($validated['title']), 400);
 
-        $content = new Content([
+        $content = Content::query()->with('post')->create([
             'user_id' => $user->id,
             'visibility' => $validated['visibility'],
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
             'body' => $validated['body'],
         ]);
-        $content->save();
-        $content->post()->create([]);
 
         if ($validated['cover'] instanceof UploadedFile) {
             $img = $this->imageUploader->upload($validated['cover']);

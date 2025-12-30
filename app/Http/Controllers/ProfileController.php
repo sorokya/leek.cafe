@@ -47,18 +47,13 @@ final class ProfileController extends Controller
             ]);
         }
 
-        $user->update([
-            'name' => $validated['name'],
-            'timezone' => $validated['timezone'],
-        ]);
+        $data = $request->only(['name', 'timezone']);
 
         if (is_string($validated['new_password'])) {
-            $user->update([
-                'password' => Hash::make($validated['new_password']),
-            ]);
+            $data['password'] = Hash::make($validated['new_password']);
         }
 
-        $user->save();
+        $user->update($data);
 
         return to_route('profile.show-settings')->with('status', 'Settings updated successfully.');
     }

@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label for="visibility" class="form-label">Visibility</label>
-                <x-visibility-select :selected="old('visibility', $content->visibility)" />
+                <x-visibility-select :selected="old('visibility', (string) $content->visibility->value)" />
             </div>
             <div class="form-group">
                 <label for="body" class="form-label">Body (Markdown)</label>

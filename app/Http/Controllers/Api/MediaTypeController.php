@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Str;
 
 final class MediaTypeController extends Controller
 {
@@ -19,8 +20,11 @@ final class MediaTypeController extends Controller
             'type' => ['required', 'string', 'max:255', 'unique:media_types,type'],
         ]);
 
+        abort_unless(is_string($validated['type']), 400);
+
         $mediaType = MediaType::query()->create([
-            'type' => (string) $validated['type'],
+            'type' => $validated['type'],
+            'slug' => Str::slug($validated['type']),
         ]);
 
         if ($request->expectsJson()) {
@@ -45,8 +49,9 @@ final class MediaTypeController extends Controller
             ],
         ]);
 
-        $mediaType->type = (string) $validated['type_value'];
-        $mediaType->save();
+        $mediaType->update([
+            'type' => $validated['type_value'],
+        ]);
 
         if ($request->expectsJson()) {
             return response()->json([

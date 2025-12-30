@@ -16,6 +16,7 @@ use App\Services\InlineImageSyncer;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -101,17 +102,11 @@ final class ProjectController extends Controller
             'body' => $validated['body'],
             'visibility' => $validated['visibility'],
         ]);
-        $content->save();
 
-        if ($content->project) {
-            $content->project->update([
-                'url' => $validated['url'],
-            ]);
-        } else {
-            $content->project()->create([
-                'url' => $validated['url'],
-            ]);
-        }
+        $content->project()->updateOrCreate(
+            [],
+            ['url' => $validated['url']],
+        );
 
         // TODO: Refactor image handling into a service to avoid duplication with PostController.
         if ($validated['cover'] instanceof UploadedFile) {
@@ -140,25 +135,28 @@ final class ProjectController extends Controller
 
         abort_if(! is_string($validated['title']), 400);
 
-        $content = new Content([
-            'user_id' => $user->id,
-            'title' => $validated['title'],
-            'body' => $validated['body'],
-            'slug' => Str::slug($validated['title']),
-            'visibility' => $validated['visibility'],
-        ]);
+        $content = DB::transaction(function () use ($validated, $user) {
+            $content = Content::create([
+                'user_id' => $user->id,
+                'title' => $validated['title'],
+                'body' => $validated['body'],
+                'slug' => Str::slug($validated['title']),
+                'visibility' => $validated['visibility'],
+            ]);
 
-        $content->save();
-        $content->project()->create([
-            'url' => $validated['url'],
-        ]);
+            $content->project()->create([
+                'url' => $validated['url'],
+            ]);
 
-        if ($validated['cover'] instanceof UploadedFile) {
-            $img = $this->imageUploader->upload($validated['cover']);
-            $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
-        }
+            if ($validated['cover'] instanceof UploadedFile) {
+                $img = $this->imageUploader->upload($validated['cover']);
+                $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
+            }
 
-        $this->inlineImageSyncer->sync($content);
+            $this->inlineImageSyncer->sync($content);
+
+            return $content;
+        });
 
         return to_route('projects.show', ['slug' => $content->slug]);
     }

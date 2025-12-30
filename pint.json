@@ -1,5 +1,6 @@
 {
   "preset": "laravel",
+  "exclude": ["_ide_helper.php", ".phpstorm.meta.php"],
   "rules": {
     "concat_space": {
       "spacing": "one"

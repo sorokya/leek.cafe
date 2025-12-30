@@ -22,12 +22,10 @@ final class ImageUploader
             return $image;
         }
 
-        $image = new Image;
-        $image->hash = $hash;
-        $image->extension = $this->getExtension($file);
-        $image->save();
-
-        return $image;
+        return Image::create([
+            'hash' => $hash,
+            'extension' => $this->getExtension($file),
+        ]);
     }
 
     private function optimize(UploadedFile $file): void
