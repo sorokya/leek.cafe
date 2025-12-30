@@ -18,8 +18,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Str;
 
 abstract class ContentController extends Controller
 {
