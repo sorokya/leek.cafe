@@ -15,6 +15,3 @@ parameters:
 
     # Report unused private elements
     reportUnmatchedIgnoredErrors: false
-    
-    # Check missing typehints
-    checkMissingIterableValueType: true

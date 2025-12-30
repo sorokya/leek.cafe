@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Image;
@@ -13,7 +15,7 @@ final class ImageController extends Controller
             ->where('hash', 'like', $hash . '%')
             ->first();
 
-        abort_unless($image, 404);
+        abort_unless($image instanceof Image, 404);
 
         $firstTwoChars = substr($image->hash, 0, 2);
         $path = storage_path('app/public/uploads/' . $firstTwoChars . '/' . $image->hash . '.' . $image->extension);
@@ -22,6 +24,7 @@ final class ImageController extends Controller
 
         $mimeType = mime_content_type($path) ?: 'application/octet-stream';
         $content = file_get_contents($path);
+
         return new Response($content, 200, [
             'Content-Type' => $mimeType,
         ]);
@@ -33,7 +36,7 @@ final class ImageController extends Controller
             ->where('hash', 'like', $hash . '%')
             ->first();
 
-        abort_unless($image, 404);
+        abort_unless($image instanceof Image, 404);
 
         $firstTwoChars = substr($image->hash, 0, 2);
         $path = storage_path('app/public/uploads/' . $firstTwoChars . '/' . $image->hash . '_thumb.' . $image->extension);
@@ -42,6 +45,7 @@ final class ImageController extends Controller
 
         $mimeType = mime_content_type($path) ?: 'application/octet-stream';
         $content = file_get_contents($path);
+
         return new Response($content, 200, [
             'Content-Type' => $mimeType,
         ]);

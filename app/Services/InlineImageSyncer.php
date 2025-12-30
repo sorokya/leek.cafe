@@ -18,7 +18,7 @@ final class InlineImageSyncer
             $imageIds = Image::query()
                 ->where(function ($q) use ($imageHashes): void {
                     foreach ($imageHashes as $prefix) {
-                        $q->orWhere('hash', 'like', $prefix . '%');
+                        $q->orWhere('hash', 'like', $prefix.'%');
                     }
                 })
                 ->pluck('id')
@@ -41,8 +41,8 @@ final class InlineImageSyncer
                 $content->inlineImages()->attach(
                     array_fill_keys(
                         $toAttach,
-                        ['role' => ImageRole::INLINE->value]
-                    )
+                        ['role' => ImageRole::INLINE->value],
+                    ),
                 );
             }
         });
@@ -53,7 +53,7 @@ final class InlineImageSyncer
      */
     private function extractImageHashes(Content $content): array
     {
-        if (!$content->body) {
+        if (! $content->body) {
             return [];
         }
 

@@ -10,13 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $content_id
  * @property-read \App\Models\Content|null $content
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Post newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Post newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Post query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Post whereContentId($value)
+ *
  * @mixin \Eloquent
  */
-class Post extends Model
+final class Post extends Model
 {
     public $timestamps = false;
 

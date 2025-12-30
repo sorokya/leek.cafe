@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $color
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaStatus newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaStatus query()
@@ -23,9 +24,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaStatus whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MediaStatus whereStatus($value)
+ *
  * @mixin \Eloquent
  */
-class MediaStatus extends Model
+final class MediaStatus extends Model
 {
     protected $table = 'media_statuses';
 

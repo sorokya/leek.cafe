@@ -1,23 +1,24 @@
 <?php
 
-use App\Http\Controllers\ImageController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ThemeController;
-use App\Http\Controllers\WelcomeController;
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\MediaStatusController;
 use App\Http\Controllers\Api\MediaTypeController;
-use App\Http\Controllers\FeedController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SiteMapController;
+use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ThoughtsController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/sitemap.xml', SiteMapController::class)->name('sitemap');
 Route::feeds();
-Route::get('/health', fn() => response()->json(['status' => 'ok']))->name('health');
+Route::get('/health', fn () => response()->json(['status' => 'ok']))->name('health');
 
 Route::controller(App\Http\Controllers\AuthController::class)->group(function (): void {
     Route::get('/login', 'showLogin')->name('auth.show-login');

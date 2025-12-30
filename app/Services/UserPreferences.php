@@ -30,16 +30,16 @@ final class UserPreferences
     {
         $value = $request->cookie(self::COOKIE_NAME);
 
-        if (!is_string($value) || $value === '') {
+        if (! is_string($value) || $value === '') {
             return;
         }
 
         $decoded = json_decode($value, true);
-        if (!is_array($decoded)) {
+        if (! is_array($decoded)) {
             return;
         }
 
-        $theme_str = $decoded['theme'] ?? 'system';
+        $theme_str = is_string($decoded['theme']) ? $decoded['theme'] : 'system';
         $this->theme = Theme::tryFrom($theme_str) ?? Theme::System;
     }
 
@@ -57,7 +57,7 @@ final class UserPreferences
     public function get_cookie(Request $request): HttpFoundationCookie
     {
         $json = json_encode([
-            'theme' => $this->theme->value
+            'theme' => $this->theme->value,
         ]);
 
         throw_unless(is_string($json), \RuntimeException::class, 'Failed to encode user preferences to JSON.');

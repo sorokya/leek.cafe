@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Content $content
  * @property-read \App\Models\MediaStatus $mediaStatus
  * @property-read \App\Models\MediaType $mediaType
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media query()
@@ -26,9 +27,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereMediaTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereRating($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereStartedAt($value)
+ *
  * @mixin \Eloquent
  */
-class Media extends Model
+final class Media extends Model
 {
     public $timestamps = false;
 

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content> $contents
  * @property-read int|null $contents_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Image newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Image newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Image query()
@@ -23,9 +24,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Image whereHash($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Image whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Image whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
-class Image extends Model
+final class Image extends Model
 {
     protected $fillable = [
         'hash',

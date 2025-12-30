@@ -19,13 +19,13 @@ final class AuthController extends Controller
         return view('login');
     }
 
-    public function showSetPassword(Request $request): View|RedirectResponse
+    public function showSetPassword(Request $request): View
     {
         $username = $request->query('username');
-        abort_if(!is_string($username) || strlen($username) < 3, 400);
+        abort_if(! is_string($username) || strlen($username) < 3, 400);
 
         $user = User::findByUsername($username);
-        abort_if(!$user instanceof \App\Models\User || $user->password !== null, 403);
+        abort_if(! $user instanceof \App\Models\User || $user->password !== null, 403);
 
         return view('set-password', [
             'username' => $user->username,
@@ -45,7 +45,7 @@ final class AuthController extends Controller
         $remember = (bool) ($validated['remember'] ?? false);
 
         $user = User::findByUsername($username);
-        if (!$user instanceof \App\Models\User) {
+        if (! $user instanceof \App\Models\User) {
             return $this->fakeHashAndBail();
         }
 
@@ -53,7 +53,7 @@ final class AuthController extends Controller
             return to_route('auth.show-set-password', ['username' => $user->username]);
         }
 
-        if (!Hash::check($password, $user->password)) {
+        if (! Hash::check($password, $user->password)) {
             return back()->withErrors([
                 'username' => 'The provided credentials do not match our records.',
             ])->onlyInput('username');
@@ -73,7 +73,7 @@ final class AuthController extends Controller
         ]);
 
         $user = User::findByUsername((string) $validated['username']);
-        abort_if(!$user instanceof \App\Models\User || $user->password !== null, 403);
+        abort_if(! $user instanceof \App\Models\User || $user->password !== null, 403);
 
         $user->password = (string) $validated['password'];
         $user->save();

@@ -14,7 +14,7 @@ final class WelcomeController extends Controller
 {
     public function index(
         PostFeedQuery $postFeedQuery,
-        ContentExcerptGenerator $excerptGenerator
+        ContentExcerptGenerator $excerptGenerator,
     ): View {
         $query = Auth::check()
             ? $postFeedQuery->all()
@@ -27,7 +27,7 @@ final class WelcomeController extends Controller
         $contents->transform(function (Content $content) use ($excerptGenerator): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $excerptGenerator->generate($content->body) : null
+                $content->body ? $excerptGenerator->generate($content->body) : null,
             );
 
             return $content;

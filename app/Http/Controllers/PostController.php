@@ -8,13 +8,14 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\ImageRole;
 use App\Models\Content;
+use App\Models\User;
 use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
-use App\Services\ImageUploader;
 use App\Services\ContentRenderer;
+use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
-use App\Visibility;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Str;
@@ -40,7 +41,7 @@ final class PostController extends Controller
         $contents->getCollection()->transform(function (Content $content): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $this->excerptGenerator->generate($content->body) : null
+                $content->body ? $this->excerptGenerator->generate($content->body) : null,
             );
 
             return $content;
@@ -57,10 +58,10 @@ final class PostController extends Controller
             ->with('user', 'coverImage')
             ->where('slug', $slug)
             ->whereHas('post')
-            ->when(!Auth::check(), fn($q) => $q->visibleToGuests())
+            ->when(! Auth::check(), fn($q) => $q->visibleToGuests())
             ->first();
 
-        abort_if(!$content || !$content->body, 404);
+        abort_if(! $content || ! $content->body, 404);
 
         return view('post.show', [
             'content' => $content,
@@ -77,7 +78,7 @@ final class PostController extends Controller
             ->with('coverImage')
             ->where('slug', $slug)
             ->first();
-        abort_unless($content, 404);
+        abort_unless($content instanceof Content, 404);
 
         return view('post.edit', [
             'content' => $content,
@@ -90,17 +91,22 @@ final class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        abort_unless($content, 404);
+        abort_unless($content instanceof Content, 404);
 
         $validated = $request->validated();
 
-        $content->title = $validated['title'];
-        $content->body = $validated['body'];
-        $content->visibility = $validated['visibility'];
+        $content->update([
+            'title' => $validated['title'],
+            'body' => $validated['body'],
+            'visibility' => $validated['visibility'],
+        ]);
+
         $content->save();
 
-        $content->coverImage()->detach();
-        if (isset($validated['cover'])) {
+        // TODO: Add checkbox for deleting current cover image
+
+        if ($validated['cover'] instanceof UploadedFile) {
+            $content->coverImage()->detach();
             $img = $this->imageUploader->upload($validated['cover']);
             $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
         }
@@ -119,20 +125,23 @@ final class PostController extends Controller
     public function store(StorePostRequest $request): RedirectResponse
     {
         $user = Auth::user();
-        abort_unless($user, 403);
+        abort_unless($user instanceof User, 403);
 
         $validated = $request->validated();
 
-        $content = new Content();
-        $content->user_id = $user->id;
-        $content->title = $validated['title'];
-        $content->body = $validated['body'];
-        $content->slug = Str::slug($validated['title']);
-        $content->visibility = $validated['visibility'];
+        abort_unless(is_string($validated['title']), 400);
+
+        $content = new Content([
+            'user_id' => $user->id,
+            'visibility' => $validated['visibility'],
+            'title' => $validated['title'],
+            'slug' => Str::slug($validated['title']),
+            'body' => $validated['body'],
+        ]);
         $content->save();
         $content->post()->create([]);
 
-        if (isset($validated['cover'])) {
+        if ($validated['cover'] instanceof UploadedFile) {
             $img = $this->imageUploader->upload($validated['cover']);
             $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
         }
@@ -148,7 +157,7 @@ final class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        abort_unless($content, 404);
+        abort_unless($content instanceof Content, 404);
 
         return view('post.delete-confirm', [
             'content' => $content,
@@ -161,7 +170,7 @@ final class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        abort_unless($content, 404);
+        abort_unless($content instanceof Content, 404);
 
         $content->delete();
 
@@ -170,6 +179,7 @@ final class PostController extends Controller
 
     /**
      * Handle image uploads for posts.
+     *
      * @return array<string, mixed>
      */
     public function uploadImages(Request $request): array

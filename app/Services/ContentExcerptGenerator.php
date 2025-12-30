@@ -24,6 +24,6 @@ final readonly class ContentExcerptGenerator
             $excerpt = substr($excerpt, 0, $lastSpace);
         }
 
-        return $excerpt . '…';
+        return $excerpt.'…';
     }
 }
