@@ -17,6 +17,7 @@ use App\Services\InlineImageSyncer;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -103,7 +104,7 @@ final class PostController extends Controller
 
         // TODO: Add checkbox for deleting current cover image
 
-        if ($validated['cover'] instanceof UploadedFile) {
+        if (array_key_exists('cover', $validated) && $validated['cover'] instanceof UploadedFile) {
             $content->coverImage()->detach();
             $img = $this->imageUploader->upload($validated['cover']);
             $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
@@ -129,20 +130,26 @@ final class PostController extends Controller
 
         abort_unless(is_string($validated['title']), 400);
 
-        $content = Content::query()->with('post')->create([
-            'user_id' => $user->id,
-            'visibility' => $validated['visibility'],
-            'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']),
-            'body' => $validated['body'],
-        ]);
+        $content = DB::transaction(function () use ($validated, $user) {
+            $content = Content::create([
+                'user_id' => $user->id,
+                'visibility' => $validated['visibility'],
+                'title' => $validated['title'],
+                'slug' => Str::slug($validated['title']),
+                'body' => $validated['body'],
+            ]);
 
-        if ($validated['cover'] instanceof UploadedFile) {
-            $img = $this->imageUploader->upload($validated['cover']);
-            $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
-        }
+            $content->post()->create();
 
-        $this->inlineImageSyncer->sync($content);
+            if ($validated['cover'] instanceof UploadedFile) {
+                $img = $this->imageUploader->upload($validated['cover']);
+                $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
+            }
+
+            $this->inlineImageSyncer->sync($content);
+
+            return $content;
+        });
 
         return to_route('posts.show', ['slug' => $content->slug]);
     }

@@ -57,6 +57,7 @@ final class Content extends Model implements Feedable
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'slug',
         'title',
         'body',

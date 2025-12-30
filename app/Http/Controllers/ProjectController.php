@@ -148,7 +148,7 @@ final class ProjectController extends Controller
                 'url' => $validated['url'],
             ]);
 
-            if ($validated['cover'] instanceof UploadedFile) {
+            if (array_key_exists('cover', $validated) && $validated['cover'] instanceof UploadedFile) {
                 $img = $this->imageUploader->upload($validated['cover']);
                 $content->images()->attach($img->id, ['role' => ImageRole::COVER->value]);
             }
