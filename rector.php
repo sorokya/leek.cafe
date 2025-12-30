@@ -3,14 +3,10 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Set\ValueObject\LevelSetList;
+use RectorLaravel\Set\LaravelSetProvider;
 use Rector\Set\ValueObject\SetList;
-use Rector\Laravel\Set\LaravelSetList;
-use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
-use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodRector;
-use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPromotedPropertyRector;
-use Rector\DeadCode\Rector\Property\RemoveUnusedPrivatePropertyRector;
+use RectorLaravel\Set\LaravelSetList;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -25,7 +21,7 @@ return RectorConfig::configure()
         __DIR__ . '/storage',
         __DIR__ . '/vendor',
     ])
-    ->withPhpSets(php82: true)
+    ->withPhpSets(php85: true)
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
@@ -35,12 +31,13 @@ return RectorConfig::configure()
         naming: true,
         instanceOf: true,
         earlyReturn: true,
-        strictBooleans: true
     )
+    ->withSetProviders(LaravelSetProvider::class)
+    ->withComposerBased(laravel: true)
     ->withSets([
-        LaravelSetList::LARAVEL_110,
         SetList::TYPE_DECLARATION,
-    ])
-    ->withRules([
-        InlineConstructorDefaultToPropertyRector::class,
+        LaravelSetList::LARAVEL_CODE_QUALITY,
+        LaravelSetList::LARAVEL_IF_HELPERS,
+        LaravelSetList::LARAVEL_COLLECTION,
+        LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
     ]);
