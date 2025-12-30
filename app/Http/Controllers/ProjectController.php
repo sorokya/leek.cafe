@@ -108,7 +108,6 @@ final class ProjectController extends Controller
             ['url' => $validated['url']],
         );
 
-        // TODO: Refactor image handling into a service to avoid duplication with PostController.
         if ($validated['cover'] instanceof UploadedFile) {
             $content->coverImage()->detach();
             $img = $this->imageUploader->upload($validated['cover']);

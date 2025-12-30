@@ -102,8 +102,6 @@ final class PostController extends Controller
             'visibility' => $validated['visibility'],
         ]);
 
-        // TODO: Add checkbox for deleting current cover image
-
         if (array_key_exists('cover', $validated) && $validated['cover'] instanceof UploadedFile) {
             $content->coverImage()->detach();
             $img = $this->imageUploader->upload($validated['cover']);
