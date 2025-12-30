@@ -152,7 +152,7 @@ abstract class ContentController extends Controller
         $this->inlineImageSyncer->sync($content);
 
         return to_route($this->getRouteName('edit'), ['slug' => $content->slug])
-            ->with('status', ucfirst($this->getContentType()) . ' updated successfully.');
+            ->with('status', sprintf('%s updated successfully.', ucfirst($this->getContentType())));
     }
 
     public function create(): View
