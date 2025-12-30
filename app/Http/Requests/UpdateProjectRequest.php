@@ -5,18 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Rules\UniqueProjectUrl;
-use Illuminate\Foundation\Http\FormRequest;
 
-final class UpdateProjectRequest extends FormRequest
+final class UpdateProjectRequest extends ContentRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,8 +15,7 @@ final class UpdateProjectRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'title' => ['required', 'string', 'max:255'],
+        return array_merge(parent::rules(), [
             'url' => [
                 'required',
                 'string',
@@ -33,9 +23,6 @@ final class UpdateProjectRequest extends FormRequest
                 'url',
                 new UniqueProjectUrl($this->route('slug')),
             ],
-            'body' => ['required', 'string'],
-            'visibility' => ['required', 'integer'],
-            'cover' => ['nullable', 'image'],
-        ];
+        ]);
     }
 }
