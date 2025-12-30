@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             ->count(5)
             ->for($user)
             ->create()
-            ->each(function (Content $content) {
+            ->each(function (Content $content): void {
                 $content->post()->create();
             });
     }

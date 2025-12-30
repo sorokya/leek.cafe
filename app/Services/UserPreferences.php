@@ -53,9 +53,6 @@ final class UserPreferences
 
     /**
      * Returns the cookie representing the user preferences.
-     *
-     * @param Request $request
-     * @return HttpFoundationCookie
      */
     public function get_cookie(Request $request): HttpFoundationCookie
     {
@@ -63,9 +60,7 @@ final class UserPreferences
             'theme' => $this->theme->value
         ]);
 
-        if (!is_string($json)) {
-            throw new \RuntimeException('Failed to encode user preferences to JSON.');
-        }
+        throw_unless(is_string($json), \RuntimeException::class, 'Failed to encode user preferences to JSON.');
 
         return Cookie::make(
             name: self::COOKIE_NAME,

@@ -14,6 +14,7 @@ final class ThemeController extends Controller
     {
         $preferences->parse_from_request($request);
         $preferences->toggleTheme();
+
         $previousUrl = url()->previous('/');
 
         return redirect()->to($previousUrl)

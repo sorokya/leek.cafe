@@ -17,11 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/sitemap.xml', SiteMapController::class)->name('sitemap');
 Route::feeds();
-Route::get('/health', function () {
-    return response()->json(['status' => 'ok']);
-})->name('health');
+Route::get('/health', fn() => response()->json(['status' => 'ok']))->name('health');
 
-Route::controller(App\Http\Controllers\AuthController::class)->group(function () {
+Route::controller(App\Http\Controllers\AuthController::class)->group(function (): void {
     Route::get('/login', 'showLogin')->name('auth.show-login');
     Route::post('/login', 'login')->name('auth.store-login');
     Route::post('/logout', 'logout')->name('auth.logout');
@@ -29,12 +27,12 @@ Route::controller(App\Http\Controllers\AuthController::class)->group(function ()
     Route::post('/set-password', 'setPassword')->name('auth.store-set-password');
 });
 
-Route::controller(ProfileController::class)->middleware('auth')->group(function () {
+Route::controller(ProfileController::class)->middleware('auth')->group(function (): void {
     Route::get('/settings', 'showSettings')->name('profile.show-settings');
     Route::post('/settings', 'updateSettings')->name('profile.update-settings');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::post('/settings/media-statuses', [MediaStatusController::class, 'store'])->name('media-statuses.store');
     Route::put('/settings/media-statuses/{mediaStatus}', [MediaStatusController::class, 'update'])->name('media-statuses.update');
     Route::delete('/settings/media-statuses/{mediaStatus}', [MediaStatusController::class, 'destroy'])->name('media-statuses.destroy');
@@ -44,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/settings/media-types/{mediaType}', [MediaTypeController::class, 'destroy'])->name('media-types.destroy');
 });
 
-Route::controller(PostController::class)->group(function () {
+Route::controller(PostController::class)->group(function (): void {
     Route::get('/posts', 'index')->name('posts.index');
     Route::get('/posts/new', 'create')->middleware('auth')->name('posts.create');
     Route::post('/posts', 'store')->middleware('auth')->name('posts.store');
@@ -56,7 +54,7 @@ Route::controller(PostController::class)->group(function () {
     Route::post('/posts/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('posts.upload-images');
 });
 
-Route::controller(ProjectController::class)->group(function () {
+Route::controller(ProjectController::class)->group(function (): void {
     Route::get('/projects', 'index')->name('projects.index');
     Route::get('/projects/new', 'create')->middleware('auth')->name('projects.create');
     Route::post('/projects', 'store')->middleware('auth')->name('projects.store');
@@ -68,17 +66,17 @@ Route::controller(ProjectController::class)->group(function () {
     Route::post('/projects/{slug}/upload-images', 'uploadImages')->middleware('auth')->name('projects.upload-images');
 });
 
-Route::controller(ThoughtsController::class)->group(function () {
+Route::controller(ThoughtsController::class)->group(function (): void {
     Route::get('/thoughts', 'index')->name('thoughts.index');
 });
 
-Route::controller(MediaController::class)->group(function () {
+Route::controller(MediaController::class)->group(function (): void {
     Route::get('/media', 'index')->name('media.index');
 });
 
 Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');
 
-Route::controller(ImageController::class)->group(function () {
+Route::controller(ImageController::class)->group(function (): void {
     Route::get('/img/{hash}/thumbnail', 'serveThumbnail')
         ->middleware('cache.headers:public;max_age=31536000;etag')
         ->name('image.serve-thumbnail')->where('hash', '.*');

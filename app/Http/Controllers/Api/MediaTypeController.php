@@ -30,8 +30,7 @@ final class MediaTypeController extends Controller
             ], 201);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media type added.');
     }
 
@@ -56,8 +55,7 @@ final class MediaTypeController extends Controller
             ]);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media type updated.');
     }
 
@@ -69,8 +67,7 @@ final class MediaTypeController extends Controller
             return response()->json([], 204);
         }
 
-        return redirect()
-            ->route('profile.show-settings')
+        return to_route('profile.show-settings')
             ->with('status', 'Media type deleted.');
     }
 }

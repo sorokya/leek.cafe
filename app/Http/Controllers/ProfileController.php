@@ -17,12 +17,10 @@ final class ProfileController extends Controller
     public function showSettings(): View|RedirectResponse
     {
         $user = Auth::user();
-        if (!$user) {
-            abort(403);
-        }
+        abort_unless($user, 403);
 
         if (!$user->password) {
-            return redirect()->route('auth.show-set-password', [
+            return to_route('auth.show-set-password', [
                 'username' => $user->username,
             ]);
         }
@@ -38,9 +36,7 @@ final class ProfileController extends Controller
     public function updateSettings(UpdateProfileRequest $request): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user || !$user->password) {
-            abort(403);
-        }
+        abort_if(!$user || !$user->password, 403);
 
         $validated = $request->validated();
 
@@ -59,6 +55,6 @@ final class ProfileController extends Controller
 
         $user->save();
 
-        return redirect()->route('profile.show-settings')->with('status', 'Settings updated successfully.');
+        return to_route('profile.show-settings')->with('status', 'Settings updated successfully.');
     }
 }

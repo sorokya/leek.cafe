@@ -60,9 +60,8 @@ final class ImageUploader
     private function getHash(UploadedFile $file): string
     {
         $hash = hash_file('sha256', $file->getPathname());
-        if (!$hash) {
-            throw new \RuntimeException('Failed to compute file hash.');
-        }
+        throw_unless($hash, \RuntimeException::class, 'Failed to compute file hash.');
+
         return $hash;
     }
 

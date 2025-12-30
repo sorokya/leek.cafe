@@ -23,11 +23,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 final class PostController extends Controller
 {
     public function __construct(
-        private PostFeedQuery $postFeedQuery,
-        private ContentRenderer $renderer,
-        private ContentExcerptGenerator $excerptGenerator,
-        private InlineImageSyncer $inlineImageSyncer,
-        private ImageUploader $imageUploader,
+        private readonly PostFeedQuery $postFeedQuery,
+        private readonly ContentRenderer $renderer,
+        private readonly ContentExcerptGenerator $excerptGenerator,
+        private readonly InlineImageSyncer $inlineImageSyncer,
+        private readonly ImageUploader $imageUploader,
     ) {}
 
     public function index(): View
@@ -60,9 +60,7 @@ final class PostController extends Controller
             ->when(!Auth::check(), fn($q) => $q->visibleToGuests())
             ->first();
 
-        if (!$content || !$content->body) {
-            abort(404);
-        }
+        abort_if(!$content || !$content->body, 404);
 
         return view('post.show', [
             'content' => $content,
@@ -79,9 +77,7 @@ final class PostController extends Controller
             ->with('coverImage')
             ->where('slug', $slug)
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         return view('post.edit', [
             'content' => $content,
@@ -94,9 +90,7 @@ final class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         $validated = $request->validated();
 
@@ -113,7 +107,7 @@ final class PostController extends Controller
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('posts.edit', ['slug' => $content->slug])
+        return to_route('posts.edit', ['slug' => $content->slug])
             ->with('status', 'Post updated successfully.');
     }
 
@@ -125,9 +119,7 @@ final class PostController extends Controller
     public function store(StorePostRequest $request): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user) {
-            abort(403);
-        }
+        abort_unless($user, 403);
 
         $validated = $request->validated();
 
@@ -147,7 +139,7 @@ final class PostController extends Controller
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('posts.show', ['slug' => $content->slug]);
+        return to_route('posts.show', ['slug' => $content->slug]);
     }
 
     public function deleteConfirm(string $slug): View
@@ -156,9 +148,7 @@ final class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         return view('post.delete-confirm', [
             'content' => $content,
@@ -171,13 +161,11 @@ final class PostController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         $content->delete();
 
-        return redirect()->route('posts.index');
+        return to_route('posts.index');
     }
 
     /**

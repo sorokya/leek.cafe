@@ -7,10 +7,10 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-final class UniqueProjectUrl implements ValidationRule
+final readonly class UniqueProjectUrl implements ValidationRule
 {
     public function __construct(
-        private readonly ?string $slug = null,
+        private ?string $slug = null,
     ) {}
 
     /**

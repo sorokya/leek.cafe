@@ -126,18 +126,18 @@ class Content extends Model implements Feedable
             ->orderBy('created_at', 'desc')
             ->take(20)
             ->get()
-            ->map(fn(Content $content) => $content->toFeedItem());
+            ->map(fn(Content $content): \Spatie\Feed\FeedItem => $content->toFeedItem());
     }
 
     public function toFeedItem(): FeedItem
     {
-        $summary = app(ContentExcerptGenerator::class)->generate($this->body ?? '');
+        $summary = resolve(ContentExcerptGenerator::class)->generate($this->body ?? '');
         return FeedItem::create([
             'id' => $this->id,
             'title' => $this->title,
             'summary' => $summary,
             'updated' => $this->updated_at,
-            'link' => url("/posts/{$this->slug}"),
+            'link' => url('/posts/' . $this->slug),
             'authorName' => $this->user->name,
         ]);
     }
@@ -148,7 +148,8 @@ class Content extends Model implements Feedable
      * @param \Illuminate\Database\Eloquent\Builder<Content> $query
      * @return \Illuminate\Database\Eloquent\Builder<Content>
      */
-    public function scopePublic(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function public(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('visibility', Visibility::PUBLIC->value);
     }
@@ -159,7 +160,8 @@ class Content extends Model implements Feedable
      * @param \Illuminate\Database\Eloquent\Builder<Content> $query
      * @return \Illuminate\Database\Eloquent\Builder<Content>
      */
-    public function scopeVisibleToGuests(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function visibleToGuests(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('visibility', '!=', Visibility::PRIVATE->value);
     }

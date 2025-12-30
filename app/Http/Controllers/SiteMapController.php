@@ -25,7 +25,7 @@ final class SiteMapController extends Controller
             Content::query()
                 ->whereHas('post')
                 ->public()
-                ->chunk(100, function ($contents) use ($sitemap) {
+                ->chunk(100, function ($contents) use ($sitemap): void {
                     foreach ($contents as $content) {
                         $lastMod = $content->updated_at ?? $content->created_at;
                         if ($lastMod === null) {
@@ -33,7 +33,7 @@ final class SiteMapController extends Controller
                         }
 
                         $sitemap->add(
-                            Url::create("/posts/{$content->slug}")
+                            Url::create('/posts/' . $content->slug)
                                 ->setLastModificationDate($lastMod)
                         );
                     }
@@ -42,7 +42,7 @@ final class SiteMapController extends Controller
             Content::query()
                 ->whereHas('project')
                 ->public()
-                ->chunk(100, function ($contents) use ($sitemap) {
+                ->chunk(100, function ($contents) use ($sitemap): void {
                     foreach ($contents as $content) {
                         $lastMod = $content->updated_at ?? $content->created_at;
                         if ($lastMod === null) {
@@ -50,7 +50,7 @@ final class SiteMapController extends Controller
                         }
 
                         $sitemap->add(
-                            Url::create("/projects/{$content->slug}")
+                            Url::create('/projects/' . $content->slug)
                                 ->setLastModificationDate($lastMod)
                         );
                     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 use RectorLaravel\Set\LaravelSetProvider;
 use Rector\Set\ValueObject\SetList;
-use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
 use RectorLaravel\Set\LaravelSetList;
 
 return RectorConfig::configure()
@@ -28,7 +27,6 @@ return RectorConfig::configure()
         codingStyle: true,
         typeDeclarations: true,
         privatization: true,
-        naming: true,
         instanceOf: true,
         earlyReturn: true,
     )

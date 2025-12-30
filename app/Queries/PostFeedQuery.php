@@ -24,7 +24,6 @@ final class PostFeedQuery
     {
         return Content::query()
             ->with('user', 'post', 'coverImage')
-            ->whereHas('post')
-            ->orderBy('created_at', 'desc');
+            ->whereHas('post')->latest();
     }
 }

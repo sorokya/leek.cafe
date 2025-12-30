@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-final class ContentExcerptGenerator
+final readonly class ContentExcerptGenerator
 {
     public function __construct(
         private ContentRenderer $renderer,

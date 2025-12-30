@@ -14,9 +14,9 @@ final class InlineImageSyncer
     public function sync(Content $content): void
     {
         $imageHashes = $this->extractImageHashes($content);
-        DB::transaction(function () use ($content, $imageHashes) {
+        DB::transaction(function () use ($content, $imageHashes): void {
             $imageIds = Image::query()
-                ->where(function ($q) use ($imageHashes) {
+                ->where(function ($q) use ($imageHashes): void {
                     foreach ($imageHashes as $prefix) {
                         $q->orWhere('hash', 'like', $prefix . '%');
                     }
@@ -57,7 +57,7 @@ final class InlineImageSyncer
             return [];
         }
 
-        preg_match_all('/@img:([a-f0-9]+)/i', $content->body, $matches);
+        preg_match_all('/@img:([a-f0-9]+)/i', (string) $content->body, $matches);
 
         return array_unique($matches[1]);
     }

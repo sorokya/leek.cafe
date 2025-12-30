@@ -22,10 +22,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 final class ProjectController extends Controller
 {
     public function __construct(
-        private ContentRenderer $renderer,
-        private ContentExcerptGenerator $excerptGenerator,
-        private InlineImageSyncer $inlineImageSyncer,
-        private ImageUploader $imageUploader,
+        private readonly ContentRenderer $renderer,
+        private readonly ContentExcerptGenerator $excerptGenerator,
+        private readonly InlineImageSyncer $inlineImageSyncer,
+        private readonly ImageUploader $imageUploader,
     ) {}
 
     public function index(): View
@@ -59,9 +59,7 @@ final class ProjectController extends Controller
             ->when(!Auth::check(), fn($q) => $q->visibleToGuests())
             ->first();
 
-        if (!$content || !$content->body) {
-            abort(404);
-        }
+        abort_if(!$content || !$content->body, 404);
 
         return view('project.show', [
             'content' => $content,
@@ -79,9 +77,7 @@ final class ProjectController extends Controller
             ->with('project')
             ->where('slug', $slug)
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         return view('project.edit', [
             'content' => $content,
@@ -95,9 +91,7 @@ final class ProjectController extends Controller
             ->with('user')
             ->with('project')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         $validated = $request->validated();
 
@@ -124,7 +118,7 @@ final class ProjectController extends Controller
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('projects.edit', ['slug' => $content->slug])
+        return to_route('projects.edit', ['slug' => $content->slug])
             ->with('status', 'Project updated successfully.');
     }
 
@@ -136,9 +130,7 @@ final class ProjectController extends Controller
     public function store(StoreProjectRequest $request): RedirectResponse
     {
         $user = Auth::user();
-        if (!$user) {
-            abort(403);
-        }
+        abort_unless($user, 403);
 
         $validated = $request->validated();
 
@@ -160,7 +152,7 @@ final class ProjectController extends Controller
 
         $this->inlineImageSyncer->sync($content);
 
-        return redirect()->route('projects.show', ['slug' => $content->slug]);
+        return to_route('projects.show', ['slug' => $content->slug]);
     }
 
     public function deleteConfirm(string $slug): View
@@ -169,9 +161,7 @@ final class ProjectController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         return view('project.delete-confirm', [
             'content' => $content,
@@ -184,13 +174,11 @@ final class ProjectController extends Controller
             ->where('slug', $slug)
             ->with('user')
             ->first();
-        if (!$content) {
-            abort(404);
-        }
+        abort_unless($content, 404);
 
         $content->delete();
 
-        return redirect()->route('projects.index');
+        return to_route('projects.index');
     }
 
     /**

@@ -22,14 +22,10 @@ final class AuthController extends Controller
     public function showSetPassword(Request $request): View|RedirectResponse
     {
         $username = $request->query('username');
-        if (!is_string($username) || strlen($username) < 3) {
-            abort(400);
-        }
+        abort_if(!is_string($username) || strlen($username) < 3, 400);
 
         $user = User::findByUsername($username);
-        if (!$user || $user->password !== null) {
-            abort(403);
-        }
+        abort_if(!$user instanceof \App\Models\User || $user->password !== null, 403);
 
         return view('set-password', [
             'username' => $user->username,
@@ -49,12 +45,12 @@ final class AuthController extends Controller
         $remember = (bool) ($validated['remember'] ?? false);
 
         $user = User::findByUsername($username);
-        if (!$user) {
+        if (!$user instanceof \App\Models\User) {
             return $this->fakeHashAndBail();
         }
 
         if ($user->password === null) {
-            return redirect()->route('auth.show-set-password', ['username' => $user->username]);
+            return to_route('auth.show-set-password', ['username' => $user->username]);
         }
 
         if (!Hash::check($password, $user->password)) {
@@ -77,9 +73,7 @@ final class AuthController extends Controller
         ]);
 
         $user = User::findByUsername((string) $validated['username']);
-        if (!$user || $user->password !== null) {
-            abort(403);
-        }
+        abort_if(!$user instanceof \App\Models\User || $user->password !== null, 403);
 
         $user->password = (string) $validated['password'];
         $user->save();

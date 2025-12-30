@@ -16,7 +16,7 @@ use League\CommonMark\Extension\CommonMark\Node\Block\IndentedCode;
 use Highlight\Highlighter;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 
-final class ContentRenderer
+final readonly class ContentRenderer
 {
     private MarkdownConverter $markdown;
 
@@ -40,7 +40,7 @@ final class ContentRenderer
                     : $highlighter->highlightAuto($code);
 
                 $languageClass = $highlighted->language !== ''
-                    ? ' language-' . htmlspecialchars($highlighted->language, ENT_QUOTES, 'UTF-8')
+                    ? ' language-' . htmlspecialchars((string) $highlighted->language, ENT_QUOTES, 'UTF-8')
                     : '';
 
                 return new class($highlighted->value, $languageClass) implements \Stringable {
@@ -70,13 +70,9 @@ final class ContentRenderer
         };
 
         $environment->addRenderer(FencedCode::class, new class($renderCodeBlock) implements NodeRendererInterface {
-            /** @var \Closure(string, string|null): \Stringable */
-            private \Closure $renderCodeBlock;
-
             /** @param \Closure(string, string|null): \Stringable $renderCodeBlock */
-            public function __construct(\Closure $renderCodeBlock)
+            public function __construct(private readonly \Closure $renderCodeBlock)
             {
-                $this->renderCodeBlock = $renderCodeBlock;
             }
 
             public function render(Node $node, ChildNodeRendererInterface $childRenderer): \Stringable
@@ -93,13 +89,9 @@ final class ContentRenderer
         });
 
         $environment->addRenderer(IndentedCode::class, new class($renderCodeBlock) implements NodeRendererInterface {
-            /** @var \Closure(string, string|null): \Stringable */
-            private \Closure $renderCodeBlock;
-
             /** @param \Closure(string, string|null): \Stringable $renderCodeBlock */
-            public function __construct(\Closure $renderCodeBlock)
+            public function __construct(private readonly \Closure $renderCodeBlock)
             {
-                $this->renderCodeBlock = $renderCodeBlock;
             }
 
             public function render(Node $node, ChildNodeRendererInterface $childRenderer): \Stringable
@@ -126,7 +118,7 @@ final class ContentRenderer
         // Img tags are (@img:hash) need to be /img/{hash} URLs
         return preg_replace_callback(
             '/!\[(.*?)\]\(@img:([a-f0-9]+)\)/',
-            function ($matches) {
+            function ($matches): string {
                 [$full, $alt, $hash] = $matches;
 
                 $url = route('image.serve', ['hash' => $hash]);
