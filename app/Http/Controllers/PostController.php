@@ -58,7 +58,7 @@ final class PostController extends Controller
             ->with('user', 'coverImage')
             ->where('slug', $slug)
             ->whereHas('post')
-            ->when(! Auth::check(), fn($q) => $q->visibleToGuests())
+            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
         abort_if(! $content || ! $content->body, 404);

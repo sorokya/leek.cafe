@@ -18,7 +18,7 @@ final class InlineImageSyncer
             $imageIds = Image::query()
                 ->where(function ($q) use ($imageHashes): void {
                     foreach ($imageHashes as $prefix) {
-                        $q->orWhere('hash', 'like', $prefix.'%');
+                        $q->orWhere('hash', 'like', $prefix . '%');
                     }
                 })
                 ->pluck('id')

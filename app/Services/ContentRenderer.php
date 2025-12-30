@@ -40,7 +40,7 @@ final readonly class ContentRenderer
                     : $highlighter->highlightAuto($code);
 
                 $languageClass = $highlighted->language !== ''
-                    ? ' language-'.htmlspecialchars((string) $highlighted->language, ENT_QUOTES, 'UTF-8')
+                    ? ' language-' . htmlspecialchars((string) $highlighted->language, ENT_QUOTES, 'UTF-8')
                     : '';
 
                 return new class($highlighted->value, $languageClass) implements \Stringable
@@ -52,7 +52,7 @@ final readonly class ContentRenderer
 
                     public function __toString(): string
                     {
-                        return '<pre><code class="hljs'.$this->languageClass.'">'.$this->value.'</code></pre>';
+                        return '<pre><code class="hljs' . $this->languageClass . '">' . $this->value . '</code></pre>';
                     }
                 };
             } catch (\Throwable) {
@@ -65,7 +65,7 @@ final readonly class ContentRenderer
 
                     public function __toString(): string
                     {
-                        return '<pre><code>'.$this->escaped.'</code></pre>';
+                        return '<pre><code>' . $this->escaped . '</code></pre>';
                     }
                 };
             }

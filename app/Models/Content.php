@@ -137,7 +137,7 @@ final class Content extends Model implements Feedable
             'title' => $this->title,
             'summary' => $summary,
             'updated' => $this->updated_at,
-            'link' => url('/posts/'.$this->slug),
+            'link' => url('/posts/' . $this->slug),
             'authorName' => $this->user->name,
         ]);
     }

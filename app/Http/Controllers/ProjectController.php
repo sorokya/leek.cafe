@@ -34,7 +34,7 @@ final class ProjectController extends Controller
         $query = Content::query()
             ->with('user', 'project', 'coverImage')
             ->whereHas('project')
-            ->when(! Auth::check(), fn($q) => $q->visibleToGuests());
+            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests());
 
         $contents = $query->paginate(10);
         $contents->getCollection()->transform(function (Content $content): Content {
@@ -57,7 +57,7 @@ final class ProjectController extends Controller
             ->with('user', 'coverImage', 'project')
             ->where('slug', $slug)
             ->whereHas('project')
-            ->when(! Auth::check(), fn($q) => $q->visibleToGuests())
+            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
         abort_if(! $content || ! $content->body, 404);
@@ -138,7 +138,7 @@ final class ProjectController extends Controller
 
         $validated = $request->validated();
 
-        abort_if(!is_string($validated['title']), 400);
+        abort_if(! is_string($validated['title']), 400);
 
         $content = new Content([
             'user_id' => $user->id,

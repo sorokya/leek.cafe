@@ -41,17 +41,17 @@ final class ImageUploader
         $hash = $this->getHash($file);
         $extension = $this->getExtension($file);
         $firstTwoChars = substr($hash, 0, 2);
-        $path = storage_path('app/public/uploads/'.$firstTwoChars.'/');
+        $path = storage_path('app/public/uploads/' . $firstTwoChars . '/');
 
-        if (file_exists($path.$hash.'.'.$extension)) {
+        if (file_exists($path . $hash . '.' . $extension)) {
             return $hash;
         }
 
-        $file->move($path, $hash.'.'.$extension);
+        $file->move($path, $hash . '.' . $extension);
 
-        SpatieImage::load($path.$hash.'.'.$extension)
+        SpatieImage::load($path . $hash . '.' . $extension)
             ->fit(Fit::Contain, 300, 200)
-            ->save($path.$hash.'_thumb.'.$extension);
+            ->save($path . $hash . '_thumb.' . $extension);
 
         return $hash;
     }
@@ -70,7 +70,7 @@ final class ImageUploader
             'image/jpeg' => 'jpg',
             'image/png' => 'png',
             'image/gif' => 'gif',
-            default => throw new \InvalidArgumentException('Unsupported image type: '.$file->getClientMimeType()),
+            default => throw new \InvalidArgumentException('Unsupported image type: ' . $file->getClientMimeType()),
         };
     }
 }
