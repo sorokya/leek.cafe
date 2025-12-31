@@ -5,24 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Content;
-use App\Services\ContentExcerptGenerator;
-use App\Services\ContentRenderer;
-use App\Services\ImageUploader;
-use App\Services\InlineImageSyncer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 final class ProjectController extends ContentController
 {
-    public function __construct(
-        ContentRenderer $renderer,
-        ContentExcerptGenerator $excerptGenerator,
-        InlineImageSyncer $inlineImageSyncer,
-        ImageUploader $imageUploader,
-    ) {
-        parent::__construct($renderer, $excerptGenerator, $inlineImageSyncer, $imageUploader);
-    }
-
     /**
      * Get the base query for listing content.
      *
@@ -30,12 +17,10 @@ final class ProjectController extends ContentController
      */
     protected function getListingQuery(): Builder
     {
-        $query = Content::query()
+        return Content::query()
             ->with('user', 'project', 'coverImage')
             ->whereHas('project')
             ->when(! Auth::check(), fn ($q) => $q->visibleToGuests());
-
-        return $query;
     }
 
     /**
@@ -55,7 +40,7 @@ final class ProjectController extends ContentController
      */
     protected function getViewName(string $action): string
     {
-        return "project.{$action}";
+        return 'project.' . $action;
     }
 
     /**
@@ -63,7 +48,7 @@ final class ProjectController extends ContentController
      */
     protected function getRouteName(string $action): string
     {
-        return "projects.{$action}";
+        return 'projects.' . $action;
     }
 
     /**

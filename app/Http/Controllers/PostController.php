@@ -54,7 +54,7 @@ final class PostController extends ContentController
      */
     protected function getViewName(string $action): string
     {
-        return "post.{$action}";
+        return 'post.' . $action;
     }
 
     /**
@@ -62,7 +62,7 @@ final class PostController extends ContentController
      */
     protected function getRouteName(string $action): string
     {
-        return "posts.{$action}";
+        return 'posts.' . $action;
     }
 
     /**

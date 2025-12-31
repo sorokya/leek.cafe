@@ -18,8 +18,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Str;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 abstract class ContentController extends Controller
 {
@@ -80,7 +80,10 @@ abstract class ContentController extends Controller
             return $content;
         });
 
-        return view($this->getViewName('index'), [
+        $viewName = $this->getViewName('index');
+        abort_unless(view()->exists($viewName), 500);
+
+        return view($viewName, [
             'contents' => $contents,
         ]);
     }
@@ -89,12 +92,15 @@ abstract class ContentController extends Controller
     {
         $content = $this->getShowQuery()
             ->where('slug', $slug)
-            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests())
+            ->unless(Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
         abort_if(! $content || ! $content->body, 404);
 
-        return view($this->getViewName('show'), [
+        $viewName = $this->getViewName('show');
+        abort_unless(view()->exists($viewName), 500);
+
+        return view($viewName, [
             'content' => $content,
             'published_at' => $content->created_at,
             'description' => $this->excerptGenerator->generate($content->body),
@@ -120,7 +126,10 @@ abstract class ContentController extends Controller
             ->first();
         abort_unless($content instanceof Content, 404);
 
-        return view($this->getViewName('edit'), [
+        $viewName = $this->getViewName('edit');
+        abort_unless(view()->exists($viewName), 500);
+
+        return view($viewName, [
             'content' => $content,
         ]);
     }
@@ -157,7 +166,10 @@ abstract class ContentController extends Controller
 
     public function create(): View
     {
-        return view($this->getViewName('create'));
+        $viewName = $this->getViewName('create');
+        abort_unless(view()->exists($viewName), 500);
+
+        return view($viewName);
     }
 
     public function store(ContentRequest $request): RedirectResponse
@@ -201,7 +213,10 @@ abstract class ContentController extends Controller
             ->first();
         abort_unless($content instanceof Content, 404);
 
-        return view($this->getViewName('delete-confirm'), [
+        $viewName = $this->getViewName('delete-confirm');
+        abort_unless(view()->exists($viewName), 500);
+
+        return view($viewName, [
             'content' => $content,
         ]);
     }
