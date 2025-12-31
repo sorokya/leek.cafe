@@ -91,3 +91,8 @@ Follow modern PHP and Laravel best practices at all times.
 - Favor expressive, self-documenting code.
 - Avoid unnecessary comments; write clear code instead.
 - When comments are used, explain *why*, not *what*.
+
+## Linting
+
+- Run `composer check` to ensure code quality before commits.
+- You can fix pint and rector issues automatically with `composer fix`.

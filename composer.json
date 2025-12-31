@@ -58,11 +58,11 @@
     "test": ["@php artisan config:clear --ansi", "@php artisan test"],
     "pint": ["./vendor/bin/pint"],
     "pint:check": ["./vendor/bin/pint --test"],
-    "phpstan": ["./vendor/bin/phpstan analyse"],
+    "phpstan": ["./vendor/bin/phpstan analyse --memory-limit=2G"],
     "rector": ["./vendor/bin/rector process"],
     "rector:check": ["./vendor/bin/rector process --dry-run"],
     "check": ["@pint:check", "@phpstan", "@rector:check"],
-    "fix": ["@pint", "@rector"],
+    "fix": ["@rector", "@pint"],
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
       "@php artisan package:discover --ansi"
