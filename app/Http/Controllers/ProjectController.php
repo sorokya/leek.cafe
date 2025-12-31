@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Content;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 final class ProjectController extends ContentController
 {
@@ -49,6 +52,16 @@ final class ProjectController extends ContentController
     protected function getRouteName(string $action): string
     {
         return 'projects.' . $action;
+    }
+
+    public function store(StoreProjectRequest $request): RedirectResponse
+    {
+        return $this->storeFromRequest($request);
+    }
+
+    public function update(UpdateProjectRequest $request, string $slug): RedirectResponse
+    {
+        return $this->updateFromRequest($request, $slug);
     }
 
     /**

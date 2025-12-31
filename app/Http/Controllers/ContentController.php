@@ -134,7 +134,7 @@ abstract class ContentController extends Controller
         ]);
     }
 
-    public function update(ContentRequest $request, string $slug): RedirectResponse
+    protected function updateFromRequest(ContentRequest $request, string $slug): RedirectResponse
     {
         $content = Content::query()
             ->with(array_merge(['user'], $this->getAdditionalRelationships()))
@@ -172,7 +172,7 @@ abstract class ContentController extends Controller
         return view($viewName);
     }
 
-    public function store(ContentRequest $request): RedirectResponse
+    protected function storeFromRequest(ContentRequest $request): RedirectResponse
     {
         $user = Auth::user();
         abort_unless($user instanceof User, 403);

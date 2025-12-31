@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Content;
 use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
@@ -12,6 +14,7 @@ use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 final class PostController extends ContentController
 {
@@ -63,6 +66,16 @@ final class PostController extends ContentController
     protected function getRouteName(string $action): string
     {
         return 'posts.' . $action;
+    }
+
+    public function store(StorePostRequest $request): RedirectResponse
+    {
+        return $this->storeFromRequest($request);
+    }
+
+    public function update(UpdatePostRequest $request, string $slug): RedirectResponse
+    {
+        return $this->updateFromRequest($request, $slug);
     }
 
     /**
