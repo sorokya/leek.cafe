@@ -31,5 +31,8 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
+      - name: Show .env file
+        run: cat .env
+
       - name: Run tests with Pest
         run: php artisan test
