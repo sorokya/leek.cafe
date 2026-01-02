@@ -32,4 +32,4 @@ jobs:
         run: php artisan key:generate
 
       - name: Run tests with Pest
-        run: php artisan test --pest
+        run: php artisan test
