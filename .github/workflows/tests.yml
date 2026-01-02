@@ -25,6 +25,17 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build JS/CSS assets
+        run: pnpm build
+
       - name: Generate application key
         run: php artisan key:generate --env testing
 
