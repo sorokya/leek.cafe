@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
-
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
-use Tests\TestCase;
+use Illuminate\Support\Facades\Hash;
 
-final class AuthSessionTest extends TestCase
-{
-    use RefreshDatabase;
+use function Pest\Laravel\assertAuthenticatedAs;
+use function Pest\Laravel\get;
+use function Pest\Laravel\withoutMiddleware;
 
-    public function test_login_persists_across_requests(): void
-    {
-        $user = User::factory()->create([
-            'username' => 'alice',
-            'password' => 'secret-password',
-        ]);
+pest()->use(RefreshDatabase::class);
 
-        $this->post('/login', [
-            'username' => 'alice',
-            'password' => 'secret-password',
-        ])->assertRedirect('/');
+test('login persists across requests', function (): void {
+    $user = User::factory()->create([
+        'username' => fake()->userName(),
+        'password' => Hash::make('secret-password'),
+    ]);
 
-        $this->get('/')->assertOk();
+    withoutMiddleware([VerifyCsrfToken::class, ValidateCsrfToken::class])->post('/login', [
+        'username' => $user->username,
+        'password' => 'secret-password',
+    ])->assertRedirect('/');
 
-        $this->assertAuthenticatedAs($user);
-        $this->assertSame($user->getKey(), Auth::id());
-    }
-}
+    get('/')->assertOk();
+
+    assertAuthenticatedAs($user);
+    expect(Auth::id())->toBe($user->getKey());
+});

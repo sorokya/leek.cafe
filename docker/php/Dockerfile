@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7
 ARG PHP_IMAGE=php:8.5.1-fpm-alpine3.23
 ARG NODE_IMAGE=node:24-alpine
 
@@ -8,11 +9,13 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN corepack enable \
-    && pnpm install --frozen-lockfile
+    && pnpm config set store-dir /root/.pnpm-store
+
+RUN --mount=type=cache,target=/root/.pnpm-store \
+    pnpm install --frozen-lockfile
 
 COPY vite.config.js ./
 COPY resources ./resources
-COPY public ./public
 
 RUN pnpm run build
 
@@ -85,7 +88,12 @@ COPY docker/php/php.dev.ini /usr/local/etc/php/conf.d/zz-env.ini
 
 COPY composer.json composer.lock /app
 
-RUN composer install --no-interaction --no-progress --prefer-dist --no-scripts
+RUN --mount=type=cache,target=/root/.composer \
+    composer install \
+      --no-interaction \
+      --no-progress \
+      --prefer-dist \
+      --no-scripts
 
 COPY . /app
 
@@ -107,7 +115,14 @@ FROM base AS prod
 COPY docker/php/php.prod.ini /usr/local/etc/php/conf.d/zz-env.ini
 
 COPY composer.json composer.lock /app/
-RUN composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts --no-dev
+RUN --mount=type=cache,target=/root/.composer \
+    composer install \
+      --no-interaction \
+      --no-progress \
+      --prefer-dist \
+      --optimize-autoloader \
+      --no-scripts \
+      --no-dev
 
 COPY . /app
 
