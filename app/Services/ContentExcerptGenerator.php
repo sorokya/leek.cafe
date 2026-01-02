@@ -13,7 +13,7 @@ final readonly class ContentExcerptGenerator
     public function generate(string $body, int $length = 200): string
     {
         $rendered = $this->renderer->render($body);
-        $text = strip_tags((string) $rendered);
+        $text = trim(strip_tags((string) $rendered));
         if (strlen($text) <= $length) {
             return $text;
         }

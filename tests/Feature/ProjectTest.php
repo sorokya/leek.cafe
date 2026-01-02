@@ -5,38 +5,57 @@ declare(strict_types=1);
 use App\Models\Content;
 use App\Models\Project;
 use App\Models\User;
+use App\Visibility;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
+use function Pest\Laravel\withoutMiddleware;
 
-test('guest can view projects index page', function () {
+pest()->use(RefreshDatabase::class);
+
+beforeEach(function (): void {
+    withoutMiddleware([VerifyCsrfToken::class, ValidateCsrfToken::class]);
+});
+
+test('guest can view projects index page', function (): void {
     get('/projects')->assertOk();
 });
 
-test('guest can view published project', function () {
+test('guest can view published project', function (): void {
+    $user = User::factory()->create([
+        'password' => '$argon2id$v=19$m=65536,t=4,p=1$ZkI5QjFPam84dGFKMlFEYQ$9NhqUNyjzlsaER+9lIDf2ERefBxJ6qY6JN6i34gSIB0',
+    ]);
     $content = Content::factory()->create([
         'slug' => 'test-project',
-        'published' => true,
+        'visibility' => Visibility::PUBLIC->value,
+        'user_id' => $user->id,
     ]);
     Project::factory()->create(['content_id' => $content->id]);
 
     get('/projects/test-project')->assertOk();
 });
 
-test('authenticated user can create project', function () {
-    $user = User::factory()->create();
+test('authenticated user can create project', function (): void {
+    $user = User::factory()->create([
+        'password' => '$argon2id$v=19$m=65536,t=4,p=1$ZkI5QjFPam84dGFKMlFEYQ$9NhqUNyjzlsaER+9lIDf2ERefBxJ6qY6JN6i34gSIB0',
+    ]);
 
     actingAs($user)
         ->get('/projects/new')
         ->assertOk();
 });
 
-test('guest cannot create project', function () {
+test('guest cannot create project', function (): void {
     get('/projects/new')->assertRedirect('/login');
 });
 
-test('authenticated user can store project', function () {
-    $user = User::factory()->create();
+test('authenticated user can store project', function (): void {
+    $user = User::factory()->create([
+        'password' => '$argon2id$v=19$m=65536,t=4,p=1$ZkI5QjFPam84dGFKMlFEYQ$9NhqUNyjzlsaER+9lIDf2ERefBxJ6qY6JN6i34gSIB0',
+    ]);
 
     actingAs($user)
         ->post('/projects', [
@@ -44,26 +63,30 @@ test('authenticated user can store project', function () {
             'slug' => 'test-project',
             'body' => 'This is a test project body',
             'url' => 'https://example.com',
-            'visibility' => 'public',
+            'visibility' => Visibility::PUBLIC->value,
         ])
         ->assertRedirect();
 
     expect(Project::count())->toBe(1);
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});
 
-test('authenticated user can edit own project', function () {
-    $user = User::factory()->create();
-    $content = Content::factory()->create(['slug' => 'test-project']);
+test('authenticated user can edit own project', function (): void {
+    $user = User::factory()->create([
+        'password' => '$argon2id$v=19$m=65536,t=4,p=1$ZkI5QjFPam84dGFKMlFEYQ$9NhqUNyjzlsaER+9lIDf2ERefBxJ6qY6JN6i34gSIB0',
+    ]);
+    $content = Content::factory()->create(['slug' => 'test-project', 'user_id' => $user->id]);
     Project::factory()->create(['content_id' => $content->id]);
 
     actingAs($user)
         ->get('/projects/test-project/edit')
         ->assertOk();
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});
 
-test('authenticated user can update project', function () {
-    $user = User::factory()->create();
-    $content = Content::factory()->create(['slug' => 'test-project', 'title' => 'Original Title']);
+test('authenticated user can update project', function (): void {
+    $user = User::factory()->create([
+        'password' => '$argon2id$v=19$m=65536,t=4,p=1$ZkI5QjFPam84dGFKMlFEYQ$9NhqUNyjzlsaER+9lIDf2ERefBxJ6qY6JN6i34gSIB0',
+    ]);
+    $content = Content::factory()->create(['slug' => 'test-project', 'title' => 'Original Title', 'user_id' => $user->id]);
     Project::factory()->create(['content_id' => $content->id]);
 
     actingAs($user)
@@ -72,16 +95,21 @@ test('authenticated user can update project', function () {
             'slug' => 'test-project',
             'body' => 'Updated body',
             'url' => 'https://example.com',
-            'visibility' => 'public',
+            'visibility' => Visibility::PUBLIC->value,
         ])
         ->assertRedirect();
 
-    expect($content->fresh()->title)->toBe('Updated Title');
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+    $content = $content->fresh();
+    assert($content instanceof Content);
 
-test('authenticated user can delete project', function () {
-    $user = User::factory()->create();
-    $content = Content::factory()->create(['slug' => 'test-project']);
+    expect($content->title)->toBe('Updated Title');
+});
+
+test('authenticated user can delete project', function (): void {
+    $user = User::factory()->create([
+        'password' => '$argon2id$v=19$m=65536,t=4,p=1$ZkI5QjFPam84dGFKMlFEYQ$9NhqUNyjzlsaER+9lIDf2ERefBxJ6qY6JN6i34gSIB0',
+    ]);
+    $content = Content::factory()->create(['slug' => 'test-project', 'user_id' => $user->id]);
     Project::factory()->create(['content_id' => $content->id]);
 
     actingAs($user)
@@ -89,4 +117,4 @@ test('authenticated user can delete project', function () {
         ->assertRedirect('/projects');
 
     expect(Project::count())->toBe(0);
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});

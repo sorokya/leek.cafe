@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class Post extends Model
 {
+    /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory;
 
     public $timestamps = false;

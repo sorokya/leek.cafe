@@ -5,14 +5,27 @@ declare(strict_types=1);
 use App\Models\Content;
 use App\Models\Post;
 use App\Models\User;
+use App\Visibility;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
+use function Pest\Laravel\withoutMiddleware;
 
-test('user can complete full post creation flow', function () {
-    $user = User::factory()->create();
+pest()->use(RefreshDatabase::class);
+
+beforeEach(function (): void {
+    withoutMiddleware([VerifyCsrfToken::class, ValidateCsrfToken::class]);
+});
+
+test('user can complete full post creation flow', function (): void {
+    $user = User::factory()->create([
+        'password' => '$argon2id$v=19$m=65536,t=4,p=1$ZkI5QjFPam84dGFKMlFEYQ$9NhqUNyjzlsaER+9lIDf2ERefBxJ6qY6JN6i34gSIB0',
+    ]);
 
     // Navigate to post creation page
     actingAs($user)
@@ -26,7 +39,7 @@ test('user can complete full post creation flow', function () {
             'title' => 'My New Blog Post',
             'slug' => 'my-new-blog-post',
             'body' => '# Introduction\n\nThis is my first blog post!',
-            'visibility' => 'public',
+            'visibility' => Visibility::PUBLIC->value,
         ])
         ->assertRedirect();
 
@@ -40,13 +53,14 @@ test('user can complete full post creation flow', function () {
     get('/posts/my-new-blog-post')
         ->assertOk()
         ->assertSee('My New Blog Post');
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});
 
-test('user can edit existing post', function () {
+test('user can edit existing post', function (): void {
     $user = User::factory()->create();
     $content = Content::factory()->create([
         'slug' => 'existing-post',
         'title' => 'Existing Post',
+        'user_id' => $user->id,
     ]);
     Post::factory()->create(['content_id' => $content->id]);
 
@@ -61,7 +75,7 @@ test('user can edit existing post', function () {
             'title' => 'Updated Post Title',
             'slug' => 'existing-post',
             'body' => 'Updated content',
-            'visibility' => 'public',
+            'visibility' => Visibility::PUBLIC->value,
         ])
         ->assertRedirect();
 
@@ -70,13 +84,14 @@ test('user can edit existing post', function () {
         'slug' => 'existing-post',
         'title' => 'Updated Post Title',
     ]);
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});
 
-test('user can view delete confirmation and delete post', function () {
+test('user can view delete confirmation and delete post', function (): void {
     $user = User::factory()->create();
     $content = Content::factory()->create([
         'slug' => 'post-to-delete',
         'title' => 'Post to Delete',
+        'user_id' => $user->id,
     ]);
     Post::factory()->create(['content_id' => $content->id]);
 
@@ -93,4 +108,4 @@ test('user can view delete confirmation and delete post', function () {
 
     // Verify post is deleted
     expect(Post::count())->toBe(0);
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});

@@ -5,12 +5,23 @@ declare(strict_types=1);
 use App\Models\Content;
 use App\Models\Project;
 use App\Models\User;
+use App\Visibility;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\get;
+use function Pest\Laravel\withoutMiddleware;
 
-test('user can complete full project creation flow', function () {
+pest()->use(RefreshDatabase::class);
+
+beforeEach(function (): void {
+    withoutMiddleware([VerifyCsrfToken::class, ValidateCsrfToken::class]);
+});
+
+test('user can complete full project creation flow', function (): void {
     $user = User::factory()->create();
 
     // Navigate to project creation page
@@ -26,7 +37,7 @@ test('user can complete full project creation flow', function () {
             'slug' => 'my-awesome-project',
             'body' => '## Overview\n\nThis project is amazing!',
             'url' => 'https://github.com/example/project',
-            'visibility' => 'public',
+            'visibility' => Visibility::PUBLIC->value,
         ])
         ->assertRedirect();
 
@@ -44,13 +55,14 @@ test('user can complete full project creation flow', function () {
     get('/projects/my-awesome-project')
         ->assertOk()
         ->assertSee('My Awesome Project');
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});
 
-test('user can edit existing project', function () {
+test('user can edit existing project', function (): void {
     $user = User::factory()->create();
     $content = Content::factory()->create([
         'slug' => 'existing-project',
         'title' => 'Existing Project',
+        'user_id' => $user->id,
     ]);
     Project::factory()->create([
         'content_id' => $content->id,
@@ -69,7 +81,7 @@ test('user can edit existing project', function () {
             'slug' => 'existing-project',
             'body' => 'Updated project description',
             'url' => 'https://example.com/new',
-            'visibility' => 'public',
+            'visibility' => Visibility::PUBLIC->value,
         ])
         ->assertRedirect();
 
@@ -82,13 +94,14 @@ test('user can edit existing project', function () {
     assertDatabaseHas('projects', [
         'url' => 'https://example.com/new',
     ]);
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});
 
-test('user can view delete confirmation and delete project', function () {
+test('user can view delete confirmation and delete project', function (): void {
     $user = User::factory()->create();
     $content = Content::factory()->create([
         'slug' => 'project-to-delete',
         'title' => 'Project to Delete',
+        'user_id' => $user->id,
     ]);
     Project::factory()->create(['content_id' => $content->id]);
 
@@ -105,4 +118,4 @@ test('user can view delete confirmation and delete project', function () {
 
     // Verify project is deleted
     expect(Project::count())->toBe(0);
-})->uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+});
