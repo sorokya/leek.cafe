@@ -25,14 +25,8 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
-      - name: Copy testing environment file
-        run: cp .env.testing .env
-
       - name: Generate application key
-        run: php artisan key:generate
-
-      - name: Show .env file
-        run: cat .env
+        run: php artisan key:generate --env=testing
 
       - name: Run tests with Pest
         run: php artisan test
