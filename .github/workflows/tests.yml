@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: ["master"]
 
+env:
+  NODE_VERSION: "24"
+  PHP_VERSION: "8.5"
+
 jobs:
   biome:
     runs-on: ubuntu-latest
@@ -14,8 +18,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup CI base
-        uses: ./.github/workflows/setup-ci
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: "pnpm"
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Biome linter
         run: pnpm biome check .
@@ -28,8 +41,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup CI base
-        uses: ./.github/workflows/setup-ci
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ env.PHP_VERSION }}"
+          tools: composer
+          coverage: none
+
+      - name: Get composer cache path
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run Pint (lint)
         run: vendor/bin/pint --test
@@ -42,8 +73,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup CI base
-        uses: ./.github/workflows/setup-ci
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ env.PHP_VERSION }}"
+          tools: composer
+          coverage: none
+
+      - name: Get composer cache path
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run PHPStan (static analysis)
         run: vendor/bin/phpstan analyse --memory-limit=1G
@@ -56,8 +105,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup CI base
-        uses: ./.github/workflows/setup-ci
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ env.PHP_VERSION }}"
+          tools: composer
+          coverage: none
+
+      - name: Get composer cache path
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run Rector (code refactoring)
         run: vendor/bin/rector process --dry-run
@@ -66,13 +133,45 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup CI base
-        uses: ./.github/workflows/setup-ci
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          cache: "pnpm"
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build JS/CSS assets
+        run: pnpm build
+
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ env.PHP_VERSION }}"
+          tools: composer
+          coverage: none
+
+      - name: Get composer cache path
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Generate application key
         run: php artisan key:generate --env testing
