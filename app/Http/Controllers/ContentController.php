@@ -186,7 +186,7 @@ abstract class ContentController extends Controller
                 'user_id' => $user->id,
                 'visibility' => $validated['visibility'],
                 'title' => $validated['title'],
-                'slug' => Str::slug($validated['title']),
+                'slug' => $validated['slug'] ?? Str::slug($validated['title']),
                 'body' => $validated['body'],
             ]);
 
