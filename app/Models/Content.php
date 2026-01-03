@@ -110,6 +110,13 @@ final class Content extends Model implements Feedable
     }
 
     /** @return BelongsToMany<Image, $this> */
+    public function embedImages(): BelongsToMany
+    {
+        return $this->belongsToMany(Image::class, 'content_images')
+            ->wherePivot('role', ImageRole::EMBED->value);
+    }
+
+    /** @return BelongsToMany<Image, $this> */
     public function thumbnailImage(): BelongsToMany
     {
         return $this->images()

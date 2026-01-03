@@ -14,6 +14,10 @@
                         <div class="form-field">
                             <textarea class="form-textarea" id="body" name="body" placeholder="What's on your mind?" required></textarea>
                         </div>
+
+                        <input type="hidden" name="embeds" id="embeds" value="{{ old('embeds', '') }}" />
+                        <div class="embed-gallery" data-embed-list></div>
+
                         <div class="thoughts-composer-row">
                             <x-visibility-radio :selected="(string) \App\Visibility::PRIVATE->value" />
                             <div class="thoughts-attach">
@@ -21,7 +25,8 @@
                                     <x-heroicon-o-paper-clip class="btn__icon" aria-hidden="true" focusable="false"
                                         width="16" height="16" />
                                 </label>
-                                <input class="thoughts-attach__input" id="attachment" type="file" />
+                                <input class="thoughts-attach__input" id="attachment" type="file" accept="image/*"
+                                    multiple data-embed-input />
                             </div>
                         </div>
                         <button class="btn btn--primary" type="submit">Post</button>
@@ -55,6 +60,17 @@
                         <div class="thoughts-item__content">
                             {!! nl2br(e($content->body ?? '')) !!}
                         </div>
+
+                        @if ($content->embedImages->isNotEmpty())
+                            <div class="embed-gallery">
+                                @foreach ($content->embedImages as $image)
+                                    <a class="embed-thumb" href="{{ $image->getUrl() }}" target="_blank" rel="noopener">
+                                        <img src="{{ $image->getThumbnailUrl() }}" alt="" loading="lazy"
+                                            decoding="async" />
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
                     </li>
                 @endforeach
             @else
@@ -66,4 +82,8 @@
             @endif
         </ol>
     </div>
+
+    @push('scripts')
+        @vite('resources/js/thoughts.js')
+    @endpush
 </x-layout>

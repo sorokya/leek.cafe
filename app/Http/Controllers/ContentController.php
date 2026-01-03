@@ -10,6 +10,7 @@ use App\Models\Content;
 use App\Models\User;
 use App\Services\ContentExcerptGenerator;
 use App\Services\ContentRenderer;
+use App\Services\EmbedImageSyncer;
 use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +28,7 @@ abstract class ContentController extends Controller
         protected readonly ContentRenderer $renderer,
         protected readonly ContentExcerptGenerator $excerptGenerator,
         protected readonly InlineImageSyncer $inlineImageSyncer,
+        protected readonly EmbedImageSyncer $embedImageSyncer,
         protected readonly ImageUploader $imageUploader,
     ) {}
 
@@ -159,6 +161,10 @@ abstract class ContentController extends Controller
         }
 
         $this->inlineImageSyncer->sync($content);
+        $embeds = array_key_exists('embeds', $validated) && is_string($validated['embeds'])
+            ? $validated['embeds']
+            : null;
+        $this->embedImageSyncer->sync($content, $embeds);
 
         return to_route($this->getRouteName('edit'), ['slug' => $content->slug])
             ->with('status', sprintf('%s updated successfully.', ucfirst($this->getContentType())));
@@ -198,6 +204,10 @@ abstract class ContentController extends Controller
             }
 
             $this->inlineImageSyncer->sync($content);
+            $embeds = array_key_exists('embeds', $validated) && is_string($validated['embeds'])
+                ? $validated['embeds']
+                : null;
+            $this->embedImageSyncer->sync($content, $embeds);
 
             return $content;
         });

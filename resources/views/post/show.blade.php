@@ -35,6 +35,17 @@
 
         <div class="content-detail__content">
             {!! $renderedBody !!}
+
+            @if ($content->embedImages->isNotEmpty())
+                <div class="embed-gallery">
+                    @foreach ($content->embedImages as $image)
+                        <a class="embed-thumb" href="{{ $image->getUrl() }}" target="_blank" rel="noopener">
+                            <img src="{{ $image->getThumbnailUrl() }}" alt="" loading="lazy"
+                                decoding="async" />
+                        </a>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </article>
 </x-layout>

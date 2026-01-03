@@ -10,6 +10,7 @@ use App\Models\Content;
 use App\Queries\PostFeedQuery;
 use App\Services\ContentExcerptGenerator;
 use App\Services\ContentRenderer;
+use App\Services\EmbedImageSyncer;
 use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,9 +24,10 @@ final class PostController extends ContentController
         ContentRenderer $renderer,
         ContentExcerptGenerator $excerptGenerator,
         InlineImageSyncer $inlineImageSyncer,
+        EmbedImageSyncer $embedImageSyncer,
         ImageUploader $imageUploader,
     ) {
-        parent::__construct($renderer, $excerptGenerator, $inlineImageSyncer, $imageUploader);
+        parent::__construct($renderer, $excerptGenerator, $inlineImageSyncer, $embedImageSyncer, $imageUploader);
     }
 
     /**
@@ -48,7 +50,7 @@ final class PostController extends ContentController
     protected function getShowQuery(): Builder
     {
         return Content::query()
-            ->with('user', 'coverImage')
+            ->with('user', 'coverImage', 'embedImages')
             ->whereHas('post');
     }
 
