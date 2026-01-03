@@ -32,6 +32,7 @@ use Spatie\Feed\FeedItem;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $inlineImages
  * @property-read int|null $inline_images_count
  * @property-read \App\Models\Post|null $post
+ * @property-read \App\Models\Thought|null $thought
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $thumbnailImage
  * @property-read int|null $thumbnail_image_count
  * @property-read \App\Models\User $user
@@ -87,6 +88,12 @@ final class Content extends Model implements Feedable
     public function post(): HasOne
     {
         return $this->hasOne(Post::class, 'content_id');
+    }
+
+    /** @return HasOne<Thought, $this> */
+    public function thought(): HasOne
+    {
+        return $this->hasOne(Thought::class, 'content_id');
     }
 
     /** @return HasOne<Project, $this> */

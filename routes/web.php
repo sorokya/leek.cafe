@@ -69,6 +69,10 @@ Route::controller(ProjectController::class)->group(function (): void {
 
 Route::controller(ThoughtsController::class)->group(function (): void {
     Route::get('/thoughts', 'index')->name('thoughts.index');
+    Route::post('/thoughts', 'store')->middleware('auth')->name('thoughts.store');
+    Route::put('/thoughts/{slug}', 'update')->middleware('auth')->name('thoughts.update');
+    Route::delete('/thoughts/{slug}', 'destroy')->middleware('auth')->name('thoughts.destroy');
+    Route::post('/thoughts/upload-images', 'uploadImages')->middleware('auth')->name('thoughts.upload-images');
 });
 
 Route::controller(MediaController::class)->group(function (): void {
