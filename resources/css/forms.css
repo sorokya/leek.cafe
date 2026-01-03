@@ -16,6 +16,7 @@
 
 .form-card.wide {
   max-width: 100%;
+  margin: 0;
 }
 
 .form-title {
@@ -146,6 +147,76 @@
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-top: 0.25rem;
+}
+
+/*
+  Toggle group (segmented radios)
+  - Used for visibility controls
+  - Uses existing theme tokens from variables.css
+*/
+
+.toggle-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.toggle-group__inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 6px);
+  background: color-mix(in oklab, var(--surface) 85%, var(--bg));
+  overflow: hidden;
+}
+
+.toggle-group__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.toggle-group__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.7rem;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  border-right: 1px solid var(--border);
+}
+
+.toggle-group__button:last-of-type {
+  border-right: 0;
+}
+
+.toggle-group__button:hover {
+  color: var(--text);
+  background: color-mix(in oklab, var(--surface) 70%, var(--bg));
+}
+
+.toggle-group__input:focus-visible + .toggle-group__button {
+  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.toggle-group__input:checked + .toggle-group__button {
+  color: var(--bg);
+  background: var(--accent);
+}
+
+.toggle-group__input:checked + .toggle-group__button:hover {
+  background: color-mix(in oklab, var(--accent) 88%, black);
 }
 
 .btn {
