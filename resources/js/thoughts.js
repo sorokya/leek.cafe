@@ -2,14 +2,14 @@ import { initializeEmbedUploader } from './embed-uploader';
 
 document.addEventListener('DOMContentLoaded', () => {
   const composer = document.querySelector('.thoughts-composer');
-  if (!composer) return;
+  if (composer) {
+    const textarea = composer.querySelector('textarea[name="body"]');
+    if (textarea) {
+      textarea.setAttribute('data-embed-paste-target', 'true');
+    }
 
-  const textarea = composer.querySelector('textarea[name="body"]');
-  if (textarea) {
-    textarea.setAttribute('data-embed-paste-target', 'true');
+    initializeEmbedUploader({ root: composer });
   }
-
-  initializeEmbedUploader({ root: composer });
 
   for (const item of document.querySelectorAll('[data-thought-item]')) {
     const actions = item.querySelector('[data-thought-actions]');
