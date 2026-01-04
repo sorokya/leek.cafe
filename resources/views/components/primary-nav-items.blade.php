@@ -23,11 +23,11 @@
     <x-heroicon-o-film class="nav-link__icon" aria-hidden="true" focusable="false" width="18" height="18" />
     {{ $mobile || request()->is('media*') ? 'Media' : '' }}
 </a>
-<a class="nav-link" {{ request()->is('thoughts') ? 'is-active' : '' }} href="{{ route('thoughts.index') }}"
+<a class="nav-link {{ request()->is('thoughts*') ? 'is-active' : '' }}" href="{{ route('thoughts.index') }}"
     aria-label="Thoughts" title="Thoughts">
     <x-heroicon-o-light-bulb class="nav-link__icon" aria-hidden="true" focusable="false" width="18"
         height="18" />
-    {{ $mobile || request()->is('thoughts') ? 'Thoughts' : '' }}
+    {{ $mobile || request()->is('thoughts*') ? 'Thoughts' : '' }}
 </a>
 
 @auth

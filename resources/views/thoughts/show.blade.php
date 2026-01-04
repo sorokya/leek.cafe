@@ -1,4 +1,8 @@
 <x-layout title="Thought">
+    <a href="{{ route('thoughts.index') }}" class="btn btn--small">
+        <x-heroicon-o-arrow-left class="btn__icon" aria-hidden="true" focusable="false" width="16" height="16" />
+        Back to Thoughts
+    </a>
     <div class="stack thoughts">
         <article class="thoughts-item" data-thought-item data-thought-slug="{{ $content->slug }}">
             <header class="thoughts-item__header">
