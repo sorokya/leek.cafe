@@ -41,7 +41,7 @@ final class ThoughtsController extends ContentController
 
     protected function getRouteName(string $action): string
     {
-        if (in_array($action, ['show', 'edit'], true)) {
+        if ($action === 'edit') {
             return 'thoughts.index';
         }
 
@@ -50,7 +50,9 @@ final class ThoughtsController extends ContentController
 
     public function store(StoreThoughtRequest $request): RedirectResponse
     {
-        return $this->storeFromRequest($request);
+        $this->storeFromRequest($request);
+
+        return to_route('thoughts.index');
     }
 
     public function update(UpdateThoughtRequest $request, string $slug): RedirectResponse

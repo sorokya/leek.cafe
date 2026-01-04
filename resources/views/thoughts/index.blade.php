@@ -40,9 +40,12 @@
                 @foreach ($contents as $content)
                     <li class="thoughts-item" data-thought-slug="{{ $content->slug }}" data-thought-item>
                         <header class="thoughts-item__header">
-                            <time class="thoughts-item__time" datetime="{{ $content->created_at?->toW3cString() }}">
-                                {{ $content->created_at?->format('M j, Y g:i A') }}
-                            </time>
+                            <a class="thoughts-item__time"
+                                href="{{ route('thoughts.show', ['slug' => substr($content->slug, 0, 12)]) }}">
+                                <time datetime="{{ $content->created_at?->toW3cString() }}">
+                                    {{ $content->created_at?->format('M j, Y g:i A') }}
+                                </time>
+                            </a>
 
                             @auth
                                 <details class="thoughts-actions" data-thought-actions>

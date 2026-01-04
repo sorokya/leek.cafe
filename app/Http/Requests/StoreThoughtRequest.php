@@ -4,20 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use Illuminate\Support\Str;
-
 final class StoreThoughtRequest extends ContentRequest
 {
     protected function prepareForValidation(): void
     {
-        if (! $this->has('title')) {
-            $this->merge([
-                'title' => sprintf(
-                    'Thought %s %s',
-                    now()->format('Y-m-d H:i'),
-                    Str::lower(Str::random(6)),
-                ),
-            ]);
-        }
+        $this->merge([
+            'title' => 'Post ' . now()->format('M j, Y g:i A'),
+            'slug' => hash('sha256', uniqid((string) time(), true)),
+        ]);
     }
 }

@@ -69,6 +69,7 @@ Route::controller(ProjectController::class)->group(function (): void {
 
 Route::controller(ThoughtsController::class)->group(function (): void {
     Route::get('/thoughts', 'index')->name('thoughts.index');
+    Route::get('/thoughts/{slug}', 'show')->name('thoughts.show');
     Route::post('/thoughts', 'store')->middleware('auth')->name('thoughts.store');
     Route::put('/thoughts/{slug}', 'update')->middleware('auth')->name('thoughts.update');
     Route::delete('/thoughts/{slug}', 'destroy')->middleware('auth')->name('thoughts.destroy');
