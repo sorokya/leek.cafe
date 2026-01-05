@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\ContentType;
 use App\Http\Requests\ContentRequest;
 use App\ImageRole;
 use App\Models\Content;
@@ -103,7 +104,7 @@ abstract class ContentController extends Controller
     public function show(string $slug): View
     {
         $content = $this->getShowQuery()
-            ->where('slug', 'like', $slug . '%')
+            ->where('slug', $slug)
             ->unless(Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
@@ -132,7 +133,7 @@ abstract class ContentController extends Controller
 
     public function edit(string $slug): View
     {
-        $content = Content::query()
+        $content = $this->getShowQuery()
             ->with(array_merge(['user', 'coverImage'], $this->getAdditionalRelationships()))
             ->where('slug', $slug)
             ->first();
@@ -148,7 +149,7 @@ abstract class ContentController extends Controller
 
     protected function updateFromRequest(ContentRequest $request, string $slug): RedirectResponse
     {
-        $content = Content::query()
+        $content = $this->getShowQuery()
             ->with(array_merge(['user'], $this->getAdditionalRelationships()))
             ->where('slug', $slug)
             ->first();
@@ -184,7 +185,7 @@ abstract class ContentController extends Controller
         }
 
         return to_route($this->getRouteName('edit'), ['slug' => $content->slug])
-            ->with('status', sprintf('%s updated successfully.', ucfirst($this->getContentType())));
+            ->with('status', sprintf('%s updated successfully.', ucfirst($this->getContentType()->label())));
     }
 
     public function create(): View
@@ -205,11 +206,27 @@ abstract class ContentController extends Controller
         abort_unless(is_string($validated['title']), 400);
 
         $content = DB::transaction(function () use ($validated, $user) {
+            $slug = $validated['slug'] ?? Str::slug($validated['title']);
+
+            Validator::validate(
+                ['slug' => $slug],
+                [
+                    'slug' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        \Illuminate\Validation\Rule::unique('contents', 'slug')
+                            ->where('content_type', $this->getContentType()->value),
+                    ],
+                ],
+            );
+
             $content = Content::create([
                 'user_id' => $user->id,
                 'visibility' => $validated['visibility'],
                 'title' => $validated['title'],
-                'slug' => $validated['slug'] ?? Str::slug($validated['title']),
+                'slug' => $slug,
+                'content_type' => $this->getContentType()->value,
                 'body' => $validated['body'],
             ]);
 
@@ -237,7 +254,7 @@ abstract class ContentController extends Controller
 
     public function deleteConfirm(string $slug): View
     {
-        $content = Content::query()
+        $content = $this->getShowQuery()
             ->where('slug', $slug)
             ->with('user')
             ->first();
@@ -253,7 +270,7 @@ abstract class ContentController extends Controller
 
     public function destroy(string $slug): RedirectResponse
     {
-        $content = Content::query()
+        $content = $this->getShowQuery()
             ->where('slug', $slug)
             ->with('user')
             ->first();
@@ -338,5 +355,5 @@ abstract class ContentController extends Controller
     /**
      * Get the content type name (e.g., 'post', 'project').
      */
-    abstract protected function getContentType(): string;
+    abstract protected function getContentType(): ContentType;
 }

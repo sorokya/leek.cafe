@@ -14,7 +14,10 @@ final class UpdateThoughtRequest extends ContentRequest
             $slug = $this->route('slug');
 
             if (is_string($slug)) {
-                $existing = Content::query()->where('slug', $slug)->first();
+                $existing = Content::query()
+                    ->where('slug', $slug)
+                    ->whereHas('thought')
+                    ->first();
 
                 if ($existing instanceof Content) {
                     $this->merge(['title' => $existing->title]);

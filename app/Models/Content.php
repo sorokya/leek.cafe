@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\ContentType;
 use App\ImageRole;
 use App\Services\ContentExcerptGenerator;
 use App\Visibility;
@@ -21,6 +22,7 @@ use Spatie\Feed\FeedItem;
  * @property int $user_id
  * @property string $title
  * @property string $slug
+ * @property int $content_type
  * @property string|null $body
  * @property int $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -44,6 +46,7 @@ use Spatie\Feed\FeedItem;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereBody($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereContentType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereUpdatedAt($value)
@@ -60,6 +63,7 @@ final class Content extends Model implements Feedable
     protected $fillable = [
         'user_id',
         'slug',
+        'content_type',
         'title',
         'body',
         'visibility',
@@ -68,6 +72,7 @@ final class Content extends Model implements Feedable
     protected function casts(): array
     {
         return [
+            'content_type' => ContentType::class,
             'visibility' => Visibility::class,
         ];
     }
