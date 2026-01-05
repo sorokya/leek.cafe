@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\ContentType;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Content;
@@ -103,9 +104,9 @@ final class PostController extends ContentController
     /**
      * Get the content type name.
      */
-    protected function getContentType(): string
+    protected function getContentType(): ContentType
     {
-        return 'post';
+        return ContentType::POST;
     }
 
     protected function supportsEmbeds(): bool

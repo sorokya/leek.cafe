@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\ContentType;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Content;
@@ -102,8 +103,8 @@ final class ProjectController extends ContentController
     /**
      * Get the content type name.
      */
-    protected function getContentType(): string
+    protected function getContentType(): ContentType
     {
-        return 'project';
+        return ContentType::PROJECT;
     }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Rules\UniqueProjectUrl;
-
 final class UpdateProjectRequest extends ContentRequest
 {
     /**
@@ -21,7 +19,6 @@ final class UpdateProjectRequest extends ContentRequest
                 'string',
                 'max:2048',
                 'url',
-                new UniqueProjectUrl($this->route('slug')),
             ],
         ]);
     }

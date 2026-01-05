@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\ContentType;
 use App\Models\Content;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -45,7 +46,9 @@ final class DatabaseSeeder extends Seeder
         Content::factory()
             ->count(5)
             ->for($user)
-            ->create()
+            ->create([
+                'content_type' => ContentType::POST->value,
+            ])
             ->each(function (Content $content): void {
                 $content->post()->create();
             });

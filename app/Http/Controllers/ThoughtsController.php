@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\ContentType;
 use App\Http\Requests\StoreThoughtRequest;
 use App\Http\Requests\UpdateThoughtRequest;
 use App\Models\Content;
@@ -76,8 +77,8 @@ final class ThoughtsController extends ContentController
         // Thoughts don't have additional data to update
     }
 
-    protected function getContentType(): string
+    protected function getContentType(): ContentType
     {
-        return 'thought';
+        return ContentType::THOUGHT;
     }
 }
