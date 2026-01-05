@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 
 class Ffmpeg
@@ -86,6 +87,12 @@ class Ffmpeg
         $process->setTimeout($timeoutSeconds);
         $process->run();
 
+        Log::debug('FFmpeg transcode output: ' . $process->getOutput());
+
+        if (! $process->isSuccessful()) {
+            Log::error('FFmpeg transcode failed: ' . $process->getErrorOutput());
+        }
+
         return $process->isSuccessful();
     }
 
@@ -110,6 +117,12 @@ class Ffmpeg
 
         $process->setTimeout($timeoutSeconds);
         $process->run();
+
+        Log::debug('FFmpeg poster generation output: ' . $process->getOutput());
+
+        if (! $process->isSuccessful()) {
+            Log::error('FFmpeg poster generation failed: ' . $process->getErrorOutput());
+        }
 
         return $process->isSuccessful();
     }

@@ -53,7 +53,7 @@ RUN apk add --no-cache \
         unzip \
         nginx \
         supervisor \
-    ffmpeg \
+        ffmpeg \
         jpegoptim \
         optipng \
         pngquant \

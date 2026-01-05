@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 return [
-    'max_upload_kilobytes' => (int) env('MEDIA_MAX_UPLOAD_KB', 1024000), // 1 GB
+    'max_upload_kilobytes' => (int) env('MEDIA_MAX_UPLOAD_KB', 102400), // 100 MB
 
-    'max_video_duration_seconds' => (int) env('MEDIA_MAX_VIDEO_DURATION_SECONDS', 1800), // 30 minutes
+    'max_video_duration_seconds' => (int) env('MEDIA_MAX_VIDEO_DURATION_SECONDS', 600), // 10 minutes
 
     'ffprobe_timeout_seconds' => (int) env('MEDIA_FFPROBE_TIMEOUT_SECONDS', 10),
 
@@ -17,7 +17,5 @@ return [
     'audio_bitrate' => (string) env('MEDIA_AUDIO_BITRATE', '128k'),
 
     // Used for deduping uploads and stable media URLs.
-    // Prefer a fast non-cryptographic hash for large videos; fallback is applied if unavailable.
-    'hash_algorithm' => (string) env('MEDIA_HASH_ALGORITHM', 'xxh3'),
-    'hash_fallback_algorithm' => (string) env('MEDIA_HASH_FALLBACK_ALGORITHM', 'sha256'),
+    'hash_algorithm' => (string) env('MEDIA_HASH_ALGORITHM', 'sha256'),
 ];

@@ -60,14 +60,10 @@ final class ImageUploader
 
     private function getHash(UploadedFile $file): string
     {
-        $algorithmConfig = config('media.hash_algorithm', 'xxh3');
-        $algorithm = is_string($algorithmConfig) && $algorithmConfig !== '' ? $algorithmConfig : 'xxh3';
+        $algorithmConfig = config('media.hash_algorithm', 'sha256');
+        $algorithm = is_string($algorithmConfig) && $algorithmConfig !== '' ? $algorithmConfig : 'sha256';
 
-        if (! in_array($algorithm, hash_algos(), true)) {
-            $fallbackConfig = config('media.hash_fallback_algorithm', 'sha256');
-            $fallback = is_string($fallbackConfig) && $fallbackConfig !== '' ? $fallbackConfig : 'sha256';
-            $algorithm = in_array($fallback, hash_algos(), true) ? $fallback : 'sha256';
-        }
+        throw_unless(in_array($algorithm, hash_algos(), true), \InvalidArgumentException::class, 'Unsupported hash algorithm: ' . $algorithm);
 
         $hash = hash_file($algorithm, $file->getPathname());
         throw_unless($hash, \RuntimeException::class, 'Failed to compute file hash.');
