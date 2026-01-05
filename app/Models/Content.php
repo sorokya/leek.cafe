@@ -22,9 +22,9 @@ use Spatie\Feed\FeedItem;
  * @property int $user_id
  * @property string $title
  * @property string $slug
- * @property int $content_type
+ * @property \App\ContentType $content_type
  * @property string|null $body
- * @property int $visibility
+ * @property \App\Visibility $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $coverImage

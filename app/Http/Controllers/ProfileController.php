@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateProfileRequest;
+use App\Models\Habit;
 use App\Models\MediaStatus;
 use App\Models\MediaType;
+use App\Models\Metric;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -31,6 +33,8 @@ final class ProfileController extends Controller
             'timezone' => $user->timezone,
             'mediaStatuses' => MediaStatus::query()->get(),
             'mediaTypes' => MediaType::query()->get(),
+            'metrics' => Metric::query()->where('user_id', $user->id)->orderBy('name')->get(),
+            'habits' => Habit::query()->where('user_id', $user->id)->orderBy('name')->get(),
         ]);
     }
 
