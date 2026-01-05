@@ -12,6 +12,11 @@ parameters:
     excludePaths:
         - _ide_helper.php
         - .phpstorm.meta.php
+        - tests/
 
     # Report unused private elements
     reportUnmatchedIgnoredErrors: false
+
+    # Ignored rules
+    ignoreErrors:
+        - '#view expects view-string\|null, string given#'

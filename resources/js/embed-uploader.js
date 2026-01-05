@@ -56,7 +56,7 @@ function renderEmbeds(listEl, hashes) {
 }
 
 async function uploadImage({ file, contentType, csrfToken }) {
-  if (!file?.type?.startsWith('image/')) {
+  if (!file?.type?.startsWith('image/') && !file?.type?.startsWith('video/')) {
     return null;
   }
 
@@ -120,8 +120,8 @@ export function initializeEmbedUploader(options = {}) {
   async function handleFiles(fileList) {
     if (!fileList || fileList.length === 0) return;
 
-    const files = Array.from(fileList).filter((f) =>
-      f?.type?.startsWith('image/'),
+    const files = Array.from(fileList).filter(
+      (f) => f?.type?.startsWith('image/') || f?.type?.startsWith('video/'),
     );
     if (files.length === 0) return;
 

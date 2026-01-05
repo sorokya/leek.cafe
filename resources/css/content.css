@@ -391,6 +391,13 @@
   text-underline-offset: 0.18em;
 }
 
+.content-detail__content video,
+.thoughts-item__content video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .pagination-links {
   display: flex;
   justify-content: center;

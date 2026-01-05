@@ -42,7 +42,7 @@ export function initializeEditor() {
     formData.append('_token', csrfToken);
     let index = 0;
     for (const file of files) {
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
         if (!file) continue;
 
         const placeholder = `![](@img:uploading-${Date.now()}-${index})`;

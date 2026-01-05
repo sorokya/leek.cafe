@@ -25,8 +25,8 @@
                                     <x-heroicon-o-paper-clip class="btn__icon" aria-hidden="true" focusable="false"
                                         width="16" height="16" />
                                 </label>
-                                <input class="thoughts-attach__input" id="attachment-new" type="file" accept="image/*"
-                                    multiple data-embed-input />
+                                <input class="thoughts-attach__input" id="attachment-new" type="file"
+                                    accept="image/*,video/*" multiple data-embed-input />
                             </div>
                         </div>
                         <button class="btn btn--primary" type="submit">Post</button>
@@ -101,7 +101,7 @@
                                                     focusable="false" width="16" height="16" />
                                             </label>
                                             <input class="thoughts-attach__input" id="attachment-{{ $content->slug }}"
-                                                type="file" accept="image/*" multiple data-embed-input />
+                                                type="file" accept="image/*,video/*" multiple data-embed-input />
                                         </div>
                                     </div>
 

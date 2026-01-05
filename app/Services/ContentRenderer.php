@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Image;
 use Highlight\Highlighter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -122,7 +123,21 @@ final readonly class ContentRenderer
             function ($matches): string {
                 [$full, $alt, $hash] = $matches;
 
+                $image = Image::query()
+                    ->where('hash', 'like', $hash . '%')
+                    ->first();
+
                 $url = route('image.serve', ['hash' => $hash]);
+
+                if ($image instanceof Image && $image->extension === 'mp4') {
+                    $poster = route('image.serve-thumbnail', ['hash' => $hash]);
+
+                    return sprintf(
+                        '<video controls src="%s" poster="%s" preload="metadata"></video>',
+                        e($url),
+                        e($poster),
+                    );
+                }
 
                 return sprintf(
                     '<img src="%s" alt="%s" loading="lazy">',

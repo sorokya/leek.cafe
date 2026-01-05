@@ -4,59 +4,72 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Jobs\ProcessUploadedMedia;
 use App\Models\Image;
 use Illuminate\Http\UploadedFile;
-use Spatie\Image\Enums\Fit;
-use Spatie\Image\Image as SpatieImage;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 final class ImageUploader
 {
     public function upload(UploadedFile $file): Image
     {
-        $this->optimize($file);
-        $hash = $this->store($file);
-
-        $image = Image::query()->where('hash', $hash)->first();
-        if ($image) {
-            return $image;
-        }
-
-        return Image::create([
-            'hash' => $hash,
-            'extension' => $this->getExtension($file),
-        ]);
-    }
-
-    private function optimize(UploadedFile $file): void
-    {
-        $optimizerChain = OptimizerChainFactory::create();
-        $optimizerChain->optimize($file->getPathname());
-    }
-
-    private function store(UploadedFile $file): string
-    {
         $hash = $this->getHash($file);
         $extension = $this->getExtension($file);
-        $firstTwoChars = substr($hash, 0, 2);
-        $path = storage_path('app/public/uploads/' . $firstTwoChars . '/');
 
-        if (file_exists($path . $hash . '.' . $extension)) {
-            return $hash;
+        $firstTwoChars = substr($hash, 0, 2);
+        $publicDir = storage_path('app/public/uploads/' . $firstTwoChars);
+        $finalPath = $publicDir . '/' . $hash . '.' . $extension;
+        $thumbPath = $extension === 'mp4'
+            ? $publicDir . '/' . $hash . '_thumb.jpg'
+            : $publicDir . '/' . $hash . '_thumb.' . $extension;
+
+        $existing = Image::query()->where('hash', $hash)->first();
+        if ($existing instanceof Image) {
+            if (file_exists($finalPath) && file_exists($thumbPath)) {
+                return $existing;
+            }
+
+            $this->stageAndDispatch($file, $hash, $firstTwoChars);
+
+            return $existing;
         }
 
-        $file->move($path, $hash . '.' . $extension);
+        $image = Image::create([
+            'hash' => $hash,
+            'extension' => $extension,
+        ]);
 
-        SpatieImage::load($path . $hash . '.' . $extension)
-            ->fit(Fit::Contain, 300, 200)
-            ->save($path . $hash . '_thumb.' . $extension);
+        $this->stageAndDispatch($file, $hash, $firstTwoChars);
 
-        return $hash;
+        return $image;
+    }
+
+    private function stageAndDispatch(UploadedFile $file, string $hash, string $firstTwoChars): void
+    {
+        $stagingDir = storage_path('app/private/uploads/originals/' . $firstTwoChars);
+        if (! is_dir($stagingDir)) {
+            mkdir($stagingDir, 0755, true);
+        }
+
+        $stagingPath = $stagingDir . '/' . $hash . '.source';
+        if (! file_exists($stagingPath)) {
+            $file->move($stagingDir, $hash . '.source');
+        }
+
+        dispatch(new ProcessUploadedMedia($hash));
     }
 
     private function getHash(UploadedFile $file): string
     {
-        $hash = hash_file('sha256', $file->getPathname());
+        $algorithmConfig = config('media.hash_algorithm', 'xxh3');
+        $algorithm = is_string($algorithmConfig) && $algorithmConfig !== '' ? $algorithmConfig : 'xxh3';
+
+        if (! in_array($algorithm, hash_algos(), true)) {
+            $fallbackConfig = config('media.hash_fallback_algorithm', 'sha256');
+            $fallback = is_string($fallbackConfig) && $fallbackConfig !== '' ? $fallbackConfig : 'sha256';
+            $algorithm = in_array($fallback, hash_algos(), true) ? $fallback : 'sha256';
+        }
+
+        $hash = hash_file($algorithm, $file->getPathname());
         throw_unless($hash, \RuntimeException::class, 'Failed to compute file hash.');
 
         return $hash;
@@ -68,6 +81,7 @@ final class ImageUploader
             'image/jpeg' => 'jpg',
             'image/png' => 'png',
             'image/gif' => 'gif',
+            'video/mp4', 'video/quicktime', 'video/webm', 'video/x-matroska' => 'mp4',
             default => throw new \InvalidArgumentException('Unsupported image type: ' . $file->getClientMimeType()),
         };
     }

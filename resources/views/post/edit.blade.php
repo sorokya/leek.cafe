@@ -31,25 +31,6 @@
                     value="{{ old('body', $content->body) }}" />
                 <div id="body-editor"></div>
             </div>
-
-            <div class="form-group">
-                <label class="form-label" for="post-embeds">Embeds</label>
-
-                <input type="hidden" name="embeds" id="embeds"
-                    value="{{ old('embeds', $content->embedImages->map(fn($img) => $img->getShortHash())->implode(',')) }}" />
-
-                <div class="thoughts-attach">
-                    <label class="btn" for="post-embeds">
-                        <x-heroicon-o-paper-clip class="btn__icon" aria-hidden="true" focusable="false" width="16"
-                            height="16" />
-                        Add images
-                    </label>
-                    <input class="thoughts-attach__input" id="post-embeds" type="file" accept="image/*" multiple
-                        data-embed-input />
-                </div>
-
-                <div class="embed-gallery" data-embed-list></div>
-            </div>
         </x-slot>
         <x-slot name="actions">
             <button type="submit" class="btn btn--primary">

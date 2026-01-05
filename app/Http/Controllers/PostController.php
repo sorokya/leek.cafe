@@ -50,7 +50,7 @@ final class PostController extends ContentController
     protected function getShowQuery(): Builder
     {
         return Content::query()
-            ->with('user', 'coverImage', 'embedImages')
+            ->with('user', 'coverImage')
             ->whereHas('post');
     }
 
@@ -106,5 +106,10 @@ final class PostController extends ContentController
     protected function getContentType(): string
     {
         return 'post';
+    }
+
+    protected function supportsEmbeds(): bool
+    {
+        return false;
     }
 }

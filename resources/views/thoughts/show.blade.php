@@ -67,7 +67,7 @@
                                         width="16" height="16" />
                                 </label>
                                 <input class="thoughts-attach__input" id="attachment-{{ $content->slug }}" type="file"
-                                    accept="image/*" multiple data-embed-input />
+                                    accept="image/*,video/*" multiple data-embed-input />
                             </div>
                         </div>
 
