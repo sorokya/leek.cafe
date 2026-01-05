@@ -1,17 +1,14 @@
 <x-layout title="{{ $profileUser->name }} ({{ '@' . $profileUser->username }})">
     <div class="stack">
-        <header class="section" aria-label="Profile header">
-            <div class="section__content">
-                <h1 class="section__title" style="padding: 0">
-                    {{ $profileUser->name }} <a
-                        href="{{ route('user.profile', ['user' => $profileUser->username]) }}">{{ '@' . $profileUser->username }}</a>
-                </h1>
-            </div>
-        </header>
+        <h1 class="profile-header" style="padding: 0">
+            {{ $profileUser->name }} <a class="profile-link"
+                href="{{ route('user.profile', ['user' => $profileUser->username]) }}">{{ '@' . $profileUser->username }}</a>
+        </h1>
+
 
         <div class="profile-grid">
             <div class="stack">
-                <section class="section" aria-label="Statistics">
+                <section class="section" aria-label="Statistics" style="display: none;">
                     <header class="section__header">
                         <h2 class="section__title">
                             Statistics
@@ -22,7 +19,7 @@
                     </div>
                 </section>
 
-                <section class="section" aria-label="Habits">
+                <section class="section" aria-label="Habits" style="display: none;">
                     <header class="section__header">
                         <h2 class="section__title">
                             Habits
@@ -41,6 +38,8 @@
             <section class="section" aria-label="Activity feed">
                 <header class="section__header">
                     <h2 class="section__title">
+                        <x-heroicon-o-rss class="section__title-icon" aria-hidden="true" focusable="false"
+                            width="24" height="24" />
                         Activity
                     </h2>
                 </header>

@@ -1,10 +1,14 @@
 <section class="section" aria-label="Day view">
     <header class="section__header">
         <h2 class="section__title" style="align-items: center; justify-content: space-between">
-            <a class="content-link" href="{{ route('user.profile.date', [$profileUser, $day->format('Y-m-d')]) }}"
-                data-day-link>
-                {{ $day->format('l, F jS Y') }}
-            </a>
+            <div style="display: flex; align-items: center; gap: 0.5rem">
+                <x-heroicon-o-calendar-days class="section__title-icon" aria-hidden="true" focusable="false" width="24"
+                    height="24" /> <a class="content-link"
+                    href="{{ route('user.profile.date', [$profileUser, $day->format('Y-m-d')]) }}" data-day-link>
+
+                    {{ $day->format('l, F jS Y') }}
+                </a>
+            </div>
 
             <span class="section__actions" style="margin: 0; justify-content: flex-end">
                 @php($prev = $day->subDay()->format('Y-m-d'))
@@ -83,13 +87,16 @@
                             </div>
                         </x-form>
                     @else
-                        <div class="form">
+                        <div class="metrics">
                             @foreach ($metrics as $metric)
                                 @php($entry = $metricEntries->get($metric->id))
-                                <div class="form-field">
-                                    <div class="form-label">{{ $metric->name }}</div>
-                                    <div class="content-meta">{{ $entry?->value ?? '—' }}</div>
-                                </div>
+                                <x-status-pill :icon="$metric->icon"
+                                    status="{{ $metric->name . ': ' . ($entry?->value ?? '—') }}" :bg="$metric->color
+                                        ? 'color-mix(in oklab, ' . $metric->color . ' 22%, var(--bg))'
+                                        : 'var(--surface)'"
+                                    :fg="$metric->color
+                                        ? 'color-mix(in oklab, ' . $metric->color . ' 30%, var(--text))'
+                                        : 'var(--text)'" />
                             @endforeach
                         </div>
                     @endif
@@ -124,13 +131,16 @@
                             </div>
                         </x-form>
                     @else
-                        <div class="form">
+                        <div class="habits">
                             @foreach ($habits as $habit)
                                 @php($entry = $habitEntries->get($habit->id))
-                                <div class="form-field">
-                                    <div class="form-label">{{ $habit->name }}</div>
-                                    <div class="content-meta">{{ $entry?->done ?? false ? 'Yes' : 'No' }}</div>
-                                </div>
+                                <x-status-pill :icon="$habit->icon"
+                                    status="{{ $habit->name . ': ' . ($entry ? '✓' : '✗') }}" :bg="$habit->color
+                                        ? 'color-mix(in oklab, ' . $habit->color . ' 22%, var(--bg))'
+                                        : 'var(--surface)'"
+                                    :fg="$habit->color
+                                        ? 'color-mix(in oklab, ' . $habit->color . ' 30%, var(--text))'
+                                        : 'var(--text)'" />
                             @endforeach
                         </div>
                     @endif
@@ -138,7 +148,7 @@
             </div>
 
             <div>
-                <h3 class="content-title" style="margin-bottom: 0.5rem">Content this day</h3>
+                <h3 class="content-title" style="margin-bottom: 0.5rem">Content</h3>
 
                 @if ($contentForDay->isEmpty())
                     <p class="content-meta">No content created on this day.</p>

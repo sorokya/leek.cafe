@@ -699,3 +699,17 @@ img.embed-media {
   accent-color: var(--accent);
   flex: 0 0 auto;
 }
+
+.profile-header {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.profile-link {
+  color: var(--accent);
+  text-decoration: none;
+}
