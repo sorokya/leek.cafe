@@ -192,6 +192,48 @@
   margin-left: 0.1rem;
 }
 
+.embed-item--expanded {
+  flex: 0 0 100%;
+}
+
+.embed-expanded {
+  width: 100%;
+}
+
+.embed-collapse {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.embed-collapse:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.embed-media {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius) - 6px);
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 85%, var(--bg));
+}
+
+img.embed-media {
+  cursor: pointer;
+}
+
 .embed-thumb {
   display: block;
   width: 5.5rem;

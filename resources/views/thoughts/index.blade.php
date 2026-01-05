@@ -73,7 +73,8 @@
                                         @foreach ($content->embedImages as $image)
                                             <div class="embed-item">
                                                 <a class="embed-thumb" href="{{ $image->getUrl() }}" target="_blank"
-                                                    rel="noopener">
+                                                    rel="noopener"
+                                                    data-embed-kind="{{ strtolower((string) $image->extension) === 'mp4' ? 'video' : 'image' }}">
                                                     <img src="{{ $image->getThumbnailUrl() }}" alt=""
                                                         loading="lazy" decoding="async" />
 
