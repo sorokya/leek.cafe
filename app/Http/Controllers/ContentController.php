@@ -10,13 +10,16 @@ use App\Models\Content;
 use App\Models\User;
 use App\Services\ContentExcerptGenerator;
 use App\Services\ContentRenderer;
+use App\Services\EmbedImageSyncer;
 use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,6 +30,7 @@ abstract class ContentController extends Controller
         protected readonly ContentRenderer $renderer,
         protected readonly ContentExcerptGenerator $excerptGenerator,
         protected readonly InlineImageSyncer $inlineImageSyncer,
+        protected readonly EmbedImageSyncer $embedImageSyncer,
         protected readonly ImageUploader $imageUploader,
     ) {}
 
@@ -68,6 +72,14 @@ abstract class ContentController extends Controller
      */
     abstract protected function updateTypeSpecificData(Content $content, array $validated): void;
 
+    /**
+     * Whether this content type supports the "embeds" attachment gallery.
+     */
+    protected function supportsEmbeds(): bool
+    {
+        return true;
+    }
+
     public function index(): View
     {
         $contents = $this->getListingQuery()->paginate(10);
@@ -91,7 +103,7 @@ abstract class ContentController extends Controller
     public function show(string $slug): View
     {
         $content = $this->getShowQuery()
-            ->where('slug', $slug)
+            ->where('slug', 'like', $slug . '%')
             ->unless(Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
@@ -160,6 +172,17 @@ abstract class ContentController extends Controller
 
         $this->inlineImageSyncer->sync($content);
 
+        if ($this->supportsEmbeds()) {
+            $embeds = array_key_exists('embeds', $validated) && is_string($validated['embeds'])
+                ? $validated['embeds']
+                : null;
+            $this->embedImageSyncer->sync($content, $embeds);
+        } else {
+            $content->images()
+                ->wherePivot('role', ImageRole::EMBED->value)
+                ->detach();
+        }
+
         return to_route($this->getRouteName('edit'), ['slug' => $content->slug])
             ->with('status', sprintf('%s updated successfully.', ucfirst($this->getContentType())));
     }
@@ -186,7 +209,7 @@ abstract class ContentController extends Controller
                 'user_id' => $user->id,
                 'visibility' => $validated['visibility'],
                 'title' => $validated['title'],
-                'slug' => Str::slug($validated['title']),
+                'slug' => $validated['slug'] ?? Str::slug($validated['title']),
                 'body' => $validated['body'],
             ]);
 
@@ -198,6 +221,13 @@ abstract class ContentController extends Controller
             }
 
             $this->inlineImageSyncer->sync($content);
+
+            if ($this->supportsEmbeds()) {
+                $embeds = array_key_exists('embeds', $validated) && is_string($validated['embeds'])
+                    ? $validated['embeds']
+                    : null;
+                $this->embedImageSyncer->sync($content, $embeds);
+            }
 
             return $content;
         });
@@ -241,9 +271,58 @@ abstract class ContentController extends Controller
      */
     public function uploadImages(Request $request): array
     {
-        $validated = $request->validate([
-            'image.*' => ['required', 'image'],
+        $maxUploadKilobytes = Config::integer('media.max_upload_kilobytes', 51200);
+
+        $validator = Validator::make($request->all(), [
+            'image' => ['required', 'array'],
+            'image.*' => [
+                'required',
+                'file',
+                'mimetypes:image/jpeg,image/png,image/gif,video/mp4,video/quicktime,video/webm,video/x-matroska',
+                'max:' . $maxUploadKilobytes,
+            ],
         ]);
+
+        $validator->after(function ($validator) use ($request): void {
+            $files = $request->file('image', []);
+            if (! is_array($files)) {
+                return;
+            }
+
+            $maxDuration = Config::integer('media.max_video_duration_seconds', 120);
+            $timeout = Config::integer('media.ffprobe_timeout_seconds', 10);
+            $allowedVideoMimes = [
+                'video/mp4',
+                'video/quicktime',
+                'video/webm',
+                'video/x-matroska',
+            ];
+
+            foreach ($files as $index => $file) {
+                $mime = (string) $file->getClientMimeType();
+                if (! in_array($mime, $allowedVideoMimes, true)) {
+                    continue;
+                }
+
+                $duration = resolve(\App\Support\Ffmpeg::class)
+                    ->probeDurationSeconds($file->getPathname(), $timeout);
+
+                if ($duration === null) {
+                    $validator->errors()->add('image.' . $index, 'Unable to read video duration.');
+
+                    continue;
+                }
+
+                if ($duration > $maxDuration) {
+                    $validator->errors()->add(
+                        'image.' . $index,
+                        'Video is too long (max ' . $maxDuration . 's).',
+                    );
+                }
+            }
+        });
+
+        $validated = $validator->validate();
 
         $images = $validated['image'] ?? [];
         $hashes = [];

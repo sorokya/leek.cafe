@@ -10,7 +10,7 @@ export function initializeEditor() {
     theme: theme === 'dark' ? 'cave' : 'solar',
   });
 
-  editor.textarea.addEventListener('change', () => {
+  editor.textarea.addEventListener('input', () => {
     hiddenInput.value = editor.getValue();
   });
 
@@ -42,7 +42,7 @@ export function initializeEditor() {
     formData.append('_token', csrfToken);
     let index = 0;
     for (const file of files) {
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
         if (!file) continue;
 
         const placeholder = `![](@img:uploading-${Date.now()}-${index})`;
@@ -63,11 +63,46 @@ export function initializeEditor() {
       const response = await fetch(`/${contentType}/upload-images`, {
         method: 'POST',
         body: formData,
-        accept: 'application/json',
+        headers: {
+          Accept: 'application/json',
+        },
       });
 
       if (!response.ok) {
-        console.error('Image upload failed', response);
+        const content = editor.getValue();
+
+        // Best-effort parse of Laravel validation errors (422).
+        let errorByIndex = [];
+        try {
+          const payload = await response.json();
+          const errors = payload?.errors;
+
+          if (errors && typeof errors === 'object') {
+            errorByIndex = placeholders.map((_, i) => {
+              const key = `image.${i}`;
+              const value = errors[key] || errors.image;
+              const first = Array.isArray(value) ? value[0] : null;
+              return typeof first === 'string' && first.length > 0
+                ? first
+                : null;
+            });
+          }
+        } catch {
+          // Ignore JSON parsing errors; fall back to a generic message.
+        }
+
+        const fallbackMessage =
+          response.status === 413
+            ? 'Upload is too large.'
+            : `Upload failed (HTTP ${response.status}).`;
+
+        const updatedContent = placeholders.reduce((text, placeholder, i) => {
+          const message = errorByIndex[i] || fallbackMessage;
+          return text.replace(placeholder, message);
+        }, content);
+
+        editor.setValue(updatedContent);
+        hiddenInput.value = editor.getValue();
         return;
       }
 
@@ -79,9 +114,17 @@ export function initializeEditor() {
         const content = editor.getValue();
         const updatedContent = content.replace(placeholder, markdownImage);
         editor.setValue(updatedContent);
+        hiddenInput.value = editor.getValue();
       });
     } catch (error) {
       console.error('Error uploading image:', error);
+
+      const content = editor.getValue();
+      const updatedContent = placeholders.reduce((text, placeholder) => {
+        return text.replace(placeholder, 'Upload failed.');
+      }, content);
+      editor.setValue(updatedContent);
+      hiddenInput.value = editor.getValue();
     }
   }
 

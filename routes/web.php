@@ -69,6 +69,11 @@ Route::controller(ProjectController::class)->group(function (): void {
 
 Route::controller(ThoughtsController::class)->group(function (): void {
     Route::get('/thoughts', 'index')->name('thoughts.index');
+    Route::get('/thoughts/{slug}', 'show')->name('thoughts.show');
+    Route::post('/thoughts', 'store')->middleware('auth')->name('thoughts.store');
+    Route::put('/thoughts/{slug}', 'update')->middleware('auth')->name('thoughts.update');
+    Route::delete('/thoughts/{slug}', 'destroy')->middleware('auth')->name('thoughts.destroy');
+    Route::post('/thoughts/upload-images', 'uploadImages')->middleware('auth')->name('thoughts.upload-images');
 });
 
 Route::controller(MediaController::class)->group(function (): void {
@@ -79,9 +84,7 @@ Route::post('/theme/toggle', ThemeController::class)->name('theme.toggle');
 
 Route::controller(ImageController::class)->group(function (): void {
     Route::get('/img/{hash}/thumbnail', 'serveThumbnail')
-        ->middleware('cache.headers:public;max_age=31536000;etag')
         ->name('image.serve-thumbnail')->where('hash', '.*');
     Route::get('/img/{hash}', 'serve')
-        ->middleware('cache.headers:public;max_age=31536000;etag')
         ->name('image.serve')->where('hash', '.*');
 });

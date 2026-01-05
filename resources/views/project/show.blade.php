@@ -1,6 +1,10 @@
 @php($cover = $content->coverImage->first())
 
 <x-layout title="{{ $content->title }}" description="{{ $description }}" :image="$cover?->getUrl()" ogType="article">
+    <a href="{{ route('projects.index') }}" class="btn btn--small">
+        <x-heroicon-o-arrow-left class="btn__icon" aria-hidden="true" focusable="false" width="16" height="16" />
+        Back to Projects
+    </a>
     <article class="content-detail">
         <header class="content-detail__header">
             @if ($cover)

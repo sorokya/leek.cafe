@@ -89,7 +89,7 @@ jobs:
               -e LOG_STACK=stderr \
               -e LOG_LEVEL=info \
               -e SESSION_DRIVER=file \
-              -e QUEUE_CONNECTION=sync \
+              -e QUEUE_CONNECTION=deferred \
               -e CACHE_STORE=file \
               ${{ env.IMAGE_NAME }}:latest
 

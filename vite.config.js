@@ -8,6 +8,7 @@ export default defineConfig({
         'resources/css/app.css',
         'resources/js/app.js',
         'resources/js/edit-post.js',
+        'resources/js/thoughts.js',
       ],
       refresh: true,
     }),

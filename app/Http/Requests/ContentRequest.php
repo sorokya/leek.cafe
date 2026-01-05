@@ -25,9 +25,11 @@ abstract class ContentRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'visibility' => ['required', 'integer'],
             'cover' => ['nullable', 'image'],
+            'embeds' => ['nullable', 'string'],
         ];
     }
 }

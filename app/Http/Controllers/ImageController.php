@@ -20,13 +20,22 @@ final class ImageController extends Controller
         $firstTwoChars = substr($image->hash, 0, 2);
         $path = storage_path('app/public/uploads/' . $firstTwoChars . '/' . $image->hash . '.' . $image->extension);
 
-        abort_unless(file_exists($path), 404);
+        if (! file_exists($path)) {
+            return new Response('Processing', 200, [
+                'Content-Type' => 'text/plain; charset=UTF-8',
+                'Cache-Control' => 'no-store',
+            ]);
+        }
 
         $mimeType = mime_content_type($path) ?: 'application/octet-stream';
         $content = file_get_contents($path);
 
+        $etag = sha1($image->hash . '|' . filemtime($path) . '|' . filesize($path));
+
         return new Response($content, 200, [
             'Content-Type' => $mimeType,
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+            'ETag' => '"' . $etag . '"',
         ]);
     }
 
@@ -39,15 +48,27 @@ final class ImageController extends Controller
         abort_unless($image instanceof Image, 404);
 
         $firstTwoChars = substr($image->hash, 0, 2);
-        $path = storage_path('app/public/uploads/' . $firstTwoChars . '/' . $image->hash . '_thumb.' . $image->extension);
+        $thumbName = $image->extension === 'mp4'
+            ? $image->hash . '_thumb.jpg'
+            : $image->hash . '_thumb.' . $image->extension;
+        $path = storage_path('app/public/uploads/' . $firstTwoChars . '/' . $thumbName);
 
-        abort_unless(file_exists($path), 404);
+        if (! file_exists($path)) {
+            return new Response('Processing', 200, [
+                'Content-Type' => 'text/plain; charset=UTF-8',
+                'Cache-Control' => 'no-store',
+            ]);
+        }
 
         $mimeType = mime_content_type($path) ?: 'application/octet-stream';
         $content = file_get_contents($path);
 
+        $etag = sha1($image->hash . '|thumb|' . filemtime($path) . '|' . filesize($path));
+
         return new Response($content, 200, [
             'Content-Type' => $mimeType,
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+            'ETag' => '"' . $etag . '"',
         ]);
     }
 }
