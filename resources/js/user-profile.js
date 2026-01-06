@@ -33,13 +33,14 @@ function bindDayView(root) {
   const picker = root.querySelector('[data-day-picker]');
   const calendarButton = root.querySelector('[data-day-calendar]');
   const dayLink = root.querySelector('[data-day-link]');
+  const saveForm = root.querySelector('[data-day-save-form]');
 
   const fragmentUrlForDate = (date) => {
     const base = dayLink?.getAttribute('href');
     if (!base) return null;
 
     // base is /user/<username>/YYYY-MM-DD
-    return `${base}`.replace(/\d{4}-\d{2}-\d{2}$/, date) + '/day';
+    return `${`${base}`.replace(/\d{4}-\d{2}-\d{2}$/, date)}/day`;
   };
 
   const pageUrlForDate = (date) => {
@@ -90,6 +91,33 @@ function bindDayView(root) {
 
       await loadDay(fragmentUrl);
       history.pushState({}, '', pageUrl);
+    });
+  }
+
+  if (saveForm) {
+    saveForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      try {
+        const response = await fetch(saveForm.action, {
+          method: 'POST',
+          body: new FormData(saveForm),
+          headers: {
+            'X-Requested-With': 'fetch',
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          // Fall back to a regular form post so validation errors render.
+          saveForm.submit();
+          return;
+        }
+
+        await loadDay(window.location.pathname + '/day');
+      } catch {
+        saveForm.submit();
+      }
     });
   }
 

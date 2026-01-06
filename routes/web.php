@@ -69,6 +69,10 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/user/{user:username}/{date}/habits', [UserDayController::class, 'storeHabits'])
         ->where('date', '\\d{4}-\\d{2}-\\d{2}')
         ->name('user.day.habits.store');
+
+    Route::post('/user/{user:username}/{date}/day', [UserDayController::class, 'store'])
+        ->where('date', '\\d{4}-\\d{2}-\\d{2}')
+        ->name('user.day.store');
 });
 
 Route::controller(PostController::class)->group(function (): void {

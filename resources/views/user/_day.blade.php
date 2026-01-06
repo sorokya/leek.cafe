@@ -35,73 +35,71 @@
 
     <div class="section__content">
         <div class="stack" style="gap: 1rem">
+            @if ($isOwner)
+                <x-form action="{{ route('user.day.store', [$profileUser, $day->format('Y-m-d')]) }}" method="POST"
+                    data-day-save-form>
+            @endif
             <div>
+
                 <h3 class="content-title" style="margin-bottom: 0.5rem">Metrics</h3>
 
                 @if ($metrics->isEmpty())
                     <p class="content-meta">No metrics configured.</p>
                 @else
                     @if ($isOwner)
-                        <x-form action="{{ route('user.day.metrics.store', [$profileUser, $day->format('Y-m-d')]) }}"
-                            method="POST">
-                            <div class="metrics">
-                                @foreach ($metrics as $metric)
-                                    @php($entry = $metricEntries->get($metric->id))
-                                    @php($value = old('metrics.' . $metric->id, $entry?->value))
+                        <div class="metrics">
+                            @foreach ($metrics as $metric)
+                                @php($entry = $metricEntries->get($metric->id))
+                                @php($rawValue = old('metrics.' . $metric->id, $entry?->value))
+                                @php($value = \App\Support\MetricValueFormatter::format($rawValue))
 
-                                    <div style="display: flex; flex-direction: column; gap: 0.5rem">
-                                        <x-status-pill :icon="$metric->icon" :status="$metric->name" :bg="$metric->color
-                                            ? 'color-mix(in oklab, ' . $metric->color . ' 22%, var(--bg))'
-                                            : 'var(--surface)'"
-                                            :fg="$metric->color
-                                                ? 'color-mix(in oklab, ' . $metric->color . ' 30%, var(--text))'
-                                                : 'var(--text)'" />
+                                <div class="day-metric-edit">
+                                    <x-status-pill :icon="$metric->icon" :status="$metric->name" :bg="$metric->color
+                                        ? 'color-mix(in oklab, ' . $metric->color . ' 22%, var(--bg))'
+                                        : 'var(--surface)'"
+                                        :fg="$metric->color
+                                            ? 'color-mix(in oklab, ' . $metric->color . ' 30%, var(--text))'
+                                            : 'var(--text)'" />
 
-                                        @if ($metric->hasOptions())
-                                            <input type="hidden" name="metrics[{{ $metric->id }}]" value="" />
-                                            <fieldset class="toggle-group" aria-label="{{ $metric->name }}">
-                                                <div class="toggle-group__inner" role="radiogroup"
-                                                    aria-label="{{ $metric->name }}">
-                                                    @foreach ($metric->optionList() as $option)
-                                                        @php($optionId = 'metric-' . $metric->id . '-option-' . $loop->index)
-                                                        <input class="toggle-group__input" type="radio"
-                                                            name="metrics[{{ $metric->id }}]"
-                                                            id="{{ $optionId }}" value="{{ $option }}"
-                                                            @checked((string) old('metrics.' . $metric->id, $entry?->value) === (string) $option) />
-                                                        <label class="toggle-group__button" for="{{ $optionId }}">
-                                                            {{ $option }}
-                                                        </label>
-                                                    @endforeach
-                                                </div>
-                                            </fieldset>
-                                        @else
-                                            <input class="form-input" type="number" inputmode="decimal" step="0.01"
-                                                name="metrics[{{ $metric->id }}]" value="{{ $value }}"
-                                                @if ($metric->min !== null) min="{{ $metric->min }}" @endif
-                                                @if ($metric->max !== null) max="{{ $metric->max }}" @endif
-                                                style="max-width: 10rem" />
-                                        @endif
+                                    @if ($metric->hasOptions())
+                                        <input type="hidden" name="metrics[{{ $metric->id }}]" value="" />
+                                        <fieldset class="toggle-group" aria-label="{{ $metric->name }}">
+                                            <div class="toggle-group__inner" role="radiogroup"
+                                                aria-label="{{ $metric->name }}">
+                                                @foreach ($metric->optionList() as $option)
+                                                    @php($optionId = 'metric-' . $metric->id . '-option-' . $loop->index)
+                                                    <input class="toggle-group__input" type="radio"
+                                                        name="metrics[{{ $metric->id }}]" id="{{ $optionId }}"
+                                                        value="{{ $option }}" @checked((string) (\App\Support\MetricValueFormatter::format($rawValue) ?? '') === (string) $option) />
+                                                    <label class="toggle-group__button" for="{{ $optionId }}">
+                                                        {{ $option }}
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </fieldset>
+                                    @else
+                                        <input class="form-input day-metric-edit__number" type="number"
+                                            inputmode="numeric" step="1" name="metrics[{{ $metric->id }}]"
+                                            value="{{ $value }}"
+                                            @if ($metric->min !== null) min="{{ $metric->min }}" @endif
+                                            @if ($metric->max !== null) max="{{ $metric->max }}" @endif />
+                                    @endif
 
-                                        @error('metrics.' . $metric->id)
-                                            <p class="form-hint form-hint--error">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <div class="form-actions">
-                                <button class="nav-link" type="submit">Save</button>
-                            </div>
-                        </x-form>
+                                    @error('metrics.' . $metric->id)
+                                        <p class="form-hint form-hint--error">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endforeach
+                        </div>
                     @else
                         <div class="metrics">
                             @foreach ($metrics as $metric)
                                 @php($entry = $metricEntries->get($metric->id))
                                 <x-status-pill :icon="$metric->icon"
-                                    status="{{ $metric->name . ': ' . ($entry?->value ?? '—') }}" :bg="$metric->color
+                                    status="{{ $metric->name . ': ' . ($entry ? \App\Support\MetricValueFormatter::format($entry->value) ?? '—' : '—') }}"
+                                    :bg="$metric->color
                                         ? 'color-mix(in oklab, ' . $metric->color . ' 22%, var(--bg))'
-                                        : 'var(--surface)'"
-                                    :fg="$metric->color
+                                        : 'var(--surface)'" :fg="$metric->color
                                         ? 'color-mix(in oklab, ' . $metric->color . ' 30%, var(--text))'
                                         : 'var(--text)'" />
                             @endforeach
@@ -117,34 +115,27 @@
                     <p class="content-meta">No habits configured.</p>
                 @else
                     @if ($isOwner)
-                        <x-form action="{{ route('user.day.habits.store', [$profileUser, $day->format('Y-m-d')]) }}"
-                            method="POST">
-                            <div class="habits">
-                                @foreach ($habits as $habit)
-                                    @php($entry = $habitEntries->get($habit->id))
-                                    @php($done = (bool) old('habits.' . $habit->id, $entry?->done ?? false))
+                        <div class="habits">
+                            @foreach ($habits as $habit)
+                                @php($entry = $habitEntries->get($habit->id))
+                                @php($done = (bool) old('habits.' . $habit->id, $entry?->done ?? false))
 
-                                    <label style="cursor: pointer">
-                                        <input class="toggle-group__input" type="checkbox"
-                                            name="habits[{{ $habit->id }}]" value="1"
-                                            @checked($done) />
-                                        <x-status-pill :icon="$habit->icon" :bg="$habit->color
-                                            ? 'color-mix(in oklab, ' . $habit->color . ' 22%, var(--bg))'
-                                            : 'var(--surface)'" :fg="$habit->color
-                                            ? 'color-mix(in oklab, ' . $habit->color . ' 30%, var(--text))'
-                                            : 'var(--text)'"
-                                            style="--status-pill-bg-checked: {{ $habit->color ? 'color-mix(in oklab, ' . $habit->color . ' 32%, var(--bg))' : 'var(--accent-soft)' }}; --status-pill-fg-checked: var(--text);">
-                                            <span>{{ $habit->name }}: <span class="habit-pill__state"
-                                                    aria-hidden="true"></span></span>
-                                        </x-status-pill>
-                                    </label>
-                                @endforeach
-                            </div>
-
-                            <div class="form-actions">
-                                <button class="nav-link" type="submit">Save</button>
-                            </div>
-                        </x-form>
+                                <label class="day-habit-pill">
+                                    <input class="toggle-group__input" type="checkbox"
+                                        name="habits[{{ $habit->id }}]" value="1"
+                                        @checked($done) />
+                                    <x-status-pill :icon="$habit->icon" :bg="$habit->color
+                                        ? 'color-mix(in oklab, ' . $habit->color . ' 22%, var(--bg))'
+                                        : 'var(--surface)'" :fg="$habit->color
+                                        ? 'color-mix(in oklab, ' . $habit->color . ' 30%, var(--text))'
+                                        : 'var(--text)'"
+                                        style="--status-pill-bg-checked: {{ $habit->color ? 'color-mix(in oklab, ' . $habit->color . ' 32%, var(--bg))' : 'var(--accent-soft)' }}; --status-pill-fg-checked: var(--text);">
+                                        <span>{{ $habit->name }}: <span class="habit-pill__state"
+                                                aria-hidden="true"></span></span>
+                                    </x-status-pill>
+                                </label>
+                            @endforeach
+                        </div>
                     @else
                         <div class="habits">
                             @foreach ($habits as $habit)
@@ -161,6 +152,14 @@
                     @endif
                 @endif
             </div>
+
+            @if ($isOwner)
+                <div class="form-actions">
+                    <button class="nav-link" type="submit">Save</button>
+                </div>
+
+                </x-form>
+            @endif
 
             <div>
                 <h3 class="content-title" style="margin-bottom: 0.5rem">Content</h3>

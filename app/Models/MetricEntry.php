@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Support\MetricValueFormatter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -41,5 +42,10 @@ final class MetricEntry extends Model
     public function metric(): BelongsTo
     {
         return $this->belongsTo(Metric::class);
+    }
+
+    public function displayValue(): string
+    {
+        return MetricValueFormatter::format($this->value) ?? '';
     }
 }

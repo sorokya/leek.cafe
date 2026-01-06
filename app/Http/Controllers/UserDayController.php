@@ -10,11 +10,46 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 final class UserDayController extends Controller
 {
+    public function store(Request $request, User $user, string $date): RedirectResponse|Response
+    {
+        abort_unless(Auth::id() === $user->id, 403);
+
+        $day = CarbonImmutable::createFromFormat('Y-m-d', $date, $user->timezone);
+        abort_unless($day instanceof CarbonImmutable, 404);
+
+        $dayString = $day->format('Y-m-d');
+
+        $validated = $request->validate([
+            'metrics' => ['array'],
+            'metrics.*' => ['nullable'],
+            'habits' => ['array'],
+            'habits.*' => ['nullable'],
+        ]);
+
+        $metricValues = array_key_exists('metrics', $validated) && is_array($validated['metrics'])
+            ? $validated['metrics']
+            : [];
+
+        $habitDoneMap = array_key_exists('habits', $validated) && is_array($validated['habits'])
+            ? $validated['habits']
+            : [];
+
+        $this->persistMetrics($user, $dayString, $metricValues);
+        $this->persistHabits($user, $dayString, $habitDoneMap);
+
+        if ($request->expectsJson()) {
+            return response()->noContent();
+        }
+
+        return to_route('user.profile.date', [$user, $dayString]);
+    }
+
     public function storeMetrics(Request $request, User $user, string $date): RedirectResponse
     {
         abort_unless(Auth::id() === $user->id, 403);
@@ -29,11 +64,42 @@ final class UserDayController extends Controller
             'metrics.*' => ['nullable'],
         ]);
 
-        $metrics = $user->metrics()->get()->keyBy('id');
-
         $values = array_key_exists('metrics', $validated) && is_array($validated['metrics'])
             ? $validated['metrics']
             : [];
+
+        $this->persistMetrics($user, $dayString, $values);
+
+        return to_route('user.profile.date', [$user, $dayString]);
+    }
+
+    public function storeHabits(Request $request, User $user, string $date): RedirectResponse
+    {
+        abort_unless(Auth::id() === $user->id, 403);
+
+        $day = CarbonImmutable::createFromFormat('Y-m-d', $date, $user->timezone);
+        abort_unless($day instanceof CarbonImmutable, 404);
+
+        $dayString = $day->format('Y-m-d');
+
+        $validated = $request->validate([
+            'habits' => ['array'],
+            'habits.*' => ['nullable'],
+        ]);
+
+        $doneMap = array_key_exists('habits', $validated) && is_array($validated['habits'])
+            ? $validated['habits']
+            : [];
+
+        $this->persistHabits($user, $dayString, $doneMap);
+
+        return to_route('user.profile.date', [$user, $dayString]);
+    }
+
+    /** @param array<int|string, mixed> $values */
+    private function persistMetrics(User $user, string $dayString, array $values): void
+    {
+        $metrics = $user->metrics()->get()->keyBy('id');
 
         foreach ($values as $metricId => $rawValue) {
             $metricId = (int) $metricId;
@@ -97,29 +163,12 @@ final class UserDayController extends Controller
                 'value' => $value,
             ]);
         }
-
-        return to_route('user.profile.date', [$user, $dayString]);
     }
 
-    public function storeHabits(Request $request, User $user, string $date): RedirectResponse
+    /** @param array<int|string, mixed> $doneMap */
+    private function persistHabits(User $user, string $dayString, array $doneMap): void
     {
-        abort_unless(Auth::id() === $user->id, 403);
-
-        $day = CarbonImmutable::createFromFormat('Y-m-d', $date, $user->timezone);
-        abort_unless($day instanceof CarbonImmutable, 404);
-
-        $dayString = $day->format('Y-m-d');
-
-        $validated = $request->validate([
-            'habits' => ['array'],
-            'habits.*' => ['nullable'],
-        ]);
-
         $habits = $user->habits()->get()->keyBy('id');
-
-        $doneMap = array_key_exists('habits', $validated) && is_array($validated['habits'])
-            ? $validated['habits']
-            : [];
 
         foreach ($habits as $habitId => $habit) {
             $isDone = array_key_exists((string) $habitId, $doneMap);
@@ -142,7 +191,5 @@ final class UserDayController extends Controller
                 'done' => true,
             ]);
         }
-
-        return to_route('user.profile.date', [$user, $dayString]);
     }
 }

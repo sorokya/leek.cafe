@@ -362,6 +362,20 @@ a.btn {
   content: "✓";
 }
 
+.day-metric-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.day-metric-edit__number {
+  max-width: 10rem;
+}
+
+.day-habit-pill {
+  cursor: pointer;
+}
+
 #body-editor {
   height: 600px;
 }
