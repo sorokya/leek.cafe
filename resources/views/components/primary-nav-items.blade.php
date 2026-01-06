@@ -2,8 +2,7 @@
     'mobile' => false,
 ])
 
-<a class="nav-link {{ request()->is('/') ? 'is-active' : '' }}" href="{{ route('welcome') }}" aria-label="Home"
-    title="Home">
+<a class="nav-link {{ request()->is('/') ? 'is-active' : '' }}" href="{{ route('home') }}" aria-label="Home" title="Home">
     <x-heroicon-o-home class="nav-link__icon" aria-hidden="true" focusable="false" width="18" height="18" />
     {{ $mobile || request()->is('/') ? 'Home' : '' }}
 </a>

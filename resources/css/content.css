@@ -1,6 +1,6 @@
 /*
   Content feed
-  - Styles used by the welcome page feed and anywhere else content is listed.
+  - Styles used by the home page feed and anywhere else content is listed.
   - Uses existing theme tokens from variables.css
 */
 
@@ -698,4 +698,18 @@ img.embed-media {
   height: 1rem;
   accent-color: var(--accent);
   flex: 0 0 auto;
+}
+
+.profile-header {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.profile-link {
+  color: var(--accent);
+  text-decoration: none;
 }

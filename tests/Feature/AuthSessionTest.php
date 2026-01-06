@@ -19,6 +19,7 @@ test('login persists across requests', function (): void {
     $user = User::factory()->create([
         'username' => fake()->userName(),
         'password' => Hash::make('secret-password'),
+        'primary' => true,
     ]);
 
     withoutMiddleware([VerifyCsrfToken::class, ValidateCsrfToken::class])->post('/login', [

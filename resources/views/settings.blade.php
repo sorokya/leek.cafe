@@ -214,5 +214,294 @@
                 </div>
             </div>
         </x-card>
+
+        <x-card title="Metrics" description="Manage daily metrics." aria-label="Metrics" class="wide">
+            <div class="form">
+                <div class="form-field">
+                    <p class="form-label">Metric</p>
+
+                    <form method="post" action="{{ route('metrics.store') }}">
+                        @csrf
+                        <div class="form-actions" style="flex-wrap: wrap">
+                            <input class="form-input" name="metric_name" type="text" inputmode="text"
+                                value="{{ old('metric_name') }}" placeholder="Name" required style="flex: 1" />
+
+                            <select class="form-input" name="metric_visibility" required style="flex: 1">
+                                <option value="{{ \App\Visibility::PRIVATE->value }}"
+                                    @if (
+                                        (string) old('metric_visibility', (string) \App\Visibility::PRIVATE->value) ===
+                                            (string) \App\Visibility::PRIVATE->value) selected @endif>
+                                    Private
+                                </option>
+                                <option value="{{ \App\Visibility::PUBLIC->value }}"
+                                    @if ((string) old('metric_visibility') === (string) \App\Visibility::PUBLIC->value) selected @endif>
+                                    Public
+                                </option>
+                            </select>
+
+                            <input class="form-input" name="metric_icon" type="text" inputmode="text"
+                                value="{{ old('metric_icon') }}" placeholder="Icon (heroicon-*)" style="flex: 1" />
+                            <input name="metric_color" type="hidden" value="{{ old('metric_color') }}" />
+                            <input class="form-color" type="color" value="{{ old('metric_color') ?: '#FFFFFF' }}"
+                                aria-label="Color" title="Color"
+                                oninput="this.previousElementSibling.value = this.value" />
+                        </div>
+
+                        <div class="form-actions" style="flex-wrap: wrap; margin-top: 0.75rem">
+                            <input class="form-input" name="metric_min" type="number" inputmode="decimal"
+                                step="0.01" value="{{ old('metric_min') }}" placeholder="Min (optional)"
+                                style="flex: 1" />
+                            <input class="form-input" name="metric_max" type="number" inputmode="decimal"
+                                step="0.01" value="{{ old('metric_max') }}" placeholder="Max (optional)"
+                                style="flex: 1" />
+                            <input class="form-input" name="metric_options" type="text" inputmode="text"
+                                value="{{ old('metric_options') }}" placeholder="Options (CSV, optional)"
+                                style="flex: 2" />
+                            <button class="btn btn--primary" type="submit">Add</button>
+                        </div>
+
+                        @error('metric_name')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('metric_visibility')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('metric_icon')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('metric_color')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('metric_min')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('metric_max')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('metric_options')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                    </form>
+
+                    @if (($metrics ?? collect())->count() > 0)
+                        <div class="form-field">
+                            <p class="form-hint">Existing metrics</p>
+
+                            @foreach ($metrics as $metric)
+                                <div class="form-actions" style="flex-wrap: wrap">
+                                    <x-status-pill :icon="$metric->icon" :status="$metric->name" :bg="$metric->color
+                                        ? 'color-mix(in oklab, ' . $metric->color . ' 22%, var(--bg))'
+                                        : 'var(--surface)'"
+                                        :fg="$metric->color
+                                            ? 'color-mix(in oklab, ' . $metric->color . ' 30%, var(--text))'
+                                            : 'var(--text)'" />
+
+                                    <form method="post" action="{{ route('metrics.update', $metric) }}"
+                                        style="display: flex; gap: 0.75rem; align-items: center; flex: 1; flex-wrap: wrap">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <input class="form-input" name="metric_name_value" type="text"
+                                            inputmode="text" value="{{ old('metric_name_value', $metric->name) }}"
+                                            required style="flex: 2" />
+
+                                        <select class="form-input" name="metric_visibility_value" required
+                                            style="flex: 1">
+                                            <option value="{{ \App\Visibility::PRIVATE->value }}"
+                                                @if (
+                                                    (string) old('metric_visibility_value', (string) $metric->visibility->value) ===
+                                                        (string) \App\Visibility::PRIVATE->value) selected @endif>
+                                                Private
+                                            </option>
+                                            <option value="{{ \App\Visibility::PUBLIC->value }}"
+                                                @if (
+                                                    (string) old('metric_visibility_value', (string) $metric->visibility->value) ===
+                                                        (string) \App\Visibility::PUBLIC->value) selected @endif>
+                                                Public
+                                            </option>
+                                        </select>
+
+                                        <input class="form-input" name="metric_icon_value" type="text"
+                                            inputmode="text" value="{{ old('metric_icon_value', $metric->icon) }}"
+                                            placeholder="Icon" style="flex: 1" />
+                                        <input name="metric_color_value" type="hidden"
+                                            value="{{ $metric->color }}" />
+                                        <input class="form-color" type="color"
+                                            value="{{ $metric->color ?: '#FFFFFF' }}" aria-label="Color"
+                                            title="Color" oninput="this.previousElementSibling.value = this.value" />
+
+                                        <input class="form-input" name="metric_min_value" type="number"
+                                            inputmode="decimal" step="0.01"
+                                            value="{{ old('metric_min_value', $metric->min) }}" placeholder="Min"
+                                            style="flex: 1" />
+                                        <input class="form-input" name="metric_max_value" type="number"
+                                            inputmode="decimal" step="0.01"
+                                            value="{{ old('metric_max_value', $metric->max) }}" placeholder="Max"
+                                            style="flex: 1" />
+                                        <input class="form-input" name="metric_options_value" type="text"
+                                            inputmode="text"
+                                            value="{{ old('metric_options_value', $metric->options) }}"
+                                            placeholder="Options (CSV)" style="flex: 2" />
+
+                                        <button class="btn" type="submit">Update</button>
+                                    </form>
+
+                                    <form method="post" action="{{ route('metrics.destroy', $metric) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn--danger" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            @endforeach
+
+                            @error('metric_name_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('metric_visibility_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('metric_icon_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('metric_color_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('metric_min_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('metric_max_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('metric_options_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </x-card>
+
+        <x-card title="Habits" description="Manage daily habits." aria-label="Habits" class="wide">
+            <div class="form">
+                <div class="form-field">
+                    <p class="form-label">Habit</p>
+
+                    <form method="post" action="{{ route('habits.store') }}">
+                        @csrf
+                        <div class="form-actions" style="flex-wrap: wrap">
+                            <input class="form-input" name="habit_name" type="text" inputmode="text"
+                                value="{{ old('habit_name') }}" placeholder="Name" required style="flex: 1" />
+
+                            <select class="form-input" name="habit_visibility" required style="flex: 1">
+                                <option value="{{ \App\Visibility::PRIVATE->value }}"
+                                    @if (
+                                        (string) old('habit_visibility', (string) \App\Visibility::PRIVATE->value) ===
+                                            (string) \App\Visibility::PRIVATE->value) selected @endif>
+                                    Private
+                                </option>
+                                <option value="{{ \App\Visibility::PUBLIC->value }}"
+                                    @if ((string) old('habit_visibility') === (string) \App\Visibility::PUBLIC->value) selected @endif>
+                                    Public
+                                </option>
+                            </select>
+
+                            <input class="form-input" name="habit_icon" type="text" inputmode="text"
+                                value="{{ old('habit_icon') }}" placeholder="Icon (heroicon-*)" style="flex: 1" />
+                            <input name="habit_color" type="hidden" value="{{ old('habit_color') }}" />
+                            <input class="form-color" type="color" value="{{ old('habit_color') ?: '#FFFFFF' }}"
+                                aria-label="Color" title="Color"
+                                oninput="this.previousElementSibling.value = this.value" />
+                            <button class="btn btn--primary" type="submit">Add</button>
+                        </div>
+
+                        @error('habit_name')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('habit_visibility')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('habit_icon')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                        @error('habit_color')
+                            <p class="form-hint form-hint--error">{{ $message }}</p>
+                        @enderror
+                    </form>
+
+                    @if (($habits ?? collect())->count() > 0)
+                        <div class="form-field">
+                            <p class="form-hint">Existing habits</p>
+
+                            @foreach ($habits as $habit)
+                                <div class="form-actions" style="flex-wrap: wrap">
+                                    <x-status-pill :icon="$habit->icon" :status="$habit->name" :bg="$habit->color
+                                        ? 'color-mix(in oklab, ' . $habit->color . ' 22%, var(--bg))'
+                                        : 'var(--surface)'"
+                                        :fg="$habit->color
+                                            ? 'color-mix(in oklab, ' . $habit->color . ' 30%, var(--text))'
+                                            : 'var(--text)'" />
+
+                                    <form method="post" action="{{ route('habits.update', $habit) }}"
+                                        style="display: flex; gap: 0.75rem; align-items: center; flex: 1; flex-wrap: wrap">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <input class="form-input" name="habit_name_value" type="text"
+                                            inputmode="text" value="{{ old('habit_name_value', $habit->name) }}"
+                                            required style="flex: 2" />
+
+                                        <select class="form-input" name="habit_visibility_value" required
+                                            style="flex: 1">
+                                            <option value="{{ \App\Visibility::PRIVATE->value }}"
+                                                @if (
+                                                    (string) old('habit_visibility_value', (string) $habit->visibility->value) ===
+                                                        (string) \App\Visibility::PRIVATE->value) selected @endif>
+                                                Private
+                                            </option>
+                                            <option value="{{ \App\Visibility::PUBLIC->value }}"
+                                                @if (
+                                                    (string) old('habit_visibility_value', (string) $habit->visibility->value) ===
+                                                        (string) \App\Visibility::PUBLIC->value) selected @endif>
+                                                Public
+                                            </option>
+                                        </select>
+
+                                        <input class="form-input" name="habit_icon_value" type="text"
+                                            inputmode="text" value="{{ old('habit_icon_value', $habit->icon) }}"
+                                            placeholder="Icon" style="flex: 1" />
+                                        <input name="habit_color_value" type="hidden"
+                                            value="{{ $habit->color }}" />
+                                        <input class="form-color" type="color"
+                                            value="{{ $habit->color ?: '#FFFFFF' }}" aria-label="Color"
+                                            title="Color" oninput="this.previousElementSibling.value = this.value" />
+
+                                        <button class="btn" type="submit">Update</button>
+                                    </form>
+
+                                    <form method="post" action="{{ route('habits.destroy', $habit) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn--danger" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            @endforeach
+
+                            @error('habit_name_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('habit_visibility_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('habit_icon_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                            @error('habit_color_value')
+                                <p class="form-hint form-hint--error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </x-card>
     </div>
 </x-layout>

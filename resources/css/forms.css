@@ -314,8 +314,8 @@ a.btn {
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
+  background: var(--status-pill-bg, var(--surface));
+  color: var(--status-pill-fg, var(--text));
   font-size: 0.875rem;
   line-height: 1.2;
   white-space: nowrap;
@@ -331,6 +331,49 @@ a.btn {
 
 .status-pill__icon > svg {
   display: block;
+}
+
+.metrics,
+.habits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.toggle-group__input:focus-visible + .status-pill {
+  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.toggle-group__input:checked + .status-pill {
+  background: var(
+    --status-pill-bg-checked,
+    var(--status-pill-bg, var(--surface))
+  );
+  color: var(--status-pill-fg-checked, var(--status-pill-fg, var(--text)));
+}
+
+.habit-pill__state::before {
+  content: "✗";
+}
+
+.toggle-group__input:checked + .status-pill .habit-pill__state::before {
+  content: "✓";
+}
+
+.day-metric-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.day-metric-edit__number {
+  max-width: 10rem;
+}
+
+.day-habit-pill {
+  cursor: pointer;
 }
 
 #body-editor {

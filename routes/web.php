@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\HabitController;
 use App\Http\Controllers\Api\MediaStatusController;
 use App\Http\Controllers\Api\MediaTypeController;
+use App\Http\Controllers\Api\MetricController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PostController;
@@ -12,10 +14,11 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SiteMapController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ThoughtsController;
-use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\UserDayController;
+use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/', [UserProfileController::class, 'home'])->name('home');
 Route::get('/sitemap.xml', SiteMapController::class)->name('sitemap');
 Route::feeds();
 Route::get('/health', fn () => response()->json(['status' => 'ok']))->name('health');
@@ -33,6 +36,16 @@ Route::controller(ProfileController::class)->middleware('auth')->group(function 
     Route::post('/settings', 'updateSettings')->name('profile.update-settings');
 });
 
+Route::controller(UserProfileController::class)->group(function (): void {
+    Route::get('/user/{user:username}', 'show')->name('user.profile');
+    Route::get('/user/{user:username}/{date}', 'showDate')
+        ->where('date', '\\d{4}-\\d{2}-\\d{2}')
+        ->name('user.profile.date');
+    Route::get('/user/{user:username}/{date}/day', 'dayFragment')
+        ->where('date', '\\d{4}-\\d{2}-\\d{2}')
+        ->name('user.profile.day-fragment');
+});
+
 Route::middleware('auth')->group(function (): void {
     Route::post('/settings/media-statuses', [MediaStatusController::class, 'store'])->name('media-statuses.store');
     Route::put('/settings/media-statuses/{mediaStatus}', [MediaStatusController::class, 'update'])->name('media-statuses.update');
@@ -41,6 +54,25 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/settings/media-types', [MediaTypeController::class, 'store'])->name('media-types.store');
     Route::put('/settings/media-types/{mediaType}', [MediaTypeController::class, 'update'])->name('media-types.update');
     Route::delete('/settings/media-types/{mediaType}', [MediaTypeController::class, 'destroy'])->name('media-types.destroy');
+
+    Route::post('/settings/metrics', [MetricController::class, 'store'])->name('metrics.store');
+    Route::put('/settings/metrics/{metric}', [MetricController::class, 'update'])->name('metrics.update');
+    Route::delete('/settings/metrics/{metric}', [MetricController::class, 'destroy'])->name('metrics.destroy');
+
+    Route::post('/settings/habits', [HabitController::class, 'store'])->name('habits.store');
+    Route::put('/settings/habits/{habit}', [HabitController::class, 'update'])->name('habits.update');
+    Route::delete('/settings/habits/{habit}', [HabitController::class, 'destroy'])->name('habits.destroy');
+
+    Route::post('/user/{user:username}/{date}/metrics', [UserDayController::class, 'storeMetrics'])
+        ->where('date', '\\d{4}-\\d{2}-\\d{2}')
+        ->name('user.day.metrics.store');
+    Route::post('/user/{user:username}/{date}/habits', [UserDayController::class, 'storeHabits'])
+        ->where('date', '\\d{4}-\\d{2}-\\d{2}')
+        ->name('user.day.habits.store');
+
+    Route::post('/user/{user:username}/{date}/day', [UserDayController::class, 'store'])
+        ->where('date', '\\d{4}-\\d{2}-\\d{2}')
+        ->name('user.day.store');
 });
 
 Route::controller(PostController::class)->group(function (): void {

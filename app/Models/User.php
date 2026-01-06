@@ -55,6 +55,7 @@ final class User extends Authenticatable
         'username',
         'password',
         'timezone',
+        'primary',
     ];
 
     /**
@@ -75,6 +76,7 @@ final class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'primary' => 'boolean',
         ];
     }
 
@@ -84,6 +86,30 @@ final class User extends Authenticatable
     public function content(): HasMany
     {
         return $this->hasMany(Content::class);
+    }
+
+    /** @return HasMany<Metric, $this> */
+    public function metrics(): HasMany
+    {
+        return $this->hasMany(Metric::class);
+    }
+
+    /** @return HasMany<Habit, $this> */
+    public function habits(): HasMany
+    {
+        return $this->hasMany(Habit::class);
+    }
+
+    /** @return HasMany<MetricEntry, $this> */
+    public function metricEntries(): HasMany
+    {
+        return $this->hasMany(MetricEntry::class);
+    }
+
+    /** @return HasMany<HabitEntry, $this> */
+    public function habitEntries(): HasMany
+    {
+        return $this->hasMany(HabitEntry::class);
     }
 
     public static function findByUsername(string $username): ?self
