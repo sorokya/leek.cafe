@@ -21,6 +21,7 @@ final class UserFactory extends Factory
         return [
             'username' => fake()->unique()->userName(),
             'name' => fake()->name(),
+            'timezone' => 'UTC',
         ];
     }
 }

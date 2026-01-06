@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\ContentType;
 use App\Models\Content;
+use App\Models\TimeZone;
 use App\Models\User;
 use App\Visibility;
 use Carbon\CarbonImmutable;
@@ -17,6 +18,8 @@ pest()->use(RefreshDatabase::class);
 test('thought published time renders in the content created timezone (show and index)', function (): void {
     $timezone = 'Europe/Stockholm';
 
+    $zoneId = TimeZone::query()->firstOrCreate(['name' => $timezone])->id;
+
     $user = User::factory()->create([
         'timezone' => $timezone,
     ]);
@@ -26,7 +29,7 @@ test('thought published time renders in the content created timezone (show and i
         ->create([
             'content_type' => ContentType::THOUGHT->value,
             'visibility' => Visibility::PUBLIC->value,
-            'created_timezone' => $timezone,
+            'created_timezone_id' => $zoneId,
             'body' => 'Hello world',
         ]);
 
@@ -58,6 +61,8 @@ test('thought published time renders in the content created timezone (show and i
 test('post published date renders in the content created timezone (index and show)', function (): void {
     $timezone = 'Europe/Stockholm';
 
+    $zoneId = TimeZone::query()->firstOrCreate(['name' => $timezone])->id;
+
     $user = User::factory()->create([
         'timezone' => $timezone,
     ]);
@@ -67,7 +72,7 @@ test('post published date renders in the content created timezone (index and sho
         ->create([
             'content_type' => ContentType::POST->value,
             'visibility' => Visibility::PUBLIC->value,
-            'created_timezone' => $timezone,
+            'created_timezone_id' => $zoneId,
             'title' => 'Timezone boundary post',
             'body' => '# Hello',
         ]);
