@@ -26,6 +26,7 @@ test('user can complete full authentication flow', function (): void {
     $user = User::factory()->create([
         'username' => fake()->userName(),
         'password' => Hash::make('password123'),
+        'primary' => true,
     ]);
 
     // Login
