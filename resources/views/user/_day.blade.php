@@ -44,11 +44,18 @@
                     @if ($isOwner)
                         <x-form action="{{ route('user.day.metrics.store', [$profileUser, $day->format('Y-m-d')]) }}"
                             method="POST">
-                            <div class="form">
+                            <div class="metrics">
                                 @foreach ($metrics as $metric)
                                     @php($entry = $metricEntries->get($metric->id))
-                                    <div class="form-field">
-                                        <label class="form-label">{{ $metric->name }}</label>
+                                    @php($value = old('metrics.' . $metric->id, $entry?->value))
+
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem">
+                                        <x-status-pill :icon="$metric->icon" :status="$metric->name" :bg="$metric->color
+                                            ? 'color-mix(in oklab, ' . $metric->color . ' 22%, var(--bg))'
+                                            : 'var(--surface)'"
+                                            :fg="$metric->color
+                                                ? 'color-mix(in oklab, ' . $metric->color . ' 30%, var(--text))'
+                                                : 'var(--text)'" />
 
                                         @if ($metric->hasOptions())
                                             <input type="hidden" name="metrics[{{ $metric->id }}]" value="" />
@@ -69,10 +76,10 @@
                                             </fieldset>
                                         @else
                                             <input class="form-input" type="number" inputmode="decimal" step="0.01"
-                                                name="metrics[{{ $metric->id }}]"
-                                                value="{{ old('metrics.' . $metric->id, $entry?->value) }}"
+                                                name="metrics[{{ $metric->id }}]" value="{{ $value }}"
                                                 @if ($metric->min !== null) min="{{ $metric->min }}" @endif
-                                                @if ($metric->max !== null) max="{{ $metric->max }}" @endif />
+                                                @if ($metric->max !== null) max="{{ $metric->max }}" @endif
+                                                style="max-width: 10rem" />
                                         @endif
 
                                         @error('metrics.' . $metric->id)
@@ -80,10 +87,10 @@
                                         @enderror
                                     </div>
                                 @endforeach
+                            </div>
 
-                                <div class="form-actions">
-                                    <button class="btn btn--primary" type="submit">Save Metrics</button>
-                                </div>
+                            <div class="form-actions">
+                                <button class="nav-link" type="submit">Save</button>
                             </div>
                         </x-form>
                     @else
@@ -112,22 +119,30 @@
                     @if ($isOwner)
                         <x-form action="{{ route('user.day.habits.store', [$profileUser, $day->format('Y-m-d')]) }}"
                             method="POST">
-                            <div class="form">
+                            <div class="habits">
                                 @foreach ($habits as $habit)
                                     @php($entry = $habitEntries->get($habit->id))
-                                    <div class="form-field">
-                                        <label class="form-checkbox">
-                                            <input class="form-checkbox__input" type="checkbox"
-                                                name="habits[{{ $habit->id }}]" value="1"
-                                                @checked((bool) old('habits.' . $habit->id, $entry?->done ?? false)) />
-                                            <span>{{ $habit->name }}</span>
-                                        </label>
-                                    </div>
-                                @endforeach
+                                    @php($done = (bool) old('habits.' . $habit->id, $entry?->done ?? false))
 
-                                <div class="form-actions">
-                                    <button class="btn btn--primary" type="submit">Save Habits</button>
-                                </div>
+                                    <label style="cursor: pointer">
+                                        <input class="toggle-group__input" type="checkbox"
+                                            name="habits[{{ $habit->id }}]" value="1"
+                                            @checked($done) />
+                                        <x-status-pill :icon="$habit->icon" :bg="$habit->color
+                                            ? 'color-mix(in oklab, ' . $habit->color . ' 22%, var(--bg))'
+                                            : 'var(--surface)'" :fg="$habit->color
+                                            ? 'color-mix(in oklab, ' . $habit->color . ' 30%, var(--text))'
+                                            : 'var(--text)'"
+                                            style="--status-pill-bg-checked: {{ $habit->color ? 'color-mix(in oklab, ' . $habit->color . ' 32%, var(--bg))' : 'var(--accent-soft)' }}; --status-pill-fg-checked: var(--text);">
+                                            <span>{{ $habit->name }}: <span class="habit-pill__state"
+                                                    aria-hidden="true"></span></span>
+                                        </x-status-pill>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="nav-link" type="submit">Save</button>
                             </div>
                         </x-form>
                     @else

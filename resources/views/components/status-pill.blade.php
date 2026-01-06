@@ -9,6 +9,8 @@
     $label = $status ?? '';
     $style = '';
     $iconComponent = null;
+    $slotContent = trim((string) $slot);
+    $hasSlot = $slotContent !== '';
 
     if (is_string($icon) && preg_match('/^heroicon-[os]-[a-z0-9-]+$/', $icon) === 1) {
         $iconComponent = $icon;
@@ -30,16 +32,22 @@
         }
     }
 
+    $providedStyle = $attributes->get('style');
+
+    if (is_string($providedStyle) && $providedStyle !== '') {
+        $style .= rtrim($providedStyle, ';') . ';';
+    }
+
     if (is_string($bg) && $bg !== '') {
-        $style .= 'background: ' . $bg . ';';
+        $style .= '--status-pill-bg: ' . $bg . ';';
     }
 
     if (is_string($fg) && $fg !== '') {
-        $style .= 'color: ' . $fg . ';';
+        $style .= '--status-pill-fg: ' . $fg . ';';
     }
 @endphp
 
-<span {{ $attributes->merge(['class' => 'status-pill']) }}
+<span {{ $attributes->merge(['class' => 'status-pill'])->except('style') }}
     @if ($style !== '') style="{{ $style }}" @endif>
     @if ($icon)
         @if ($iconComponent)
@@ -49,5 +57,9 @@
             <span class="status-pill__icon" aria-hidden="true">{{ $icon }}</span>
         @endif
     @endif
-    <span class="status-pill__label">{{ $label }}</span>
+    <span class="status-pill__label">
+        @if ($hasSlot)
+            {{ $slot }}@else{{ $label }}
+        @endif
+    </span>
 </span>
