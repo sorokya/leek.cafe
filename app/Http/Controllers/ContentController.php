@@ -105,7 +105,7 @@ abstract class ContentController extends Controller
     public function show(string $slug): View
     {
         $content = $this->getShowQuery()
-            ->where('slug', $slug)
+            ->where('slug', 'like', $slug . '%')
             ->unless(Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
