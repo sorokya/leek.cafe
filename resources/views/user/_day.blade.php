@@ -36,8 +36,9 @@
     <div class="section__content">
         <div class="stack" style="gap: 1rem">
             @if ($isOwner)
-                <x-form action="{{ route('user.day.store', [$profileUser, $day->format('Y-m-d')]) }}" method="POST"
-                    data-day-save-form>
+                <form class="form" method="post"
+                    action="{{ route('user.day.store', [$profileUser, $day->format('Y-m-d')]) }}" data-day-save-form>
+                    @csrf
             @endif
             <div>
 
@@ -158,7 +159,7 @@
                     <button class="nav-link" type="submit">Save</button>
                 </div>
 
-                </x-form>
+                </form>
             @endif
 
             <div>
