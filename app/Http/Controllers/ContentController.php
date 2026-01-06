@@ -115,7 +115,7 @@ abstract class ContentController extends Controller
 
         return view($viewName, [
             'content' => $content,
-            'published_at' => $content->created_at,
+            'published_at' => $content->createdAtInCreatedTimezone(),
             'description' => $this->excerptGenerator->generate($content->body),
             'renderedBody' => (string) $this->renderer->render($content->body),
         ]);
@@ -227,6 +227,7 @@ abstract class ContentController extends Controller
                 'title' => $validated['title'],
                 'slug' => $slug,
                 'content_type' => $this->getContentType()->value,
+                'created_timezone' => $user->timezone,
                 'body' => $validated['body'],
             ]);
 

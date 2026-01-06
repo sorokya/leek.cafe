@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Spatie\Feed\Feedable;
 use Spatie\Feed\FeedItem;
 
@@ -23,6 +24,7 @@ use Spatie\Feed\FeedItem;
  * @property string $title
  * @property string $slug
  * @property \App\ContentType $content_type
+ * @property string|null $created_timezone
  * @property string|null $body
  * @property \App\Visibility $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -64,10 +66,35 @@ final class Content extends Model implements Feedable
         'user_id',
         'slug',
         'content_type',
+        'created_timezone',
         'title',
         'body',
         'visibility',
     ];
+
+    protected static function booted(): void
+    {
+        self::creating(function (self $content): void {
+            if (is_string($content->created_timezone) && $content->created_timezone !== '') {
+                return;
+            }
+
+            $content->created_timezone = $content->user->timezone ?? Config::string('app.timezone', 'UTC');
+        });
+    }
+
+    public function createdAtInCreatedTimezone(): ?\Illuminate\Support\Carbon
+    {
+        if (! $this->created_at) {
+            return null;
+        }
+
+        $timezone = is_string($this->created_timezone) && $this->created_timezone !== ''
+            ? $this->created_timezone
+            : Config::string('app.timezone', 'UTC');
+
+        return $this->created_at->copy()->setTimezone($timezone);
+    }
 
     protected function casts(): array
     {

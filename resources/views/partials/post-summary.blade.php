@@ -1,4 +1,5 @@
 @php($cover = $content->coverImage->first())
+@php($publishedAt = $content->createdAtInCreatedTimezone())
 <article class="content-summary {{ $cover ? 'content-summary--has-cover' : '' }}">
     @if ($cover)
         <a class="content-summary__cover" href="{{ $link }}" aria-label="Open {{ $content->title }}">
@@ -11,10 +12,10 @@
             <a class="content-link" href="{{ $link }}">{{ $content->title }}</a>
         </h2>
 
-        @if (($showDate ?? false) && $content->created_at)
+        @if (($showDate ?? false) && $publishedAt)
             <h4 class="content-meta">
-                <time class="content-date" datetime="{{ $content->created_at->toW3cString() }}">
-                    {{ $content->created_at->format('F j, Y') }}
+                <time class="content-date" datetime="{{ $publishedAt->toW3cString() }}">
+                    {{ $publishedAt->format('F j, Y') }}
                 </time>
             </h4>
         @endif
