@@ -18,7 +18,7 @@ use App\Http\Controllers\UserDayController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [UserProfileController::class, 'home'])->name('welcome');
+Route::get('/', [UserProfileController::class, 'home'])->name('home');
 Route::get('/sitemap.xml', SiteMapController::class)->name('sitemap');
 Route::feeds();
 Route::get('/health', fn () => response()->json(['status' => 'ok']))->name('health');
