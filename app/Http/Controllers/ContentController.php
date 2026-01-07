@@ -8,6 +8,7 @@ use App\ContentType;
 use App\Http\Requests\ContentRequest;
 use App\ImageRole;
 use App\Models\Content;
+use App\Models\TimeZone;
 use App\Models\User;
 use App\Services\ContentExcerptGenerator;
 use App\Services\ContentRenderer;
@@ -104,7 +105,7 @@ abstract class ContentController extends Controller
     public function show(string $slug): View
     {
         $content = $this->getShowQuery()
-            ->where('slug', $slug)
+            ->where('slug', 'like', $slug . '%')
             ->unless(Auth::check(), fn ($q) => $q->visibleToGuests())
             ->first();
 
@@ -115,7 +116,7 @@ abstract class ContentController extends Controller
 
         return view($viewName, [
             'content' => $content,
-            'published_at' => $content->created_at,
+            'published_at' => $content->createdAtInCreatedTimezone(),
             'description' => $this->excerptGenerator->generate($content->body),
             'renderedBody' => (string) $this->renderer->render($content->body),
         ]);
@@ -134,7 +135,7 @@ abstract class ContentController extends Controller
     public function edit(string $slug): View
     {
         $content = $this->getShowQuery()
-            ->with(array_merge(['user', 'coverImage'], $this->getAdditionalRelationships()))
+            ->with(array_merge(['user', 'coverImage', 'createdTimeZone'], $this->getAdditionalRelationships()))
             ->where('slug', $slug)
             ->first();
         abort_unless($content instanceof Content, 404);
@@ -150,7 +151,7 @@ abstract class ContentController extends Controller
     protected function updateFromRequest(ContentRequest $request, string $slug): RedirectResponse
     {
         $content = $this->getShowQuery()
-            ->with(array_merge(['user'], $this->getAdditionalRelationships()))
+            ->with(array_merge(['user', 'createdTimeZone'], $this->getAdditionalRelationships()))
             ->where('slug', $slug)
             ->first();
         abort_unless($content instanceof Content, 404);
@@ -227,6 +228,7 @@ abstract class ContentController extends Controller
                 'title' => $validated['title'],
                 'slug' => $slug,
                 'content_type' => $this->getContentType()->value,
+                'created_timezone_id' => TimeZone::query()->firstOrCreate(['name' => $user->timezone])->id,
                 'body' => $validated['body'],
             ]);
 
@@ -256,7 +258,7 @@ abstract class ContentController extends Controller
     {
         $content = $this->getShowQuery()
             ->where('slug', $slug)
-            ->with('user')
+            ->with('user', 'createdTimeZone')
             ->first();
         abort_unless($content instanceof Content, 404);
 
@@ -272,7 +274,7 @@ abstract class ContentController extends Controller
     {
         $content = $this->getShowQuery()
             ->where('slug', $slug)
-            ->with('user')
+            ->with('user', 'createdTimeZone')
             ->first();
         abort_unless($content instanceof Content, 404);
 

@@ -20,7 +20,7 @@ final class ThoughtsController extends ContentController
     protected function getListingQuery(): Builder
     {
         return Content::query()
-            ->with('user', 'embedImages')
+            ->with('user', 'embedImages', 'createdTimeZone')
             ->whereHas('thought')->latest()
             ->unless(Auth::check(), fn ($q) => $q->visibleToGuests());
     }
@@ -31,7 +31,7 @@ final class ThoughtsController extends ContentController
     protected function getShowQuery(): Builder
     {
         return Content::query()
-            ->with('user', 'embedImages')
+            ->with('user', 'embedImages', 'createdTimeZone')
             ->whereHas('thought');
     }
 

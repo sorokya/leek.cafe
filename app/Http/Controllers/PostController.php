@@ -51,7 +51,7 @@ final class PostController extends ContentController
     protected function getShowQuery(): Builder
     {
         return Content::query()
-            ->with('user', 'coverImage')
+            ->with('user', 'coverImage', 'createdTimeZone')
             ->whereHas('post');
     }
 

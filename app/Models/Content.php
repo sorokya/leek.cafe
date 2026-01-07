@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Spatie\Feed\Feedable;
 use Spatie\Feed\FeedItem;
 
@@ -23,10 +24,12 @@ use Spatie\Feed\FeedItem;
  * @property string $title
  * @property string $slug
  * @property \App\ContentType $content_type
+ * @property int|null $created_timezone_id
  * @property string|null $body
  * @property \App\Visibility $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\TimeZone|null $createdTimeZone
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $coverImage
  * @property-read int|null $cover_image_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
@@ -64,10 +67,55 @@ final class Content extends Model implements Feedable
         'user_id',
         'slug',
         'content_type',
+        'created_timezone_id',
         'title',
         'body',
         'visibility',
     ];
+
+    protected static function booted(): void
+    {
+        self::creating(function (self $content): void {
+            if (($content->created_timezone_id ?? 0) > 0) {
+                return;
+            }
+
+            $timezoneName = null;
+            if ($content->relationLoaded('user')) {
+                $timezoneName = $content->user->timezone;
+            } elseif ($content->user_id > 0) {
+                $timezoneName = User::query()->whereKey($content->user_id)->value('timezone');
+            }
+
+            $timezoneName = is_string($timezoneName) && $timezoneName !== ''
+                ? $timezoneName
+                : Config::string('app.timezone', 'UTC');
+
+            $zoneId = TimeZone::query()->firstOrCreate(['name' => $timezoneName])->id;
+
+            $content->created_timezone_id = $zoneId;
+        });
+    }
+
+    public function createdAtInCreatedTimezone(): ?\Illuminate\Support\Carbon
+    {
+        if (! $this->created_at) {
+            return null;
+        }
+
+        $timezone = $this->createdTimeZone?->name;
+        $timezone = is_string($timezone) && $timezone !== ''
+            ? $timezone
+            : Config::string('app.timezone', 'UTC');
+
+        return $this->created_at->copy()->setTimezone($timezone);
+    }
+
+    /** @return BelongsTo<TimeZone, $this> */
+    public function createdTimeZone(): BelongsTo
+    {
+        return $this->belongsTo(TimeZone::class, 'created_timezone_id');
+    }
 
     protected function casts(): array
     {

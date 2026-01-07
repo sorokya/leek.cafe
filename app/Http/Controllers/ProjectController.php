@@ -22,7 +22,7 @@ final class ProjectController extends ContentController
     protected function getListingQuery(): Builder
     {
         return Content::query()
-            ->with('user', 'project', 'coverImage')
+            ->with('user', 'project', 'coverImage', 'createdTimeZone')
             ->whereHas('project')
             ->when(! Auth::check(), fn ($q) => $q->visibleToGuests());
     }
@@ -35,7 +35,7 @@ final class ProjectController extends ContentController
     protected function getShowQuery(): Builder
     {
         return Content::query()
-            ->with('user', 'coverImage', 'project')
+            ->with('user', 'coverImage', 'project', 'createdTimeZone')
             ->whereHas('project');
     }
 
