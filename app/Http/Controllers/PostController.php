@@ -38,9 +38,9 @@ final class PostController extends ContentController
      */
     protected function getListingQuery(): Builder
     {
-        return Auth::check()
-            ? $this->postFeedQuery->all()
-            : $this->postFeedQuery->published();
+        return $this->postFeedQuery
+            ->all()
+            ->visibleForIndex(Auth::user());
     }
 
     /**

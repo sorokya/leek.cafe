@@ -8,6 +8,7 @@ use App\ContentType;
 use App\ImageRole;
 use App\Services\ContentExcerptGenerator;
 use App\Visibility;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -234,5 +235,55 @@ final class Content extends Model implements Feedable
     protected function visibleToGuests(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('visibility', '!=', Visibility::PRIVATE->value);
+    }
+
+    /**
+     * Scope a query for content listings (indexes/feeds).
+     *
+     * Guests: only PUBLIC.
+     * Authenticated: own content + PUBLIC from everyone else.
+     */
+    /**
+     * @param Builder<Content> $query
+     *
+     * @return Builder<Content>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function visibleForIndex(Builder $query, ?User $viewer): Builder
+    {
+        if (! $viewer instanceof \App\Models\User) {
+            return $query->where('visibility', Visibility::PUBLIC->value);
+        }
+
+        return $query->where(function (Builder $q) use ($viewer): void {
+            $q
+                ->where('visibility', Visibility::PUBLIC->value)
+                ->orWhere('user_id', $viewer->id);
+        });
+    }
+
+    /**
+     * Scope a query for showing a single content item.
+     *
+     * Guests: PUBLIC and UNLISTED (anything except PRIVATE).
+     * Authenticated: own content + anything except PRIVATE from others.
+     */
+    /**
+     * @param Builder<Content> $query
+     *
+     * @return Builder<Content>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function visibleForShow(Builder $query, ?User $viewer): Builder
+    {
+        if (! $viewer instanceof \App\Models\User) {
+            return $query->where('visibility', '!=', Visibility::PRIVATE->value);
+        }
+
+        return $query->where(function (Builder $q) use ($viewer): void {
+            $q
+                ->where('visibility', '!=', Visibility::PRIVATE->value)
+                ->orWhere('user_id', $viewer->id);
+        });
     }
 }

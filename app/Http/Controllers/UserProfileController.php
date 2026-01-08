@@ -44,12 +44,12 @@ final class UserProfileController extends Controller
         $isOwner = Auth::id() === $user->id;
 
         $metrics = $user->metrics()
-            ->when(! $isOwner, fn ($q) => $q->where('visibility', \App\Visibility::PUBLIC->value))
+            ->visibleTo(Auth::user())
             ->orderBy('name')
             ->get();
 
         $habits = $user->habits()
-            ->when(! $isOwner, fn ($q) => $q->where('visibility', \App\Visibility::PUBLIC->value))
+            ->visibleTo(Auth::user())
             ->orderBy('name')
             ->get();
 
@@ -71,7 +71,7 @@ final class UserProfileController extends Controller
             ->with('user', 'post', 'project', 'thought', 'coverImage', 'embedImages')
             ->where('user_id', $user->id)
             ->whereBetween('created_at', [$startUtc, $endUtc])
-            ->unless($isOwner, fn ($q) => $q->visibleToGuests())
+            ->visibleForIndex(Auth::user())
             ->orderBy('created_at')
             ->get();
 
@@ -86,7 +86,7 @@ final class UserProfileController extends Controller
             return $content;
         });
 
-        $activityFeed = $this->buildActivityFeed($user, $isOwner, $excerptGenerator);
+        $activityFeed = $this->buildActivityFeed($user, $excerptGenerator);
 
         return view('user.profile', [
             'profileUser' => $user,
@@ -111,12 +111,12 @@ final class UserProfileController extends Controller
         $isOwner = Auth::id() === $user->id;
 
         $metrics = $user->metrics()
-            ->when(! $isOwner, fn ($q) => $q->where('visibility', \App\Visibility::PUBLIC->value))
+            ->visibleTo(Auth::user())
             ->orderBy('name')
             ->get();
 
         $habits = $user->habits()
-            ->when(! $isOwner, fn ($q) => $q->where('visibility', \App\Visibility::PUBLIC->value))
+            ->visibleTo(Auth::user())
             ->orderBy('name')
             ->get();
 
@@ -138,7 +138,7 @@ final class UserProfileController extends Controller
             ->with('user', 'post', 'project', 'thought', 'coverImage', 'embedImages')
             ->where('user_id', $user->id)
             ->whereBetween('created_at', [$startUtc, $endUtc])
-            ->unless($isOwner, fn ($q) => $q->visibleToGuests())
+            ->visibleForIndex(Auth::user())
             ->orderBy('created_at')
             ->get();
 
@@ -178,11 +178,11 @@ final class UserProfileController extends Controller
     }
 
     /** @return \Illuminate\Support\Collection<int, Content> */
-    private function buildActivityFeed(User $user, bool $isOwner, ContentExcerptGenerator $excerptGenerator)
+    private function buildActivityFeed(User $user, ContentExcerptGenerator $excerptGenerator)
     {
         $base = Content::query()
             ->where('user_id', $user->id)
-            ->unless($isOwner, fn ($q) => $q->visibleToGuests());
+            ->visibleForIndex(Auth::user());
 
         $posts = (clone $base)
             ->with('coverImage', 'post')

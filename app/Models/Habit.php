@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Visibility;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +37,31 @@ final class Habit extends Model
         return [
             'visibility' => Visibility::class,
         ];
+    }
+
+    /**
+     * Scope a query for a given viewer.
+     *
+     * Guests: only PUBLIC.
+     * Authenticated: own habits + PUBLIC from everyone else.
+     */
+    /**
+     * @param Builder<Habit> $query
+     *
+     * @return Builder<Habit>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function visibleTo(Builder $query, ?User $viewer): Builder
+    {
+        if (! $viewer instanceof \App\Models\User) {
+            return $query->where('visibility', Visibility::PUBLIC->value);
+        }
+
+        return $query->where(function (Builder $q) use ($viewer): void {
+            $q
+                ->where('visibility', Visibility::PUBLIC->value)
+                ->orWhere('user_id', $viewer->id);
+        });
     }
 
     /** @return BelongsTo<User, $this> */

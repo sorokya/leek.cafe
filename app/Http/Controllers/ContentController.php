@@ -106,7 +106,7 @@ abstract class ContentController extends Controller
     {
         $content = $this->getShowQuery()
             ->where('slug', 'like', $slug . '%')
-            ->unless(Auth::check(), fn ($q) => $q->visibleToGuests())
+            ->visibleForShow(Auth::user())
             ->first();
 
         abort_if(! $content || ! $content->body, 404);
