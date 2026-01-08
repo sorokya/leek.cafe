@@ -6,6 +6,8 @@
                 {{ $publishedAt?->format('M j, Y g:i A') }}
             </time>
         </a>
+
+        <x-visibility-pill :content="$content" />
     </header>
 
     <div class="thoughts-item__content">

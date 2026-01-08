@@ -12,23 +12,27 @@
                     </time>
                 </a>
 
-                @auth
-                    <details class="thoughts-actions" data-thought-actions>
-                        <summary class="thoughts-actions__trigger" aria-label="Actions">
-                            <x-heroicon-o-ellipsis-horizontal aria-hidden="true" focusable="false" width="18"
-                                height="18" />
-                        </summary>
+                <div class="thoughts-item__header-right">
+                    <x-visibility-pill :content="$content" />
 
-                        <div class="thoughts-actions__menu" role="menu">
-                            <a class="thoughts-actions__item" href="#" role="menuitem" data-thought-edit-link>
-                                Edit
-                            </a>
-                            <a class="thoughts-actions__item" href="#" role="menuitem" data-thought-delete>
-                                Delete
-                            </a>
-                        </div>
-                    </details>
-                @endauth
+                    @auth
+                        <details class="thoughts-actions" data-thought-actions>
+                            <summary class="thoughts-actions__trigger" aria-label="Actions">
+                                <x-heroicon-o-ellipsis-horizontal aria-hidden="true" focusable="false" width="18"
+                                    height="18" />
+                            </summary>
+
+                            <div class="thoughts-actions__menu" role="menu">
+                                <a class="thoughts-actions__item" href="#" role="menuitem" data-thought-edit-link>
+                                    Edit
+                                </a>
+                                <a class="thoughts-actions__item" href="#" role="menuitem" data-thought-delete>
+                                    Delete
+                                </a>
+                            </div>
+                        </details>
+                    @endauth
+                </div>
             </header>
 
             <div data-thought-view>
