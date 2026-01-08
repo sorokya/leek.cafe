@@ -22,7 +22,7 @@ final class ThoughtsController extends ContentController
         return Content::query()
             ->with('user', 'embedImages', 'createdTimeZone')
             ->whereHas('thought')->latest()
-            ->unless(Auth::check(), fn ($q) => $q->visibleToGuests());
+            ->visibleForIndex(Auth::user());
     }
 
     /**

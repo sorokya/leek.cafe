@@ -12,8 +12,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $user_id
  * @property int $metric_id
- * @property string $date
- * @property string $value
+ * @property \Illuminate\Support\Carbon $date
+ * @property numeric $value
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Metric $metric
+ * @property-read \App\Models\User $user
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry whereMetricId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MetricEntry whereValue($value)
+ *
+ * @mixin \Eloquent
  */
 final class MetricEntry extends Model
 {

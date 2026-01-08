@@ -13,9 +13,14 @@
                         alt="Cover image for {{ $content->title }}" loading="lazy" decoding="async" />
                 </div>
             @endif
-            <h1 class="content-detail__title">
-                {{ $content->title }}
-            </h1>
+            <div class="content-title-row">
+                <h1 class="content-detail__title content-title-row__title">
+                    {{ $content->title }}
+                </h1>
+
+                <x-visibility-pill :content="$content" class="content-title-row__pill" />
+            </div>
+
             <h4 class="content-detail__meta">
                 <time class="content-detail__date" datetime="{{ $published_at?->toW3cString() }}">
                     {{ $published_at?->format('F j, Y') }}

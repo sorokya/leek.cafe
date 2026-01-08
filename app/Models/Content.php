@@ -8,6 +8,7 @@ use App\ContentType;
 use App\ImageRole;
 use App\Services\ContentExcerptGenerator;
 use App\Visibility;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,38 +24,46 @@ use Spatie\Feed\FeedItem;
  * @property int $user_id
  * @property string $title
  * @property string $slug
- * @property \App\ContentType $content_type
- * @property int|null $created_timezone_id
+ * @property ContentType $content_type
  * @property string|null $body
- * @property \App\Visibility $visibility
+ * @property Visibility $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\TimeZone|null $createdTimeZone
+ * @property int|null $created_timezone_id
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $coverImage
  * @property-read int|null $cover_image_count
+ * @property-read \App\Models\TimeZone|null $createdTimeZone
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $embedImages
+ * @property-read int|null $embed_images_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $images
  * @property-read int|null $images_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $inlineImages
  * @property-read int|null $inline_images_count
  * @property-read \App\Models\Post|null $post
+ * @property-read \App\Models\Project|null $project
  * @property-read \App\Models\Thought|null $thought
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Image> $thumbnailImage
  * @property-read int|null $thumbnail_image_count
  * @property-read \App\Models\User $user
  *
  * @method static \Database\Factories\ContentFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereBody($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereContentType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Content whereVisibility($value)
+ * @method static Builder<static>|Content newModelQuery()
+ * @method static Builder<static>|Content newQuery()
+ * @method static Builder<static>|Content public()
+ * @method static Builder<static>|Content query()
+ * @method static Builder<static>|Content visibleForIndex(?\App\Models\User $viewer)
+ * @method static Builder<static>|Content visibleForShow(?\App\Models\User $viewer)
+ * @method static Builder<static>|Content visibleToGuests()
+ * @method static Builder<static>|Content whereBody($value)
+ * @method static Builder<static>|Content whereContentType($value)
+ * @method static Builder<static>|Content whereCreatedAt($value)
+ * @method static Builder<static>|Content whereCreatedTimezoneId($value)
+ * @method static Builder<static>|Content whereId($value)
+ * @method static Builder<static>|Content whereSlug($value)
+ * @method static Builder<static>|Content whereTitle($value)
+ * @method static Builder<static>|Content whereUpdatedAt($value)
+ * @method static Builder<static>|Content whereUserId($value)
+ * @method static Builder<static>|Content whereVisibility($value)
  *
  * @mixin \Eloquent
  */
@@ -234,5 +243,55 @@ final class Content extends Model implements Feedable
     protected function visibleToGuests(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('visibility', '!=', Visibility::PRIVATE->value);
+    }
+
+    /**
+     * Scope a query for content listings (indexes/feeds).
+     *
+     * Guests: only PUBLIC.
+     * Authenticated: own content + PUBLIC from everyone else.
+     */
+    /**
+     * @param Builder<Content> $query
+     *
+     * @return Builder<Content>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function visibleForIndex(Builder $query, ?User $viewer): Builder
+    {
+        if (! $viewer instanceof \App\Models\User) {
+            return $query->where('visibility', Visibility::PUBLIC->value);
+        }
+
+        return $query->where(function (Builder $q) use ($viewer): void {
+            $q
+                ->where('visibility', Visibility::PUBLIC->value)
+                ->orWhere('user_id', $viewer->id);
+        });
+    }
+
+    /**
+     * Scope a query for showing a single content item.
+     *
+     * Guests: PUBLIC and UNLISTED (anything except PRIVATE).
+     * Authenticated: own content + anything except PRIVATE from others.
+     */
+    /**
+     * @param Builder<Content> $query
+     *
+     * @return Builder<Content>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function visibleForShow(Builder $query, ?User $viewer): Builder
+    {
+        if (! $viewer instanceof \App\Models\User) {
+            return $query->where('visibility', '!=', Visibility::PRIVATE->value);
+        }
+
+        return $query->where(function (Builder $q) use ($viewer): void {
+            $q
+                ->where('visibility', '!=', Visibility::PRIVATE->value)
+                ->orWhere('user_id', $viewer->id);
+        });
     }
 }

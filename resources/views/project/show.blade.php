@@ -14,9 +14,13 @@
                 </div>
             @endif
 
-            <h1 class="content-detail__title">
-                {{ $content->title }}
-            </h1>
+            <div class="content-title-row">
+                <h1 class="content-detail__title content-title-row__title">
+                    {{ $content->title }}
+                </h1>
+
+                <x-visibility-pill :content="$content" class="content-title-row__pill" />
+            </div>
 
             @if ($content->project?->url)
                 <p class="content-meta">

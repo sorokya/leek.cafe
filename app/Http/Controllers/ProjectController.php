@@ -24,7 +24,7 @@ final class ProjectController extends ContentController
         return Content::query()
             ->with('user', 'project', 'coverImage', 'createdTimeZone')
             ->whereHas('project')
-            ->when(! Auth::check(), fn ($q) => $q->visibleToGuests());
+            ->visibleForIndex(Auth::user());
     }
 
     /**

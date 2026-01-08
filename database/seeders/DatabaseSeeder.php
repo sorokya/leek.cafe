@@ -55,7 +55,7 @@ final class DatabaseSeeder extends Seeder
 
         DB::table('habits')->insert([
             ['user_id' => $user->id, 'name' => 'Exercise', 'visibility' => Visibility::PUBLIC->value, 'icon' => 'heroicon-s-heart', 'color' => '#EF4444'],
-            ['user_id' => $user->id, 'name' => 'Meditation', 'visibility' => Visibility::PUBLIC->value, 'icon' => 'heroicon-s-brain', 'color' => '#8B5CF6'],
+            ['user_id' => $user->id, 'name' => 'Meditation', 'visibility' => Visibility::PUBLIC->value, 'icon' => 'heroicon-s-heart', 'color' => '#8B5CF6'],
             ['user_id' => $user->id, 'name' => 'Reading', 'visibility' => Visibility::PUBLIC->value, 'icon' => 'heroicon-s-book-open', 'color' => '#3B82F6'],
         ]);
 

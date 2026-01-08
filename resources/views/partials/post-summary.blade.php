@@ -8,9 +8,13 @@
         </a>
     @endif
     <div class="content-summary__body {{ $cover ? 'content-summary__body--has-cover' : '' }}">
-        <h2 class="content-title">
-            <a class="content-link" href="{{ $link }}">{{ $content->title }}</a>
-        </h2>
+        <div class="content-title-row">
+            <h2 class="content-title content-title-row__title">
+                <a class="content-link" href="{{ $link }}">{{ $content->title }}</a>
+            </h2>
+
+            <x-visibility-pill :content="$content" class="content-title-row__pill" />
+        </div>
 
         @if (($showDate ?? false) && $publishedAt)
             <h4 class="content-meta">
