@@ -10,8 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $content_id
- * @property-read \App\Models\Content|null $content
+ * @property-read \App\Models\Content $content
  *
+ * @method static \Database\Factories\ThoughtFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Thought newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Thought newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Thought query()

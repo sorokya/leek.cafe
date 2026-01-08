@@ -18,9 +18,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Visibility $visibility
  * @property string|null $icon
  * @property string|null $color
+ * @property numeric|null $min
+ * @property numeric|null $max
  * @property string|null $options
- * @property string|null $min
- * @property string|null $max
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MetricEntry> $entries
+ * @property-read int|null $entries_count
+ * @property-read \App\Models\User $user
+ *
+ * @method static \Database\Factories\MetricFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Metric newModelQuery()
+ * @method static Builder<static>|Metric newQuery()
+ * @method static Builder<static>|Metric query()
+ * @method static Builder<static>|Metric visibleTo(?\App\Models\User $viewer)
+ * @method static Builder<static>|Metric whereColor($value)
+ * @method static Builder<static>|Metric whereCreatedAt($value)
+ * @method static Builder<static>|Metric whereIcon($value)
+ * @method static Builder<static>|Metric whereId($value)
+ * @method static Builder<static>|Metric whereMax($value)
+ * @method static Builder<static>|Metric whereMin($value)
+ * @method static Builder<static>|Metric whereName($value)
+ * @method static Builder<static>|Metric whereOptions($value)
+ * @method static Builder<static>|Metric whereUpdatedAt($value)
+ * @method static Builder<static>|Metric whereUserId($value)
+ * @method static Builder<static>|Metric whereVisibility($value)
+ *
+ * @mixin \Eloquent
  */
 final class Metric extends Model
 {

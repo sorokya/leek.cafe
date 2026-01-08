@@ -15,11 +15,20 @@ use Illuminate\Notifications\Notifiable;
  * @property string $name
  * @property string|null $password
  * @property string $timezone
+ * @property bool $primary
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Content> $content
  * @property-read int|null $content_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\HabitEntry> $habitEntries
+ * @property-read int|null $habit_entries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Habit> $habits
+ * @property-read int|null $habits_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MetricEntry> $metricEntries
+ * @property-read int|null $metric_entries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Metric> $metrics
+ * @property-read int|null $metrics_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  *
@@ -31,6 +40,7 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePrimary($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTimezone($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)

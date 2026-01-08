@@ -96,3 +96,11 @@ Follow modern PHP and Laravel best practices at all times.
 
 - Run `composer check` to ensure code quality before commits.
 - You can fix pint and rector issues automatically with `composer fix`.
+
+## Tests
+
+- Always run `composer test` to ensure all tests pass before commits.
+
+## Cache
+
+- Never manually clear caches. Use `./docker-artisan cache:clear` if needed.
