@@ -105,7 +105,4 @@
         </article>
     </div>
 
-    @push('scripts')
-        @vite('resources/js/thoughts.js')
-    @endpush
 </x-layout>
