@@ -9,8 +9,11 @@ use App\Http\Requests\StoreThoughtRequest;
 use App\Http\Requests\UpdateThoughtRequest;
 use App\Models\Content;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 final class ThoughtsController extends ContentController
 {
@@ -56,9 +59,47 @@ final class ThoughtsController extends ContentController
         return to_route('thoughts.index');
     }
 
-    public function update(UpdateThoughtRequest $request, string $slug): RedirectResponse
+    public function update(UpdateThoughtRequest $request, string $slug): Response|RedirectResponse
     {
+        if ($request->expectsJson() || $request->header('X-Requested-With') === 'fetch') {
+            $this->updateContentFromRequest($request, $slug);
+
+            return response()->noContent();
+        }
+
         return $this->updateFromRequest($request, $slug);
+    }
+
+    public function editFragment(string $slug): View
+    {
+        $content = $this->getShowQuery()
+            ->with('user', 'embedImages', 'createdTimeZone')
+            ->where('slug', $slug)
+            ->visibleForShow(Auth::user())
+            ->first();
+
+        abort_unless($content instanceof Content, 404);
+
+        return view('thoughts._edit-form', [
+            'content' => $content,
+        ]);
+    }
+
+    public function viewFragment(Request $request, string $slug): Response
+    {
+        $content = $this->getShowQuery()
+            ->with('user', 'embedImages', 'createdTimeZone')
+            ->where('slug', $slug)
+            ->visibleForShow(Auth::user())
+            ->first();
+
+        abort_unless($content instanceof Content, 404);
+
+        return response()->view('thoughts._item', [
+            'content' => $content,
+            'wrapContent' => $request->boolean('wrapContent'),
+            'shortSlug' => $request->boolean('shortSlug'),
+        ]);
     }
 
     /**

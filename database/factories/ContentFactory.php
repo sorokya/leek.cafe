@@ -18,10 +18,13 @@ final class ContentFactory extends Factory
      */
     public function definition(): array
     {
+        $body = fake()->paragraphs(3, true);
+
         return [
             'slug' => fake()->unique()->slug(),
             'title' => fake()->sentence(),
-            'body' => fake()->paragraphs(3, true),
+            'body' => $body,
+            'rendered' => resolve(\App\Services\ContentRenderer::class)->render($body),
             'visibility' => fake()->numberBetween(0, 2),
         ];
     }

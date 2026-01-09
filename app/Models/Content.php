@@ -26,6 +26,7 @@ use Spatie\Feed\FeedItem;
  * @property string $slug
  * @property ContentType $content_type
  * @property string|null $body
+ * @property string $rendered
  * @property Visibility $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -59,6 +60,7 @@ use Spatie\Feed\FeedItem;
  * @method static Builder<static>|Content whereCreatedAt($value)
  * @method static Builder<static>|Content whereCreatedTimezoneId($value)
  * @method static Builder<static>|Content whereId($value)
+ * @method static Builder<static>|Content whereRendered($value)
  * @method static Builder<static>|Content whereSlug($value)
  * @method static Builder<static>|Content whereTitle($value)
  * @method static Builder<static>|Content whereUpdatedAt($value)
@@ -79,6 +81,7 @@ final class Content extends Model implements Feedable
         'created_timezone_id',
         'title',
         'body',
+        'rendered',
         'visibility',
     ];
 
@@ -207,7 +210,7 @@ final class Content extends Model implements Feedable
 
     public function toFeedItem(): FeedItem
     {
-        $summary = resolve(ContentExcerptGenerator::class)->generate($this->body ?? '');
+        $summary = resolve(ContentExcerptGenerator::class)->generate($this->rendered ?? '');
 
         return FeedItem::create([
             'id' => $this->id,

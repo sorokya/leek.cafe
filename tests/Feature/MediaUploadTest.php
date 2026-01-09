@@ -30,7 +30,7 @@ test('upload rejects disallowed mimetype', function (): void {
     $file = UploadedFile::fake()->create('evil.txt', 10, 'text/plain');
 
     actingAs($user)
-        ->postJson('/posts/upload-images', [
+        ->postJson('/upload-images', [
             'image' => [$file],
         ])
         ->assertStatus(422);
@@ -50,7 +50,7 @@ test('upload rejects videos that exceed max duration', function (): void {
     $file = UploadedFile::fake()->create('too-long.mp4', 10, 'video/mp4');
 
     actingAs($user)
-        ->postJson('/posts/upload-images', [
+        ->postJson('/upload-images', [
             'image' => [$file],
         ])
         ->assertStatus(422)
@@ -71,7 +71,7 @@ test('upload returns hashes and dispatches processing job', function (): void {
     $file = UploadedFile::fake()->create('ok.jpg', 10, 'image/jpeg');
 
     $response = actingAs($user)
-        ->postJson('/posts/upload-images', [
+        ->postJson('/upload-images', [
             'image' => [$file],
         ])
         ->assertOk()

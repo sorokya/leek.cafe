@@ -16,10 +16,8 @@ use App\Services\EmbedImageSyncer;
 use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
@@ -88,7 +86,7 @@ abstract class ContentController extends Controller
         $contents->getCollection()->transform(function (Content $content): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $this->excerptGenerator->generate($content->body) : null,
+                $content->rendered ? $this->excerptGenerator->generate($content->rendered) : null,
             );
 
             return $content;
@@ -117,8 +115,7 @@ abstract class ContentController extends Controller
         return view($viewName, [
             'content' => $content,
             'published_at' => $content->createdAtInCreatedTimezone(),
-            'description' => $this->excerptGenerator->generate($content->body),
-            'renderedBody' => (string) $this->renderer->render($content->body),
+            'description' => $this->excerptGenerator->generate($content->rendered),
         ]);
     }
 
@@ -148,7 +145,7 @@ abstract class ContentController extends Controller
         ]);
     }
 
-    protected function updateFromRequest(ContentRequest $request, string $slug): RedirectResponse
+    protected function updateContentFromRequest(ContentRequest $request, string $slug): Content
     {
         $content = $this->getShowQuery()
             ->with(array_merge(['user', 'createdTimeZone'], $this->getAdditionalRelationships()))
@@ -158,9 +155,12 @@ abstract class ContentController extends Controller
 
         $validated = $request->validated();
 
+        abort_unless(is_string($validated['body']), 400);
+
         $content->update([
             'title' => $validated['title'],
             'body' => $validated['body'],
+            'rendered' => $this->renderer->render($validated['body']),
             'visibility' => $validated['visibility'],
         ]);
 
@@ -184,6 +184,13 @@ abstract class ContentController extends Controller
                 ->wherePivot('role', ImageRole::EMBED->value)
                 ->detach();
         }
+
+        return $content;
+    }
+
+    protected function updateFromRequest(ContentRequest $request, string $slug): RedirectResponse
+    {
+        $content = $this->updateContentFromRequest($request, $slug);
 
         return to_route($this->getRouteName('edit'), ['slug' => $content->slug])
             ->with('status', sprintf('%s updated successfully.', ucfirst($this->getContentType()->label())));
@@ -222,6 +229,8 @@ abstract class ContentController extends Controller
                 ],
             );
 
+            abort_unless(is_string($validated['body']), 400);
+
             $content = Content::create([
                 'user_id' => $user->id,
                 'visibility' => $validated['visibility'],
@@ -230,6 +239,7 @@ abstract class ContentController extends Controller
                 'content_type' => $this->getContentType()->value,
                 'created_timezone_id' => TimeZone::query()->firstOrCreate(['name' => $user->timezone])->id,
                 'body' => $validated['body'],
+                'rendered' => $this->renderer->render($validated['body']),
             ]);
 
             $this->storeTypeSpecificData($content, $validated);
@@ -281,77 +291,6 @@ abstract class ContentController extends Controller
         $content->delete();
 
         return to_route($this->getRouteName('index'));
-    }
-
-    /**
-     * Handle image uploads.
-     *
-     * @return array<string, mixed>
-     */
-    public function uploadImages(Request $request): array
-    {
-        $maxUploadKilobytes = Config::integer('media.max_upload_kilobytes', 51200);
-
-        $validator = Validator::make($request->all(), [
-            'image' => ['required', 'array'],
-            'image.*' => [
-                'required',
-                'file',
-                'mimetypes:image/jpeg,image/png,image/gif,video/mp4,video/quicktime,video/webm,video/x-matroska',
-                'max:' . $maxUploadKilobytes,
-            ],
-        ]);
-
-        $validator->after(function ($validator) use ($request): void {
-            $files = $request->file('image', []);
-            if (! is_array($files)) {
-                return;
-            }
-
-            $maxDuration = Config::integer('media.max_video_duration_seconds', 120);
-            $timeout = Config::integer('media.ffprobe_timeout_seconds', 10);
-            $allowedVideoMimes = [
-                'video/mp4',
-                'video/quicktime',
-                'video/webm',
-                'video/x-matroska',
-            ];
-
-            foreach ($files as $index => $file) {
-                $mime = (string) $file->getClientMimeType();
-                if (! in_array($mime, $allowedVideoMimes, true)) {
-                    continue;
-                }
-
-                $duration = resolve(\App\Support\Ffmpeg::class)
-                    ->probeDurationSeconds($file->getPathname(), $timeout);
-
-                if ($duration === null) {
-                    $validator->errors()->add('image.' . $index, 'Unable to read video duration.');
-
-                    continue;
-                }
-
-                if ($duration > $maxDuration) {
-                    $validator->errors()->add(
-                        'image.' . $index,
-                        'Video is too long (max ' . $maxDuration . 's).',
-                    );
-                }
-            }
-        });
-
-        $validated = $validator->validate();
-
-        $images = $validated['image'] ?? [];
-        $hashes = [];
-
-        foreach ($images as $image) {
-            $img = $this->imageUploader->upload($image);
-            $hashes[] = $img->getShortHash();
-        }
-
-        return ['hashes' => $hashes];
     }
 
     /**

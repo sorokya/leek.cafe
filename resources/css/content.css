@@ -97,7 +97,7 @@
 }
 
 .thoughts-item__content {
-  padding: 0.75rem;
+  padding: 0 0.75rem;
 }
 
 .thoughts-actions {
@@ -578,62 +578,6 @@ img.embed-media {
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
   font-size: 0.95em;
-}
-
-.content-detail__content pre code.hljs {
-  color: var(--text);
-}
-
-.content-detail__content .hljs-comment,
-.content-detail__content .hljs-quote {
-  color: var(--muted);
-}
-
-.content-detail__content .hljs-keyword,
-.content-detail__content .hljs-selector-tag,
-.content-detail__content .hljs-literal {
-  color: color-mix(in oklab, var(--accent) 80%, var(--text));
-  font-weight: 700;
-}
-
-.content-detail__content .hljs-string,
-.content-detail__content .hljs-regexp,
-.content-detail__content .hljs-attr,
-.content-detail__content .hljs-attribute {
-  color: color-mix(in oklab, var(--accent) 55%, var(--text));
-}
-
-.content-detail__content .hljs-number,
-.content-detail__content .hljs-built_in,
-.content-detail__content .hljs-symbol,
-.content-detail__content .hljs-bullet {
-  color: color-mix(in oklab, var(--accent) 65%, var(--text));
-}
-
-.content-detail__content .hljs-title,
-.content-detail__content .hljs-section,
-.content-detail__content .hljs-function {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.content-detail__content .hljs-meta,
-.content-detail__content .hljs-subst {
-  color: color-mix(in oklab, var(--text) 85%, var(--muted));
-}
-
-.content-detail__content .hljs-type,
-.content-detail__content .hljs-class,
-.content-detail__content .hljs-name {
-  color: color-mix(in oklab, var(--accent) 70%, var(--text));
-}
-
-.content-detail__content .hljs-emphasis {
-  font-style: italic;
-}
-
-.content-detail__content .hljs-strong {
-  font-weight: 800;
 }
 
 /*
