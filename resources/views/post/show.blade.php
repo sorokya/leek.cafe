@@ -43,7 +43,7 @@
         </header>
 
         <div class="content-detail__content">
-            {!! $renderedBody !!}
+            {!! $content->rendered !!}
         </div>
     </article>
 </x-layout>

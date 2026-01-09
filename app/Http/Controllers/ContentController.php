@@ -118,7 +118,6 @@ abstract class ContentController extends Controller
             'content' => $content,
             'published_at' => $content->createdAtInCreatedTimezone(),
             'description' => $this->excerptGenerator->generate($content->rendered),
-            'renderedBody' => $content->rendered,
         ]);
     }
 

@@ -38,7 +38,7 @@
             <div data-thought-view>
                 <div class="thoughts-item__content">
                     <div class="content">
-                        {!! $renderedBody !!}
+                        {!! $content->rendered !!}
                     </div>
 
                     @if ($content->embedImages->isNotEmpty())
