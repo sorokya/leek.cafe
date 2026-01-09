@@ -1,7 +1,7 @@
-<section class="section" aria-label="Day view">
+<section class="section day" aria-label="Day view">
     <header class="section__header">
-        <h2 class="section__title" style="align-items: center; justify-content: space-between">
-            <div style="display: flex; align-items: center; gap: 0.5rem">
+        <h2 class="section__title">
+            <div class="section__link">
                 <x-heroicon-o-calendar-days class="section__title-icon" aria-hidden="true" focusable="false" width="24"
                     height="24" /> <a class="content-link"
                     href="{{ route('user.profile.date', [$profileUser, $day->format('Y-m-d')]) }}" data-day-link>
@@ -10,7 +10,7 @@
                 </a>
             </div>
 
-            <span class="section__actions" style="margin: 0; justify-content: flex-end">
+            <span class="section__actions">
                 @php($prev = $day->subDay()->format('Y-m-d'))
                 @php($next = $day->addDay()->format('Y-m-d'))
 
@@ -22,8 +22,7 @@
                 <button class="btn btn--small" type="button" data-day-calendar aria-label="Pick a date">
                     <x-heroicon-o-calendar-days aria-hidden="true" focusable="false" width="16" height="16" />
                 </button>
-                <input class="form-input" type="date" value="{{ $day->format('Y-m-d') }}" data-day-picker
-                    style="max-width: 12rem" />
+                <input class="form-input" type="date" value="{{ $day->format('Y-m-d') }}" data-day-picker />
 
                 <a class="btn btn--small" href="{{ route('user.profile.date', [$profileUser, $next]) }}" data-day-next
                     aria-label="Next day">

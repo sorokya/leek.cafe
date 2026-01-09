@@ -1,0 +1,25 @@
+.day .section__title {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.day .section__link {
+  display: none;
+}
+
+.day .section__actions {
+  margin: 0;
+  justify-content: flex-end;
+}
+
+.day input[type="date"] {
+  max-width: 12rem;
+}
+
+@media (min-width: 38rem) {
+  .day .section__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
