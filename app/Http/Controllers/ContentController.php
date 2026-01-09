@@ -16,10 +16,8 @@ use App\Services\EmbedImageSyncer;
 use App\Services\ImageUploader;
 use App\Services\InlineImageSyncer;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
@@ -293,77 +291,6 @@ abstract class ContentController extends Controller
         $content->delete();
 
         return to_route($this->getRouteName('index'));
-    }
-
-    /**
-     * Handle image uploads.
-     *
-     * @return array<string, mixed>
-     */
-    public function uploadImages(Request $request): array
-    {
-        $maxUploadKilobytes = Config::integer('media.max_upload_kilobytes', 51200);
-
-        $validator = Validator::make($request->all(), [
-            'image' => ['required', 'array'],
-            'image.*' => [
-                'required',
-                'file',
-                'mimetypes:image/jpeg,image/png,image/gif,video/mp4,video/quicktime,video/webm,video/x-matroska',
-                'max:' . $maxUploadKilobytes,
-            ],
-        ]);
-
-        $validator->after(function ($validator) use ($request): void {
-            $files = $request->file('image', []);
-            if (! is_array($files)) {
-                return;
-            }
-
-            $maxDuration = Config::integer('media.max_video_duration_seconds', 120);
-            $timeout = Config::integer('media.ffprobe_timeout_seconds', 10);
-            $allowedVideoMimes = [
-                'video/mp4',
-                'video/quicktime',
-                'video/webm',
-                'video/x-matroska',
-            ];
-
-            foreach ($files as $index => $file) {
-                $mime = (string) $file->getClientMimeType();
-                if (! in_array($mime, $allowedVideoMimes, true)) {
-                    continue;
-                }
-
-                $duration = resolve(\App\Support\Ffmpeg::class)
-                    ->probeDurationSeconds($file->getPathname(), $timeout);
-
-                if ($duration === null) {
-                    $validator->errors()->add('image.' . $index, 'Unable to read video duration.');
-
-                    continue;
-                }
-
-                if ($duration > $maxDuration) {
-                    $validator->errors()->add(
-                        'image.' . $index,
-                        'Video is too long (max ' . $maxDuration . 's).',
-                    );
-                }
-            }
-        });
-
-        $validated = $validator->validate();
-
-        $images = $validated['image'] ?? [];
-        $hashes = [];
-
-        foreach ($images as $image) {
-            $img = $this->imageUploader->upload($image);
-            $hashes[] = $img->getShortHash();
-        }
-
-        return ['hashes' => $hashes];
     }
 
     /**

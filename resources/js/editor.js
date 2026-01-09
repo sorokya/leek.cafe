@@ -59,8 +59,7 @@ export function initializeEditor() {
     }
 
     try {
-      const contentType = location.pathname.split('/')[1];
-      const response = await fetch(`/${contentType}/upload-images`, {
+      const response = await fetch(`/upload-images`, {
         method: 'POST',
         body: formData,
         headers: {

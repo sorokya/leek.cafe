@@ -193,15 +193,22 @@ document.addEventListener('DOMContentLoaded', () => {
     originalViewHtml.delete(item);
   }
 
-  async function refreshViewFragment(item) {
-    const view = item.querySelector('[data-thought-view]');
-    if (!view) return;
-
+  async function refreshThoughtItem(item) {
     const viewUrl = item.dataset.thoughtViewFragmentUrl;
     if (!viewUrl) return;
 
     const html = await fetchHtml(viewUrl);
-    view.innerHTML = html;
+
+    const template = document.createElement('template');
+    template.innerHTML = html.trim();
+
+    const next = template.content.firstElementChild;
+    if (!next || !next.matches('[data-thought-item]')) {
+      throw new Error('Invalid thought fragment response');
+    }
+
+    item.replaceWith(next);
+    return next;
   }
 
   document.addEventListener('click', (event) => {
@@ -276,8 +283,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      await refreshViewFragment(item);
-      exitEditMode(item, { restoreOriginalView: false });
+      originalViewHtml.delete(item);
+      const nextItem = await refreshThoughtItem(item);
+      if (nextItem) {
+        nextItem.removeAttribute('aria-busy');
+      }
     } catch {
       form.submit();
     } finally {

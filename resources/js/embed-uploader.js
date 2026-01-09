@@ -55,7 +55,7 @@ function renderEmbeds(listEl, hashes) {
   }
 }
 
-async function uploadImage({ file, contentType, csrfToken }) {
+async function uploadImage({ file, csrfToken }) {
   if (!file?.type?.startsWith('image/') && !file?.type?.startsWith('video/')) {
     return null;
   }
@@ -64,7 +64,7 @@ async function uploadImage({ file, contentType, csrfToken }) {
   formData.append('_token', csrfToken);
   formData.append('image[]', file);
 
-  const response = await fetch(`/${contentType}/upload-images`, {
+  const response = await fetch(`/upload-images`, {
     method: 'POST',
     body: formData,
     headers: {
@@ -92,8 +92,6 @@ export function initializeEmbedUploader(options = {}) {
   if (!hiddenInput || !listEl) {
     return;
   }
-
-  const contentType = options.contentType || location.pathname.split('/')[1];
 
   const csrfToken = document.querySelector('[name="_token"]')?.value;
   if (!csrfToken) {
@@ -130,7 +128,7 @@ export function initializeEmbedUploader(options = {}) {
     }
 
     for (const file of files) {
-      uploadImage({ file, contentType, csrfToken }).then((hash) => {
+      uploadImage({ file, csrfToken }).then((hash) => {
         if (!hash) return;
 
         setHashes(Array.from(new Set([...hashes, hash])));

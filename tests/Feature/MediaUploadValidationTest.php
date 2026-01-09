@@ -26,7 +26,7 @@ test('upload-images rejects disallowed mimetype', function (): void {
     $file = UploadedFile::fake()->create('file.txt', 10, 'text/plain');
 
     actingAs($user)
-        ->post('/thoughts/upload-images', [
+        ->post('/upload-images', [
             'image' => [$file],
         ], [
             'Accept' => 'application/json',
@@ -91,7 +91,7 @@ test('upload-images rejects too-long video by duration', function (): void {
     $file = new UploadedFile($outPath, 'video.mp4', 'video/mp4', null, true);
 
     actingAs($user)
-        ->post('/thoughts/upload-images', [
+        ->post('/upload-images', [
             'image' => [$file],
         ], [
             'Accept' => 'application/json',

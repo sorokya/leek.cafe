@@ -73,13 +73,14 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/user/{user:username}/{date}/day', [UserDayController::class, 'store'])
         ->where('date', '\\d{4}-\\d{2}-\\d{2}')
         ->name('user.day.store');
+
+    Route::post('/upload-images', [ImageController::class, 'upload'])->name('upload-images');
 });
 
 Route::controller(PostController::class)->group(function (): void {
     Route::get('/posts', 'index')->name('posts.index');
     Route::get('/posts/new', 'create')->middleware('auth')->name('posts.create');
     Route::post('/posts', 'store')->middleware('auth')->name('posts.store');
-    Route::post('/posts/upload-images', 'uploadImages')->middleware('auth')->name('posts.upload-images');
     Route::get('/posts/{slug}', 'show')->name('posts.show');
     Route::get('/posts/{slug}/edit', 'edit')->middleware('auth')->name('posts.edit');
     Route::get('/posts/{slug}/delete-confirm', 'deleteConfirm')->middleware('auth')->name('posts.delete-confirm');
@@ -91,7 +92,6 @@ Route::controller(ProjectController::class)->group(function (): void {
     Route::get('/projects', 'index')->name('projects.index');
     Route::get('/projects/new', 'create')->middleware('auth')->name('projects.create');
     Route::post('/projects', 'store')->middleware('auth')->name('projects.store');
-    Route::post('/projects/upload-images', 'uploadImages')->middleware('auth')->name('projects.upload-images');
     Route::get('/projects/{slug}', 'show')->name('projects.show');
     Route::get('/projects/{slug}/edit', 'edit')->middleware('auth')->name('projects.edit');
     Route::get('/projects/{slug}/delete-confirm', 'deleteConfirm')->middleware('auth')->name('projects.delete-confirm');
@@ -107,7 +107,6 @@ Route::controller(ThoughtsController::class)->group(function (): void {
     Route::post('/thoughts', 'store')->middleware('auth')->name('thoughts.store');
     Route::put('/thoughts/{slug}', 'update')->middleware('auth')->name('thoughts.update');
     Route::delete('/thoughts/{slug}', 'destroy')->middleware('auth')->name('thoughts.destroy');
-    Route::post('/thoughts/upload-images', 'uploadImages')->middleware('auth')->name('thoughts.upload-images');
 });
 
 Route::controller(MediaController::class)->group(function (): void {

@@ -95,9 +95,10 @@ final class ThoughtsController extends ContentController
 
         abort_unless($content instanceof Content, 404);
 
-        return response()->view('thoughts._view', [
+        return response()->view('thoughts._item', [
             'content' => $content,
             'wrapContent' => $request->boolean('wrapContent'),
+            'shortSlug' => $request->boolean('shortSlug'),
         ]);
     }
 
