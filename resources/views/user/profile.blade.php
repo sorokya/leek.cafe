@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <section class="section" aria-label="Activity feed">
+            <section class="section" aria-label="Activity feed" data-activity-feed>
                 <header class="section__header">
                     <h2 class="section__title">
                         <x-heroicon-o-rss class="section__title-icon" aria-hidden="true" focusable="false"
