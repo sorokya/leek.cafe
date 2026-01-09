@@ -79,7 +79,7 @@ final class UserProfileController extends Controller
             if (in_array($content->content_type, [ContentType::POST, ContentType::PROJECT], true)) {
                 $content->setAttribute(
                     'excerpt',
-                    $content->body ? $excerptGenerator->generate($content->body) : null,
+                    $content->rendered ? $excerptGenerator->generate($content->rendered) : null,
                 );
             }
 
@@ -146,7 +146,7 @@ final class UserProfileController extends Controller
             if (in_array($content->content_type, [ContentType::POST, ContentType::PROJECT], true)) {
                 $content->setAttribute(
                     'excerpt',
-                    $content->body ? $excerptGenerator->generate($content->body) : null,
+                    $content->rendered ? $excerptGenerator->generate($content->rendered) : null,
                 );
             }
 
@@ -208,7 +208,7 @@ final class UserProfileController extends Controller
         $posts->transform(function (Content $content) use ($excerptGenerator): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $excerptGenerator->generate($content->body) : null,
+                $content->rendered ? $excerptGenerator->generate($content->rendered) : null,
             );
 
             return $content;
@@ -217,7 +217,7 @@ final class UserProfileController extends Controller
         $projects->transform(function (Content $content) use ($excerptGenerator): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $excerptGenerator->generate($content->body) : null,
+                $content->rendered ? $excerptGenerator->generate($content->rendered) : null,
             );
 
             return $content;

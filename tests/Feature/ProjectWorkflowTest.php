@@ -35,7 +35,7 @@ test('user can complete full project creation flow', function (): void {
         ->post('/projects', [
             'title' => 'My Awesome Project',
             'slug' => 'my-awesome-project',
-            'body' => '## Overview\n\nThis project is amazing!',
+            'body' => "## Overview\n\nThis project is amazing!",
             'url' => 'https://github.com/example/project',
             'visibility' => Visibility::PUBLIC->value,
         ])

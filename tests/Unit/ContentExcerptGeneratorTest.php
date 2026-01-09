@@ -23,7 +23,7 @@ test('truncates long text at word boundary', function (): void {
 
 test('strips html tags from markdown', function (): void {
     $generator = new ContentExcerptGenerator(new ContentRenderer);
-    $excerpt = $generator->generate('# Hello **World**');
+    $excerpt = $generator->generate('<h1>Hello <strong>World</strong></h1>');
 
     expect($excerpt)
         ->toBe('Hello World');

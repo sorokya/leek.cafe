@@ -88,7 +88,7 @@ abstract class ContentController extends Controller
         $contents->getCollection()->transform(function (Content $content): Content {
             $content->setAttribute(
                 'excerpt',
-                $content->body ? $this->excerptGenerator->generate($content->body) : null,
+                $content->rendered ? $this->excerptGenerator->generate($content->rendered) : null,
             );
 
             return $content;
@@ -117,8 +117,8 @@ abstract class ContentController extends Controller
         return view($viewName, [
             'content' => $content,
             'published_at' => $content->createdAtInCreatedTimezone(),
-            'description' => $this->excerptGenerator->generate($content->body),
-            'renderedBody' => (string) $this->renderer->render($content->body),
+            'description' => $this->excerptGenerator->generate($content->rendered),
+            'renderedBody' => $content->rendered,
         ]);
     }
 
@@ -158,9 +158,12 @@ abstract class ContentController extends Controller
 
         $validated = $request->validated();
 
+        abort_unless(is_string($validated['body']), 400);
+
         $content->update([
             'title' => $validated['title'],
             'body' => $validated['body'],
+            'rendered' => $this->renderer->render($validated['body']),
             'visibility' => $validated['visibility'],
         ]);
 
@@ -222,6 +225,8 @@ abstract class ContentController extends Controller
                 ],
             );
 
+            abort_unless(is_string($validated['body']), 400);
+
             $content = Content::create([
                 'user_id' => $user->id,
                 'visibility' => $validated['visibility'],
@@ -230,6 +235,7 @@ abstract class ContentController extends Controller
                 'content_type' => $this->getContentType()->value,
                 'created_timezone_id' => TimeZone::query()->firstOrCreate(['name' => $user->timezone])->id,
                 'body' => $validated['body'],
+                'rendered' => $this->renderer->render($validated['body']),
             ]);
 
             $this->storeTypeSpecificData($content, $validated);

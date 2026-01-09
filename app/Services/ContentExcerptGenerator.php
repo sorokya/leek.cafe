@@ -6,14 +6,9 @@ namespace App\Services;
 
 final readonly class ContentExcerptGenerator
 {
-    public function __construct(
-        private ContentRenderer $renderer,
-    ) {}
-
-    public function generate(string $body, int $length = 200): string
+    public function generate(string $rendered, int $length = 200): string
     {
-        $rendered = $this->renderer->render($body);
-        $text = trim(strip_tags((string) $rendered));
+        $text = trim(strip_tags($rendered));
         if (strlen($text) <= $length) {
             return $text;
         }
