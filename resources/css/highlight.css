@@ -1,0 +1,55 @@
+pre code.hljs {
+  color: var(--text);
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--muted);
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal {
+  color: color-mix(in oklab, var(--accent) 80%, var(--text));
+  font-weight: 700;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-attr,
+.hljs-attribute {
+  color: color-mix(in oklab, var(--accent) 55%, var(--text));
+}
+
+.hljs-number,
+.hljs-built_in,
+.hljs-symbol,
+.hljs-bullet {
+  color: color-mix(in oklab, var(--accent) 65%, var(--text));
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-function {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.hljs-meta,
+.hljs-subst {
+  color: color-mix(in oklab, var(--text) 85%, var(--muted));
+}
+
+.hljs-type,
+.hljs-class,
+.hljs-name {
+  color: color-mix(in oklab, var(--accent) 70%, var(--text));
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 800;
+}

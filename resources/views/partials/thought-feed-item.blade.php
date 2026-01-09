@@ -39,7 +39,7 @@
 
     <div data-thought-view>
         <div class="thoughts-item__content">
-            {!! nl2br(e($content->body ?? '')) !!}
+            {!! $content->rendered !!}
 
             @if ($content->embedImages->isNotEmpty())
                 <div class="embed-gallery">
@@ -47,7 +47,8 @@
                         <div class="embed-item">
                             <a class="embed-thumb" href="{{ $image->getUrl() }}" target="_blank" rel="noopener"
                                 data-embed-kind="{{ strtolower((string) $image->extension) === 'mp4' ? 'video' : 'image' }}">
-                                <img src="{{ $image->getThumbnailUrl() }}" alt="" loading="lazy" decoding="async" />
+                                <img src="{{ $image->getThumbnailUrl() }}" alt="" loading="lazy"
+                                    decoding="async" />
 
                                 @if (strtolower((string) $image->extension) === 'mp4')
                                     <span class="embed-play" aria-hidden="true">
@@ -82,8 +83,8 @@
                     <x-visibility-radio id="visibility-{{ $content->slug }}" :selected="(string) $content->visibility->value" />
                     <div class="thoughts-attach">
                         <label class="btn" for="attachment-{{ $content->slug }}">
-                            <x-heroicon-o-paper-clip class="btn__icon" aria-hidden="true" focusable="false"
-                                width="16" height="16" />
+                            <x-heroicon-o-paper-clip class="btn__icon" aria-hidden="true" focusable="false" width="16"
+                                height="16" />
                         </label>
                         <input class="thoughts-attach__input" id="attachment-{{ $content->slug }}" type="file"
                             accept="image/*,video/*" multiple data-embed-input />
@@ -101,4 +102,4 @@
             </x-form>
         </div>
     @endauth
-</{{ $tag }}>
+    </{{ $tag }}>
