@@ -147,7 +147,7 @@ abstract class ContentController extends Controller
         ]);
     }
 
-    protected function updateFromRequest(ContentRequest $request, string $slug): RedirectResponse
+    protected function updateContentFromRequest(ContentRequest $request, string $slug): Content
     {
         $content = $this->getShowQuery()
             ->with(array_merge(['user', 'createdTimeZone'], $this->getAdditionalRelationships()))
@@ -186,6 +186,13 @@ abstract class ContentController extends Controller
                 ->wherePivot('role', ImageRole::EMBED->value)
                 ->detach();
         }
+
+        return $content;
+    }
+
+    protected function updateFromRequest(ContentRequest $request, string $slug): RedirectResponse
+    {
+        $content = $this->updateContentFromRequest($request, $slug);
 
         return to_route($this->getRouteName('edit'), ['slug' => $content->slug])
             ->with('status', sprintf('%s updated successfully.', ucfirst($this->getContentType()->label())));

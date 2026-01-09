@@ -108,53 +108,180 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEmbedUploader({ root: composer });
   }
 
-  for (const item of document.querySelectorAll('[data-thought-item]')) {
-    const actions = item.querySelector('[data-thought-actions]');
-    const editLink = item.querySelector('[data-thought-edit-link]');
-    const deleteLink = item.querySelector('[data-thought-delete]');
-    const view = item.querySelector('[data-thought-view]');
-    const edit = item.querySelector('[data-thought-edit-panel]');
-    const cancel = item.querySelector('[data-thought-cancel]');
-    const deleteForm = item.querySelector('[data-thought-delete-form]');
+  const originalViewHtml = new WeakMap();
 
-    if (edit && !edit.hasAttribute('data-embed-uploader-initialized')) {
-      initializeEmbedUploader({ root: edit });
-      edit.setAttribute('data-embed-uploader-initialized', 'true');
+  async function fetchHtml(url) {
+    const response = await fetch(url, {
+      headers: {
+        'X-Requested-With': 'fetch',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fetch failed (${response.status})`);
     }
 
-    if (editLink && view && edit) {
-      editLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (actions) actions.removeAttribute('open');
+    return await response.text();
+  }
 
-        view.hidden = true;
-        edit.hidden = false;
+  function initializeEmbedUploadersIn(root) {
+    if (!root) return;
 
-        const textarea = edit.querySelector('textarea[name="body"]');
-        if (textarea) {
-          textarea.focus();
-          textarea.selectionStart = textarea.value.length;
-          textarea.selectionEnd = textarea.value.length;
-        }
-      });
-    }
-
-    if (cancel && view && edit) {
-      cancel.addEventListener('click', () => {
-        view.hidden = false;
-        edit.hidden = true;
-      });
-    }
-
-    if (deleteLink && deleteForm) {
-      deleteLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (actions) actions.removeAttribute('open');
-
-        if (confirm('Delete this thought?')) {
-          deleteForm.submit();
-        }
-      });
+    for (const form of root.querySelectorAll('form[data-thought-edit-form]')) {
+      if (form.hasAttribute('data-embed-uploader-initialized')) continue;
+      initializeEmbedUploader({ root: form });
+      form.setAttribute('data-embed-uploader-initialized', 'true');
     }
   }
+
+  function getThoughtItem(element) {
+    return element?.closest?.('[data-thought-item]') ?? null;
+  }
+
+  function closeActionsMenu(item) {
+    const actions = item?.querySelector?.('[data-thought-actions]');
+    if (actions) actions.removeAttribute('open');
+  }
+
+  async function enterEditMode(item) {
+    const view = item.querySelector('[data-thought-view]');
+    const edit = item.querySelector('[data-thought-edit]');
+    if (!view || !edit) return;
+
+    if (!originalViewHtml.has(item)) {
+      originalViewHtml.set(item, view.innerHTML);
+    }
+
+    const editUrl = item.dataset.thoughtEditFragmentUrl;
+    if (!editUrl) return;
+
+    item.setAttribute('aria-busy', 'true');
+    try {
+      const html = await fetchHtml(editUrl);
+      edit.innerHTML = html;
+      edit.hidden = false;
+      view.hidden = true;
+
+      initializeEmbedUploadersIn(edit);
+
+      const textarea = edit.querySelector('textarea[name="body"]');
+      if (textarea) {
+        textarea.focus();
+        textarea.selectionStart = textarea.value.length;
+        textarea.selectionEnd = textarea.value.length;
+      }
+    } finally {
+      item.removeAttribute('aria-busy');
+    }
+  }
+
+  function exitEditMode(item, { restoreOriginalView = true } = {}) {
+    const view = item.querySelector('[data-thought-view]');
+    const edit = item.querySelector('[data-thought-edit]');
+    if (!view || !edit) return;
+
+    if (restoreOriginalView) {
+      const cached = originalViewHtml.get(item);
+      if (typeof cached === 'string') {
+        view.innerHTML = cached;
+      }
+    }
+
+    edit.innerHTML = '';
+    edit.hidden = true;
+    view.hidden = false;
+    originalViewHtml.delete(item);
+  }
+
+  async function refreshViewFragment(item) {
+    const view = item.querySelector('[data-thought-view]');
+    if (!view) return;
+
+    const viewUrl = item.dataset.thoughtViewFragmentUrl;
+    if (!viewUrl) return;
+
+    const html = await fetchHtml(viewUrl);
+    view.innerHTML = html;
+  }
+
+  document.addEventListener('click', (event) => {
+    const editLink = event.target.closest('[data-thought-edit-link]');
+    if (editLink) {
+      if (shouldLetBrowserHandleClick(event)) return;
+      event.preventDefault();
+
+      const item = getThoughtItem(editLink);
+      if (!item) return;
+
+      closeActionsMenu(item);
+      enterEditMode(item);
+      return;
+    }
+
+    const cancelButton = event.target.closest('[data-thought-cancel]');
+    if (cancelButton) {
+      const item = getThoughtItem(cancelButton);
+      if (!item) return;
+
+      exitEditMode(item, { restoreOriginalView: true });
+      return;
+    }
+
+    const deleteLink = event.target.closest('[data-thought-delete]');
+    if (deleteLink) {
+      if (shouldLetBrowserHandleClick(event)) return;
+      event.preventDefault();
+
+      const item = getThoughtItem(deleteLink);
+      if (!item) return;
+
+      closeActionsMenu(item);
+
+      const deleteForm = item.querySelector('form[data-thought-delete-form]');
+      if (!deleteForm) return;
+
+      if (confirm('Delete this thought?')) {
+        deleteForm.submit();
+      }
+    }
+  });
+
+  document.addEventListener('submit', async (event) => {
+    const form = event.target;
+    if (!form.matches('form[data-thought-edit-form]')) return;
+
+    event.preventDefault();
+
+    const item = getThoughtItem(form);
+    if (!item) {
+      form.submit();
+      return;
+    }
+
+    item.setAttribute('aria-busy', 'true');
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {
+          'X-Requested-With': 'fetch',
+          Accept: 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        // Fall back so validation errors render normally.
+        form.submit();
+        return;
+      }
+
+      await refreshViewFragment(item);
+      exitEditMode(item, { restoreOriginalView: false });
+    } catch {
+      form.submit();
+    } finally {
+      item.removeAttribute('aria-busy');
+    }
+  });
 });

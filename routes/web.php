@@ -101,6 +101,8 @@ Route::controller(ProjectController::class)->group(function (): void {
 
 Route::controller(ThoughtsController::class)->group(function (): void {
     Route::get('/thoughts', 'index')->name('thoughts.index');
+    Route::get('/thoughts/{slug}/fragments/edit', 'editFragment')->middleware('auth')->name('thoughts.fragments.edit');
+    Route::get('/thoughts/{slug}/fragments/view', 'viewFragment')->name('thoughts.fragments.view');
     Route::get('/thoughts/{slug}', 'show')->name('thoughts.show');
     Route::post('/thoughts', 'store')->middleware('auth')->name('thoughts.store');
     Route::put('/thoughts/{slug}', 'update')->middleware('auth')->name('thoughts.update');
