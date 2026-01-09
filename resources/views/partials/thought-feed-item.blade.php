@@ -1,12 +1,8 @@
 @php
-    /** @var bool $asListItem */
-    $asListItem = (bool) ($asListItem ?? false);
     $publishedAt = $content->createdAtInCreatedTimezone();
-
-    $tag = $asListItem ? 'li' : 'article';
 @endphp
 
-<{{ $tag }} class="thoughts-item" data-thought-item data-thought-slug="{{ $content->slug }}">
+<article class="thoughts-item" data-thought-item data-thought-slug="{{ $content->slug }}">
     <header class="thoughts-item__header">
         <a class="thoughts-item__time" href="{{ route('thoughts.show', ['slug' => substr($content->slug, 0, 12)]) }}">
             <time datetime="{{ $publishedAt?->toW3cString() }}">
@@ -102,4 +98,4 @@
             </x-form>
         </div>
     @endauth
-    </{{ $tag }}>
+</article>

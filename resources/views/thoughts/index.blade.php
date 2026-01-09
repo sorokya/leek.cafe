@@ -35,12 +35,11 @@
             </section>
         @endauth
 
-        <ol class="thoughts-feed" role="list">
+        <section class="thoughts-feed">
             @if ($contents && $contents->isNotEmpty())
                 @foreach ($contents as $content)
                     @include('partials.thought-feed-item', [
                         'content' => $content,
-                        'asListItem' => true,
                     ])
                 @endforeach
             @else
@@ -50,6 +49,6 @@
                     </div>
                 </li>
             @endif
-        </ol>
+        </section>
     </div>
 </x-layout>
