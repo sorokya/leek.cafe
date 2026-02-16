@@ -79,10 +79,19 @@ header,
 main,
 footer {
   background: var(--content-bg);
-  margin: 0 20rem;
-  padding: 2rem;
+  margin: 0 1rem;
+  padding: 1rem;
   border-left: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
+}
+
+@media (min-width: 1200px) {
+  header,
+  main,
+  footer {
+    margin: 0 20rem;
+    padding: 2rem;
+  }
 }
 
 .flash-message {
