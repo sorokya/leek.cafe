@@ -1,0 +1,70 @@
+name: Tests
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  NODE_VERSION: "24"
+  PHP_VERSION: "8.5"
+
+jobs:
+  biome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      - name: Run Biome linter
+        run: pnpm biome check .
+        continue-on-error: true
+
+  pint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      - name: Run Pint (lint)
+        run: vendor/bin/pint --test
+        continue-on-error: true
+
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      - name: Run PHPStan (static analysis)
+        run: vendor/bin/phpstan analyse --memory-limit=1G
+        continue-on-error: true
+
+  rector:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      - name: Run Rector (code refactoring)
+        run: vendor/bin/rector process --dry-run
+        continue-on-error: true
+
+  pest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      - name: Run php tests
+        run: composer test

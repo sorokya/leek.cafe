@@ -1,0 +1,53 @@
+name: Setup App
+description: "Setup Node.js and PHP environments for GitHub Actions workflows"
+inputs:
+  node-version:
+    description: "Node.js version to setup"
+    required: false
+    default: "24"
+  php-version:
+    description: "PHP version to setup"
+    required: false
+    default: "8.5"
+runs:
+  using: "composite"
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "pnpm"
+
+    - name: Setup php
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        tools: composer
+        coverage: none
+
+    - name: Get composer cache path
+      shell: bash
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache composer dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: Install PHP dependencies
+      shell: bash
+      run: composer install --no-interaction --no-progress --prefer-dist
+
+    - name: Install Node dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Build JS/CSS assets
+      shell: bash
+      run: pnpm build
