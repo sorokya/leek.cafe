@@ -79,7 +79,9 @@ COPY src src
 COPY db db
 COPY composer.json composer.lock phinx.php .
 
-COPY --from=assets-builder /app/public/js /app/public/css ./public
+COPY --from=assets-builder /app/public/js public/js
+COPY --from=assets-builder /app/public/css public/css
+COPY --from=assets-builder /app/public/assets public/assets
 
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
