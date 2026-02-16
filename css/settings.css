@@ -1,0 +1,10 @@
+.settings-forms {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+.settings-forms .form {
+  margin: 0;
+}

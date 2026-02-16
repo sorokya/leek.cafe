@@ -1,0 +1,17 @@
+.flash-message {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 5px;
+}
+
+.flash-success {
+  background-color: var(--success-bg-color);
+  color: var(--success-text-color);
+  border: 1px solid var(--success-border-color);
+}
+
+.flash-error {
+  background-color: var(--error-bg-color);
+  color: var(--error-text-color);
+  border: 1px solid var(--error-border-color);
+}

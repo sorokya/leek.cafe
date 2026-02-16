@@ -6,6 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use App\Data\PDO;
 use App\Utils\ResponseHelper;
+use App\Utils\SessionHelper;
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
@@ -117,9 +118,6 @@ function load_user(): void
     }
 
     if (!isset($_SESSION['current_user'])) {
-        $_SESSION['current_user'] = [
-            'id' => $user->id,
-            'username' => $user->username,
-        ];
+        SessionHelper::setUser($user);
     }
 }

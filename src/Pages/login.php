@@ -28,10 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 LayoutHelper::assertRequestMethod('GET', 'POST');
 LayoutHelper::begin('Login');
-LayoutHelper::addStyleSheet('login.css');
 ?>
 
-<form action="/login" method="POST" id="login-form">
+<form action="/login" method="POST" class="form">
     <div>
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>

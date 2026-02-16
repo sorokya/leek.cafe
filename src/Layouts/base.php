@@ -39,7 +39,7 @@ $flashError = SessionHelper::getFlashError();
         <nav class="nav-secondary">
             <?php if ($user instanceof \App\Utils\SessionUser): ?>
                 <form method="POST" action="/logout">
-                    <span>Welcome, <?= htmlspecialchars($user->username) ?>! Not you?</span>
+                    <span>Welcome, <span id="header-display-name" x-sync><?= htmlspecialchars($user->displayName) ?></span>! Not you?</span>
                     <button type="submit">Logout</button>
                 </form>
             <?php else: ?>

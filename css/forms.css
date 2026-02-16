@@ -1,0 +1,42 @@
+.form {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+}
+
+.form div {
+  margin-bottom: 1rem;
+}
+
+.form button {
+  width: 100%;
+  padding: 0.75rem;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 0;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}

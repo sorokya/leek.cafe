@@ -19,9 +19,23 @@ class User
 
     public ?DateTime $updatedAt = null;
 
+    private const string COLUMNS = 'users.id, users.username, IFNULL(users.display_name, users.username) AS display_name, users.created_at, users.updated_at';
+
+    /**
+     * @param array{id: int|string, username: string, display_name: string, created_at: string, updated_at: string|null} $data
+     */
+    private function fill(array $data): void
+    {
+        $this->id = (int)$data['id'];
+        $this->username = $data['username'];
+        $this->displayName = $data['display_name'];
+        $this->createdAt = new DateTime($data['created_at']);
+        $this->updatedAt = $data['updated_at'] ? new DateTime($data['updated_at']) : null;
+    }
+
     public static function findBySessionToken(PDO $pdo, string $token): ?self
     {
-        $stmt = $pdo->prepare('SELECT u.id, u.username, IFNULL(u.display_name, u.username) AS display_name, u.created_at, u.updated_at FROM users u JOIN sessions s ON u.id = s.user_id WHERE s.session_token = :session_token AND s.expires_at > NOW()');
+        $stmt = $pdo->prepare('SELECT ' . self::COLUMNS . ' FROM users JOIN sessions ON users.id = sessions.user_id WHERE sessions.session_token = :session_token AND sessions.expires_at > NOW()');
         $stmt->execute(['session_token' => $token]);
 
         $data = $stmt->fetch();
@@ -30,11 +44,22 @@ class User
         }
 
         $user = new self();
-        $user->id = (int)$data['id'];
-        $user->username = $data['username'];
-        $user->displayName = $data['display_name'];
-        $user->createdAt = new DateTime($data['created_at']);
-        $user->updatedAt = $data['updated_at'] ? new DateTime($data['updated_at']) : null;
+        $user->fill($data);
+        return $user;
+    }
+
+    public static function findById(PDO $pdo, int $id): ?self
+    {
+        $stmt = $pdo->prepare('SELECT ' . self::COLUMNS . ' FROM users WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+
+        $data = $stmt->fetch();
+        if (!$data) {
+            return null;
+        }
+
+        $user = new self();
+        $user->fill($data);
         return $user;
     }
 }
