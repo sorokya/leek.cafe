@@ -76,7 +76,8 @@ EXPOSE 8000
 
 COPY public public
 COPY src src
-COPY composer.json composer.lock .
+COPY db db
+COPY composer.json composer.lock phinx.php .
 
 COPY --from=assets-builder /app/public/js /app/public/css ./public
 
