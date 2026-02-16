@@ -76,7 +76,7 @@ jobs:
               --restart unless-stopped \
               --network ${{ secrets.DOCKER_NETWORK }} \
               -e APP_ENV=production \
-              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               ${{ env.IMAGE_NAME }}:latest
 
             docker image prune -f
