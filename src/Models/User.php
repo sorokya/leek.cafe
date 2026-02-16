@@ -21,7 +21,7 @@ class User
 
     public static function findBySessionToken(PDO $pdo, string $token): ?self
     {
-        $stmt = $pdo->prepare('SELECT u.id, u.username, u.display_name, u.created_at, u.updated_at FROM users u JOIN sessions s ON u.id = s.user_id WHERE s.session_token = :session_token AND s.expires_at > NOW()');
+        $stmt = $pdo->prepare('SELECT u.id, u.username, IFNULL(u.display_name, u.username) AS display_name, u.created_at, u.updated_at FROM users u JOIN sessions s ON u.id = s.user_id WHERE s.session_token = :session_token AND s.expires_at > NOW()');
         $stmt->execute(['session_token' => $token]);
 
         $data = $stmt->fetch();
