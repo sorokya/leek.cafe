@@ -1,0 +1,36 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+}
+
+header h1 {
+  margin: 1rem 0;
+}
+
+header h1 a {
+  text-decoration: none;
+  color: inherit;
+}
+
+header nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+header nav a {
+  text-decoration: none;
+  color: inherit;
+}
+
+header nav a.active {
+  border-bottom: 1px solid currentColor;
+}
+
+header nav form {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}

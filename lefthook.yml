@@ -1,0 +1,19 @@
+pre-commit:
+  commands:
+    biome:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+      run: pnpm biome check --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+    pint:
+      glob: "*.php"
+      exclude: ["_ide_helper.php", ".phpstorm.meta.php"]
+      run: vendor/bin/pint --test {staged_files}
+
+    phpstan:
+      glob: "*.php"
+      exclude: ["_ide_helper.php", ".phpstorm.meta.php"]
+      run: vendor/bin/phpstan analyse --memory-limit=2G {staged_files}
+
+    rector:
+      glob: "*.php"
+      exclude: ["_ide_helper.php", ".phpstorm.meta.php"]
+      run: vendor/bin/rector process --dry-run {staged_files}

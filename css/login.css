@@ -1,0 +1,16 @@
+#login-form {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+}
+
+#login-form div {
+  margin-bottom: 1rem;
+}
+
+#login-form button {
+  width: 100%;
+  padding: 0.75rem;
+}
