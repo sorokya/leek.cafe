@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config({quiet: true});
 
 const ctx = await esbuild.context({
-  entryPoints: ['css/global.css', 'css/settings.css', 'js/global.js'],
+  entryPoints: ['css/global.css', 'css/home.css', 'js/global.js'],
   bundle: true,
   outdir: 'public',
   entryNames: '[ext]/[name]',
@@ -17,6 +17,8 @@ const ctx = await esbuild.context({
     '.jpg': 'file',
     '.jpeg': 'file',
     '.gif': 'file',
+    '.otf': 'file',
+    '.ttf': 'file',
   },
 });
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Authentication;
 
-use App\Data\PDO;
+use App\Database;
 
 class ChangePasswordAction
 {
     public ?string $error = null;
 
-    public function __construct(private readonly PDO $pdo, private readonly ChangePasswordRequest $request)
+    public function __construct(private readonly ChangePasswordRequest $request)
     {
     }
 
@@ -21,7 +21,8 @@ class ChangePasswordAction
             return false;
         }
 
-        $stmt = $this->pdo->prepare('SELECT password_hash FROM users WHERE id = :user_id');
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE id = :user_id');
         $stmt->execute(['user_id' => $this->request->userId]);
 
         $user = $stmt->fetch();
@@ -33,7 +34,7 @@ class ChangePasswordAction
 
         $newPasswordHash = password_hash($this->request->newPassword, PASSWORD_ARGON2ID);
 
-        $updateStmt = $this->pdo->prepare('UPDATE users SET password_hash = :password_hash, updated_at = NOW() WHERE id = :user_id');
+        $updateStmt = $pdo->prepare('UPDATE users SET password_hash = :password_hash, updated_at = NOW() WHERE id = :user_id');
         return $updateStmt->execute([
             'password_hash' => $newPasswordHash,
             'user_id' => $this->request->userId,

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Data\PDO;
+use App\Models\Session;
+use App\Models\User;
 use App\Utils\ResponseHelper;
 use App\Utils\SessionHelper;
 use Dotenv\Dotenv;
@@ -104,15 +105,14 @@ function load_user(): void
         return;
     }
 
-    $pdo = new PDO();
-    $session = \App\Models\Session::findByToken($pdo, $_SESSION['session_token']);
-    if (!$session instanceof \App\Models\Session || $session->expired()) {
+    $session = Session::findByToken($_SESSION['session_token']);
+    if (!$session instanceof Session || $session->expired()) {
         session_destroy();
         ResponseHelper::redirect('/login');
     }
 
-    $user = \App\Models\User::findBySessionToken($pdo, $session->token);
-    if (!$user instanceof \App\Models\User) {
+    $user = User::findBySessionToken($session->token);
+    if (!$user instanceof User) {
         session_destroy();
         ResponseHelper::redirect('/login');
     }

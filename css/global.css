@@ -1,4 +1,5 @@
 @import "modern-normalize";
+@import "./fonts";
 @import "./variables";
 @import "./nav";
 @import "./forms";

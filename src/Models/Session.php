@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Data\PDO;
+use App\Database;
 use DateTime;
 
 class Session
@@ -26,14 +26,16 @@ class Session
         return $this->expiresAt < new DateTime();
     }
 
-    public function invalidate(PDO $pdo): void
+    public function invalidate(): void
     {
+        $pdo = Database::getConnection();
         $stmt = $pdo->prepare('UPDATE sessions SET expires_at = NOW() WHERE session_token = :session_token');
         $stmt->execute(['session_token' => $this->token]);
     }
 
-    public static function create(PDO $pdo, int $userId): self
+    public static function create(int $userId): self
     {
+        $pdo = Database::getConnection();
         $session = new self();
         $session->userId = $userId;
         $session->token = bin2hex(random_bytes(32));
@@ -55,8 +57,9 @@ class Session
         return $session;
     }
 
-    public static function findByToken(PDO $pdo, string $token): ?self
+    public static function findByToken(string $token): ?self
     {
+        $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT * FROM sessions WHERE session_token = :session_token AND expires_at > NOW()');
         $stmt->execute(['session_token' => $token]);
 

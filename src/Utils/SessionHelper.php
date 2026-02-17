@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Utils;
 
-use App\Data\PDO;
+use App\Database;
 use App\Models\User;
 
 class SessionUser
@@ -35,8 +35,9 @@ class SessionHelper
         ];
     }
 
-    public static function refreshUser(PDO $pdo): void
+    public static function refreshUser(): void
     {
+        Database::getConnection();
         $user = self::getUser();
         if (!$user instanceof \App\Utils\SessionUser) {
             return;
@@ -44,7 +45,7 @@ class SessionHelper
 
         $userId = $user->id;
 
-        $freshUser = User::findById($pdo, $userId);
+        $freshUser = User::findById($userId);
         if ($freshUser instanceof \App\Models\User) {
             self::setUser($freshUser);
         }
@@ -72,5 +73,33 @@ class SessionHelper
         $message = $_SESSION['flash_error'] ?? null;
         unset($_SESSION['flash_error']);
         return $message;
+    }
+
+    public static function getBool(string $key, bool $default = false): bool
+    {
+        if (!isset($_SESSION[$key])) {
+            return $default;
+        }
+
+        return (bool) $_SESSION[$key];
+    }
+
+    public static function setBool(string $key, bool $value): void
+    {
+        $_SESSION[$key] = $value;
+    }
+
+    public static function getInt(string $key, int $default = 0): int
+    {
+        if (!isset($_SESSION[$key])) {
+            return $default;
+        }
+
+        return (int) $_SESSION[$key];
+    }
+
+    public static function setInt(string $key, int $value): void
+    {
+        $_SESSION[$key] = $value;
     }
 }

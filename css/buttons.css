@@ -1,17 +1,1 @@
-button {
-  background: none;
-  border: 1px solid var(--border-color);
-  color: inherit;
-  border-radius: 5px;
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
 
-button:hover {
-  opacity: 0.8;
-}
-
-button:focus-visible {
-  outline: 2px solid var(--focus-color);
-  outline-offset: 2px;
-}

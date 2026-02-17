@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Profile;
 
-use App\Data\PDO;
+use App\Database;
 use App\Utils\SessionUser;
 
 class UpdateProfileAction
 {
     public ?string $error = null;
 
-    public function __construct(private readonly PDO $pdo, private readonly UpdateProfileRequest $request, private readonly SessionUser $currentUser)
+    public function __construct(private readonly UpdateProfileRequest $request, private readonly SessionUser $currentUser)
     {
     }
 
@@ -27,7 +27,8 @@ class UpdateProfileAction
             return false;
         }
 
-        $stmt = $this->pdo->prepare('UPDATE users SET display_name = :display_name WHERE id = :user_id');
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('UPDATE users SET display_name = :display_name WHERE id = :user_id');
         return $stmt->execute(['user_id' => $this->request->userId, 'display_name' => $this->request->displayName ?: null]);
     }
 }

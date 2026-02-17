@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Data\PDO;
+use App\Database;
 use DateTime;
 
 class User
@@ -33,8 +33,9 @@ class User
         $this->updatedAt = $data['updated_at'] ? new DateTime($data['updated_at']) : null;
     }
 
-    public static function findBySessionToken(PDO $pdo, string $token): ?self
+    public static function findBySessionToken(string $token): ?self
     {
+        $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT ' . self::COLUMNS . ' FROM users JOIN sessions ON users.id = sessions.user_id WHERE sessions.session_token = :session_token AND sessions.expires_at > NOW()');
         $stmt->execute(['session_token' => $token]);
 
@@ -48,8 +49,9 @@ class User
         return $user;
     }
 
-    public static function findById(PDO $pdo, int $id): ?self
+    public static function findById(int $id): ?self
     {
+        $pdo = Database::getConnection();
         $stmt = $pdo->prepare('SELECT ' . self::COLUMNS . ' FROM users WHERE id = :id');
         $stmt->execute(['id' => $id]);
 

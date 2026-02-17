@@ -1,36 +1,153 @@
-header {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-color);
-  align-items: center;
+nav {
+  background: url("./img/menu-bg.gif") repeat;
+  position: relative;
+  border-right: 2px solid var(--border-color);
+  padding: 1rem 2rem;
 }
 
-header h1 {
-  margin: 1rem 0;
+nav.collapsed {
+  flex: 0;
+  padding: 1rem;
 }
 
-header h1 a {
+nav .nav-background {
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+nav .nav-foreground {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+}
+
+nav h1 {
+  margin: 0;
+}
+
+nav h1:hover {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+header h1 img {
+  height: 40px;
+}
+
+nav menu {
+  margin: 0.25rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav menu li.separator {
+  height: 1px;
+  background: #bef4e8;
+  width: 80%;
+  margin: 1rem auto;
+}
+
+nav menu a {
+  font-family: "Amatic", sans-serif;
+  font-size: 3rem;
   text-decoration: none;
-  color: inherit;
+  color: #000;
+  display: block;
+  --link-color: #bef4e8;
+  text-shadow:
+    var(--link-color) 1px 1px 0,
+    var(--link-color) -1px -1px 0,
+    var(--link-color) -1px 1px 0,
+    var(--link-color) 1px -1px 0;
+
+  transition: linear 0.1s;
 }
 
-header nav {
+nav menu a img {
+  height: 2rem;
+  vertical-align: middle;
+}
+
+nav menu a.active {
+  color: var(--link-color);
+}
+
+nav menu a:hover {
+  transform: scale(1.1) translate(8px, 3px) rotate(2deg);
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg) scale(1) translateX(0);
+  }
+  25% {
+    transform: rotate(1deg) scale(1.05) translateX(2px);
+  }
+  50% {
+    transform: rotate(2deg) scale(1.075) translateX(0);
+  }
+  75% {
+    transform: rotate(1deg) scale(1.05) translateX(-2px);
+  }
+  100% {
+    transform: rotate(0deg) scale(1) translateX(0);
+  }
+}
+
+#collapse-nav-form {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 3;
+  height: 100%;
+}
+
+#collapse-nav-form::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 0;
+}
+
+#collapse-nav-form button {
+  position: relative;
+  background: none;
+  color: #ccc;
+  border: none;
+  height: 100%;
+  border-top: none;
+  cursor: pointer;
+  z-index: 1;
+}
+
+#collapse-nav-form button:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.hit-counter-label {
+  font-family: "Amatic", sans-serif;
+  font-size: 1.5rem;
+}
+
+.hit-counter-value {
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  user-select: none;
 }
 
-header nav a {
-  text-decoration: none;
-  color: inherit;
-}
-
-header nav a.active {
-  border-bottom: 1px solid currentColor;
-}
-
-header nav form {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+.hit-counter-value .hit-digit {
+  font-family: monospace;
+  color: #fff;
+  background: #000;
+  padding: 0.25rem;
+  border: 1px solid #fff;
+  display: block;
 }
