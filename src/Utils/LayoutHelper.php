@@ -84,7 +84,8 @@ class LayoutHelper
     {
         self::$__layout_data['has_music'] = true;
         echo sprintf(
-            '<audio autoplay loop><source src="%s" type="%s"></audio>',
+            '<audio %s loop><source src="%s" type="%s"></audio>',
+            SessionHelper::getBool('auto_play_enabled') ? 'autoplay' : '',
             htmlspecialchars($path),
             htmlspecialchars($type),
         );

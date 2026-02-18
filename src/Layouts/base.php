@@ -110,6 +110,7 @@ $hits = str_pad($hits, 9, '0', STR_PAD_LEFT);
     </main>
     <script type="text/javascript">
         window.APP_ENV = <?= json_encode($_ENV['APP_ENV'] ?? 'production') ?>;
+        window.AUTO_PLAY_ENABLED = <?= json_encode(SessionHelper::getBool('auto_play_enabled')) ?>;
         <?php if ($_ENV['APP_ENV'] === 'development'): ?>
             window.ESBUILD_SERVE_HOST = <?= json_encode($_ENV['ESBUILD_SERVE_HOST'] ?? 'localhost') ?>;
             window.ESBUILD_SERVE_PORT = <?= json_encode($_ENV['ESBUILD_SERVE_PORT'] ?? 3751) ?>;

@@ -9,6 +9,6 @@ LayoutHelper::begin('Games', 'Explore my favorite games on leek.cafe!');
 LayoutHelper::addStyleSheet('games.css');
 ?>
 
-<?php LayoutHelper::addMusic('/music/lostwoods.webm'); ?>
+<?php LayoutHelper::addMusic('/music/astral-observatory.mp3', 'audio/mpeg'); ?>
 
 <?php LayoutHelper::end(); ?>

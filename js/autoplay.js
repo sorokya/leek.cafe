@@ -1,5 +1,5 @@
 export function setupAutoplay() {
-  const elements = document.querySelectorAll('audio[autoplay]');
+  const elements = document.querySelectorAll('audio');
   if (elements.length === 0) return;
 
   for (const audio of elements) {
