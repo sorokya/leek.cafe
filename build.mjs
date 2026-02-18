@@ -4,7 +4,13 @@ import dotenv from 'dotenv';
 dotenv.config({quiet: true});
 
 const ctx = await esbuild.context({
-  entryPoints: ['css/global.css', 'css/home.css', 'js/global.js'],
+  entryPoints: [
+    'css/global.css',
+    'css/home.css',
+    'css/games.css',
+    'css/autoplay.css',
+    'js/global.js',
+  ],
   bundle: true,
   outdir: 'public',
   entryNames: '[ext]/[name]',

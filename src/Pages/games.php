@@ -6,16 +6,9 @@ use App\Utils\LayoutHelper;
 
 LayoutHelper::assertRequestMethod('GET');
 LayoutHelper::begin('Games', 'Explore my favorite games on leek.cafe!');
-LayoutHelper::addStyleSheet('home.css');
+LayoutHelper::addStyleSheet('games.css');
 ?>
 
-<div class="section">
-    <div class="section-content" style="text-align: center;">
-        <img src="/img/construction.gif" alt="Under Construction" />
-        <p>
-            This section is currently under construction. Please check back later for info about my favorite games.
-        </p>
-    </div>
-</div>
+<?php LayoutHelper::addMusic('/music/lostwoods.webm'); ?>
 
 <?php LayoutHelper::end(); ?>

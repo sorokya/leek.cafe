@@ -1,5 +1,6 @@
 import ajax from '@imacrayon/alpine-ajax';
 import Alpine from 'alpinejs';
+import { setupAutoplay } from './autoplay';
 import { setupHotReload } from './hot-reload';
 
 window.Alpine = Alpine;
@@ -11,4 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Running in development mode');
     setupHotReload();
   }
+
+  setupAutoplay();
 });

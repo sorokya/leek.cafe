@@ -8,7 +8,7 @@ class LayoutHelper
 {
     /**
      * Layout data storage
-     * @var array{title: string, description: string, layout: string, content: string, stylesheets: string[], scripts: string[]}
+     * @var array{title: string, description: string, layout: string, content: string, stylesheets: string[], scripts: string[], has_music: bool}
      */
     private static array $__layout_data = [
         'title' => '',
@@ -17,6 +17,7 @@ class LayoutHelper
         'content' => '',
         'stylesheets' => ['global.css'],
         'scripts' => ['global.js'],
+        'has_music' => false,
     ];
 
     public static function assertRequestMethod(string ...$allowedMethods): void
@@ -37,6 +38,10 @@ class LayoutHelper
 
     public static function addStyleSheet(string $stylesheet): void
     {
+        if (in_array($stylesheet, self::$__layout_data['stylesheets'], true)) {
+            return;
+        }
+
         self::$__layout_data['stylesheets'][] = $stylesheet;
     }
 
@@ -50,6 +55,10 @@ class LayoutHelper
 
     public static function addScript(string $script): void
     {
+        if (in_array($script, self::$__layout_data['scripts'], true)) {
+            return;
+        }
+
         self::$__layout_data['scripts'][] = $script;
     }
 
@@ -59,6 +68,28 @@ class LayoutHelper
     public static function getScripts(): array
     {
         return self::$__layout_data['scripts'];
+    }
+
+    public static function enableMusic(): void
+    {
+        self::$__layout_data['has_music'] = true;
+    }
+
+    public static function hasMusic(): bool
+    {
+        return self::$__layout_data['has_music'];
+    }
+
+    public static function addMusic(string $path, string $type = "audio/webm"): void
+    {
+        self::$__layout_data['has_music'] = true;
+        echo sprintf(
+            '<audio autoplay loop><source src="%s" type="%s"></audio>',
+            htmlspecialchars($path),
+            htmlspecialchars($type),
+        );
+
+        self::addStyleSheet('autoplay.css');
     }
 
     /**
