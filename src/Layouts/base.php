@@ -109,6 +109,9 @@ $hits = str_pad($hits, 9, '0', STR_PAD_LEFT);
     <?php foreach (LayoutHelper::getScripts() as $script): ?>
         <script src="/js/<?= htmlspecialchars($script) ?>"></script>
     <?php endforeach; ?>
+    <?php if ($_ENV['APP_ENV'] !== 'development'): ?>
+        <script defer src="https://stats.leek.cafe/script.js" data-website-id="3f8acfa2-41a7-4445-ad03-de0e36ee7af5"></script>
+    <?php endif; ?>
 </body>
 
 </html>
