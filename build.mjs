@@ -9,6 +9,7 @@ const ctx = await esbuild.context({
     'css/home.css',
     'css/games.css',
     'css/autoplay.css',
+    'css/oot.css',
     'js/global.js',
   ],
   bundle: true,

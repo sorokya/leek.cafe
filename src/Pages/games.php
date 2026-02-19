@@ -14,6 +14,7 @@ $n64Games = [
         'year' => 1998,
         'cover' => '/img/games/oot-cover.png',
         'rating' => 5.0,
+        'link' => '/games/zelda-ocarina-of-time',
     ],
     [
         'title' => "Zelda: Majora's Mask",
@@ -245,8 +246,20 @@ $games = [
     <ul class="game-list">
         <?php foreach ($gameData['games'] as $game): ?>
             <li>
-                <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" <?= $gameData['disk'] ? 'class="disk"' : '' ?> />
-                <h3><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h3>
+                <?php if (isset($game['link'])): ?>
+                    <a href="<?= htmlspecialchars($game['link']) ?>">
+                    <?php endif; ?>
+                    <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" <?= $gameData['disk'] ? 'class="disk"' : '' ?> />
+                    <?php if (isset($game['link'])): ?>
+                    </a>
+                <?php endif; ?>
+                <h3>
+                    <?php if (isset($game['link'])): ?>
+                        <a href="<?= htmlspecialchars($game['link']) ?>"><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</a>
+                    <?php else: ?>
+                        <?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)
+                    <?php endif; ?>
+                </h3>
                 <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
             </li>
         <?php endforeach; ?>

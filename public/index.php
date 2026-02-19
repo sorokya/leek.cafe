@@ -70,7 +70,7 @@ if ($matchedFile) {
     load_user();
     include $matchedFile;
 } else {
-    ResponseHelper::error('Not Found', 404);
+    include __DIR__ . '/../src/Pages/404.php';
 }
 
 /**
