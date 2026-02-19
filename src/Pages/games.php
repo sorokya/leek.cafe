@@ -166,6 +166,60 @@ $dreamcastGames = [
         'rating' => 4.5,
     ],
 ];
+
+$gbaGames = [
+    [
+        'title' => 'Pokémon FireRed',
+        'year' => 2004,
+        'cover' => '/img/games/pokemon-fr-cover.png',
+        'rating' => 5.0,
+    ],
+    [
+        'title' => 'Pokémon Emerald',
+        'year' => 2005,
+        'cover' => '/img/games/pokemon-emerald-cover.png',
+        'rating' => 5.0,
+    ],
+];
+
+$games = [
+    'n64' => [
+        'name' => 'Nintendo 64',
+        'disk' => false,
+        'img' => '/img/gifs/n64.gif',
+        'games' => $n64Games,
+    ],
+    'ps2' => [
+        'name' => 'PlayStation 2',
+        'disk' => true,
+        'img' => '/img/gifs/ps2.gif',
+        'games' => $ps2Games,
+    ],
+    'snes' => [
+        'name' => 'Super Nintendo',
+        'disk' => false,
+        'img' => '/img/gifs/snes.gif',
+        'games' => $snesGames,
+    ],
+    'gamecube' => [
+        'name' => 'GameCube',
+        'disk' => true,
+        'img' => '/img/gifs/gamecube.gif',
+        'games' => $gameCubeGames,
+    ],
+    'dreamcast' => [
+        'name' => 'Dreamcast',
+        'disk' => true,
+        'img' => '/img/gifs/dreamcast.gif',
+        'games' => $dreamcastGames,
+    ],
+    'gba' => [
+        'name' => 'Game Boy Advance',
+        'disk' => false,
+        'img' => '/img/gifs/gba.gif',
+        'games' => $gbaGames,
+    ],
+];
 ?>
 
 <?php LayoutHelper::addMusic('/music/astral-observatory.mp3', 'audio/mpeg'); ?>
@@ -181,84 +235,22 @@ $dreamcastGames = [
     My favorite games are listed below by console/platform. You can click some of them to see more details.
 </p>
 
-<h1 class="img-header">
-    <img src="/img/gifs/n64.gif" alt="N64" />
-    Nintendo 64
-    <img src="/img/gifs/n64.gif" alt="N64" />
-</h1>
+<?php foreach ($games as $gameData): ?>
+    <h2 class="img-header">
+        <img src="<?= htmlspecialchars($gameData['img']) ?>" alt="<?= htmlspecialchars($gameData['name']) ?>" />
+        <?= htmlspecialchars($gameData['name']) ?>
+        <img src="<?= htmlspecialchars($gameData['img']) ?>" alt="<?= htmlspecialchars($gameData['name']) ?>" />
+    </h2>
 
-<ul class="game-list">
-    <?php foreach ($n64Games as $game): ?>
-        <li>
-            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" />
-            <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
-            <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
-        </li>
-    <?php endforeach; ?>
-</ul>
-
-<h1 class="img-header">
-    <img src="/img/gifs/dreamcast.gif" alt="Dreamcast" />
-    Dreamcast
-    <img src="/img/gifs/dreamcast.gif" alt="Dreamcast" />
-</h1>
-
-<ul class="game-list">
-    <?php foreach ($dreamcastGames as $game): ?>
-        <li>
-            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" class="disk" />
-            <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
-            <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
-        </li>
-    <?php endforeach; ?>
-</ul>
-
-<h1 class="img-header">
-    <img src="/img/gifs/ps2.gif" alt="PS2" />
-    PlayStation 2
-    <img src="/img/gifs/ps2.gif" alt="PS2" />
-</h1>
-
-<ul class="game-list">
-    <?php foreach ($ps2Games as $game): ?>
-        <li>
-            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" class="disk" />
-            <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
-            <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
-        </li>
-    <?php endforeach; ?>
-</ul>
-
-<h1 class="img-header">
-    <img src="/img/gifs/snes.gif" alt="SNES" />
-    Super Nintendo
-    <img src="/img/gifs/snes.gif" alt="SNES" />
-</h1>
-
-<ul class="game-list">
-    <?php foreach ($snesGames as $game): ?>
-        <li>
-            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" />
-            <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
-            <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
-        </li>
-    <?php endforeach; ?>
-</ul>
-
-<h1 class="img-header">
-    <img src="/img/gifs/gamecube.gif" alt="GameCube" />
-    GameCube
-    <img src="/img/gifs/gamecube.gif" alt="GameCube" />
-</h1>
-
-<ul class="game-list">
-    <?php foreach ($gameCubeGames as $game): ?>
-        <li>
-            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" class="disk" />
-            <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
-            <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
-        </li>
-    <?php endforeach; ?>
-</ul>
+    <ul class="game-list">
+        <?php foreach ($gameData['games'] as $game): ?>
+            <li>
+                <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" <?= $gameData['disk'] ? 'class="disk"' : '' ?> />
+                <h3><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h3>
+                <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php endforeach; ?>
 
 <?php LayoutHelper::end(); ?>
