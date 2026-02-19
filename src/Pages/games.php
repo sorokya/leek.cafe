@@ -152,7 +152,20 @@ $gameCubeGames = [
     ],
 ];
 
-
+$dreamcastGames = [
+    [
+        'title' => 'Sonic Adventure',
+        'year' => 1998,
+        'cover' => '/img/games/sonic-adventure-cover.png',
+        'rating' => 4.5,
+    ],
+    [
+        'title' => 'Sonic Adventure 2',
+        'year' => 2001,
+        'cover' => '/img/games/sonic-adventure-2-cover.png',
+        'rating' => 4.5,
+    ],
+];
 ?>
 
 <?php LayoutHelper::addMusic('/music/astral-observatory.mp3', 'audio/mpeg'); ?>
@@ -185,6 +198,22 @@ $gameCubeGames = [
 </ul>
 
 <h1 class="img-header">
+    <img src="/img/gifs/dreamcast.gif" alt="Dreamcast" />
+    Dreamcast
+    <img src="/img/gifs/dreamcast.gif" alt="Dreamcast" />
+</h1>
+
+<ul class="game-list">
+    <?php foreach ($dreamcastGames as $game): ?>
+        <li>
+            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" class="disk" />
+            <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
+            <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
+        </li>
+    <?php endforeach; ?>
+</ul>
+
+<h1 class="img-header">
     <img src="/img/gifs/ps2.gif" alt="PS2" />
     PlayStation 2
     <img src="/img/gifs/ps2.gif" alt="PS2" />
@@ -193,7 +222,7 @@ $gameCubeGames = [
 <ul class="game-list">
     <?php foreach ($ps2Games as $game): ?>
         <li>
-            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" />
+            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" class="disk" />
             <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
             <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
         </li>
@@ -225,7 +254,7 @@ $gameCubeGames = [
 <ul class="game-list">
     <?php foreach ($gameCubeGames as $game): ?>
         <li>
-            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" />
+            <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" class="disk" />
             <h2><?= htmlspecialchars($game['title']) ?> (<?= htmlspecialchars((string) $game['year']) ?>)</h2>
             <span class="rating" title="<?= htmlspecialchars((string) $game['rating']) ?> out of 5" data-rating="<?= htmlspecialchars((string)$game['rating']) ?>"></span>
         </li>
