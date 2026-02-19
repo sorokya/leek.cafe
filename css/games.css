@@ -1,3 +1,44 @@
+@import "./rating";
+
 main {
   background: url("./img/red-space.gif") repeat;
+}
+
+.img-header {
+  display: flex;
+  font-size: 3rem;
+  gap: 1rem;
+  align-items: center;
+}
+
+.img-header img {
+  height: 3rem;
+}
+
+.game-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 0;
+  margin-bottom: 6rem;
+}
+
+.game-list li img {
+  max-width: 10rem;
+}
+
+.game-list img:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.game-list li {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+.game-list h2 {
+  margin: 0.5rem 0 0.25rem;
 }

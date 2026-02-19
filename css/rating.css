@@ -1,0 +1,41 @@
+.rating {
+  background: url("./img/star.gif") repeat-x;
+  display: block;
+  height: 32px;
+}
+
+.rating[data-rating="1"] {
+  width: 32px;
+}
+
+.rating[data-rating="1.5"] {
+  width: 48px;
+}
+
+.rating[data-rating="2"] {
+  width: 64px;
+}
+
+.rating[data-rating="2.5"] {
+  width: 80px;
+}
+
+.rating[data-rating="3"] {
+  width: 96px;
+}
+
+.rating[data-rating="3.5"] {
+  width: 112px;
+}
+
+.rating[data-rating="4"] {
+  width: 128px;
+}
+
+.rating[data-rating="4.5"] {
+  width: 144px;
+}
+
+.rating[data-rating="5"] {
+  width: 160px;
+}
