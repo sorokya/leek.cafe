@@ -8,7 +8,7 @@ class LayoutHelper
 {
     /**
      * Layout data storage
-     * @var array{title: string, description: string, layout: string, content: string, stylesheets: string[], scripts: string[], has_music: bool}
+     * @var array{title: string, description: string, layout: string, content: string, stylesheets: string[], scripts: string[], music: array{artist: string, link: string}|null}
      */
     private static array $__layout_data = [
         'title' => '',
@@ -17,7 +17,7 @@ class LayoutHelper
         'content' => '',
         'stylesheets' => ['global.css'],
         'scripts' => ['global.js'],
-        'has_music' => false,
+        'music' => null,
     ];
 
     public static function assertRequestMethod(string ...$allowedMethods): void
@@ -70,19 +70,21 @@ class LayoutHelper
         return self::$__layout_data['scripts'];
     }
 
-    public static function enableMusic(): void
+    /**
+     * @return array{artist: string, link: string}|null Music information if music is enabled, null otherwise
+     */
+    public static function getMusic(): ?array
     {
-        self::$__layout_data['has_music'] = true;
+        return self::$__layout_data['music'];
     }
 
-    public static function hasMusic(): bool
+    public static function addMusic(string $path, string $type = "audio/webm", string $artist = "", string $link = ""): void
     {
-        return self::$__layout_data['has_music'];
-    }
+        self::$__layout_data['music'] = [
+            'artist' => $artist,
+            'link' => $link,
+        ];
 
-    public static function addMusic(string $path, string $type = "audio/webm"): void
-    {
-        self::$__layout_data['has_music'] = true;
         echo sprintf(
             '<audio %s loop><source src="%s" type="%s"></audio>',
             SessionHelper::getBool('auto_play_enabled') ? 'autoplay' : '',

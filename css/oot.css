@@ -72,3 +72,31 @@
     transform: rotate(360deg);
   }
 }
+
+main > p,
+main > h1,
+main > div,
+main > iframe,
+main > ul {
+  padding: 0 5rem;
+}
+
+main > ul {
+  margin: 0 1rem;
+}
+
+blockquote {
+  font-style: italic;
+}
+
+blockquote::before,
+blockquote::after {
+  content: '"';
+}
+
+.side-img {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 1rem 0;
+}

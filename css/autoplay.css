@@ -3,6 +3,19 @@
   top: 1rem;
   right: 1rem;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#toggle-music-form .music-artist {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: #ccc;
+}
+
+.music-artist a {
+  color: inherit;
 }
 
 #toggle-music-form button {

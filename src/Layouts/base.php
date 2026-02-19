@@ -98,11 +98,22 @@ $hits = str_pad($hits, 9, '0', STR_PAD_LEFT);
             <div x-sync id="flash-error" style="display: none;"></div>
         <?php endif; ?>
 
-        <?php if (LayoutHelper::hasMusic()): ?>
+        <?php if ($music = LayoutHelper::getMusic()): ?>
             <form id="toggle-music-form" action="/toggle-music" method="post" x-target="toggle-music-button" @ajax:after="$dispatch('toggle-music')">
                 <button type="submit" aria-label="Toggle music" id="toggle-music-button" <?= SessionHelper::getBool('auto_play_enabled') ? 'class="active"' : '' ?>>
                     <img src="/img/gifs/music.gif" alt="Toggle Music" loading="lazy" />
                 </button>
+                <?php if ($music['artist'] !== '' && $music['artist'] !== '0'): ?>
+                    <span class="music-artist">
+                        <?php if ($music['link'] !== '' && $music['link'] !== '0'): ?>
+                            <a href="<?= htmlspecialchars($music['link']) ?>" target="_blank" rel="noopener noreferrer">
+                                <?= htmlspecialchars($music['artist']) ?>
+                            </a>
+                        <?php else: ?>
+                            <?= htmlspecialchars($music['artist']) ?>
+                        <?php endif; ?>
+                    </span>
+                <?php endif; ?>
             </form>
         <?php endif; ?>
 
