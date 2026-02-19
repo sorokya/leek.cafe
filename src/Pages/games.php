@@ -249,7 +249,7 @@ $games = [
                 <?php if (isset($game['link'])): ?>
                     <a href="<?= htmlspecialchars($game['link']) ?>">
                     <?php endif; ?>
-                    <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" <?= $gameData['disk'] ? 'class="disk"' : '' ?> />
+                    <img src="<?= htmlspecialchars($game['cover']) ?>" alt="<?= htmlspecialchars($game['title']) ?>" <?= $gameData['disk'] ? 'class="disk"' : '' ?> loading="lazy" />
                     <?php if (isset($game['link'])): ?>
                     </a>
                 <?php endif; ?>
