@@ -82,7 +82,7 @@ $hits = str_pad($hits, 9, '0', STR_PAD_LEFT);
         </form>
     </nav>
 
-    <main>
+    <main id="main-content">
         <?php if ($flashSuccess): ?>
             <div class="flash-message flash-success" x-sync id="flash-success">
                 <?= htmlspecialchars($flashSuccess) ?>
@@ -131,8 +131,9 @@ $hits = str_pad($hits, 9, '0', STR_PAD_LEFT);
         <script src="/js/<?= htmlspecialchars($script) ?>"></script>
     <?php endforeach; ?>
     <?php if ($_ENV['APP_ENV'] !== 'development'): ?>
-        <script defer src="https://stats.leek.cafe/script.js" data-website-id="3f8acfa2-41a7-4445-ad03-de0e36ee7af5"></script>
+        <script async defer src="https://stats.leek.cafe/script.js" data-website-id="3f8acfa2-41a7-4445-ad03-de0e36ee7af5"></script>
     <?php endif; ?>
+    <script src="https://keepandroidopen.org/banner.js?id=main-content" async></script>
 </body>
 
 </html>
