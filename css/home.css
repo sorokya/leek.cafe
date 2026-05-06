@@ -24,7 +24,7 @@ main {
   text-shadow: 1px 1px 1px #000;
 }
 
-.section-content > h2 img {
+.section-content img {
   max-width: 100%;
   margin-top: 1rem;
 }
@@ -61,4 +61,25 @@ main {
   gap: 1rem;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.posts {
+  list-style: none;
+  display: flex;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.posts li {
+  display: flex;
+  flex-flow: column;
+  padding: 1rem 2rem;
+}
+
+.posts li a,
+.posts li small {
+  display: block;
 }

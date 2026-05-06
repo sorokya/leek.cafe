@@ -23,6 +23,20 @@ LayoutHelper::addStyleSheet('home.css');
 
 <div class="section">
     <div class="section-content">
+        <h2>Posts</h2>
+        <ul class="posts">
+          <li>
+            <a href="/posts/2026-05-06-developing-eoweb">
+              Developing EOWeb
+            </a>
+            <small>May 6th 2026</small>
+          </li>
+        </ul>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-content">
         <h2>About Me</h2>
         <ul>
             <li>Name: Richard Leek (<a href="https://github.com/sorokya" target="_blank">@sorokya</a>)</li>
