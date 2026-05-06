@@ -21,11 +21,25 @@ main {
 
 .section-content > p {
   margin: 0.5rem 0;
+  text-shadow: 1px 1px 1px #000;
+}
+
+.section-content > h2 img {
+  max-width: 100%;
+  margin-top: 1rem;
 }
 
 .section .section-content {
   position: relative;
   z-index: 1;
+}
+
+.section .subtitle {
+  text-align: center;
+  font-style: italic;
+  font-size: 0.75em;
+  color: #cecece;
+  text-shadow: 1px 1px 1px #000;
 }
 
 .section::before {
