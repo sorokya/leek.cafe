@@ -13,7 +13,7 @@ LayoutHelper::addMusic('/music/oot-theme.mp3', 'audio/mpeg', 'Kaelum Ross', 'htt
 <div class="shrine">
     <div class="glow"></div>
     <div class="rays"></div>
-    <img class="box" src="/img/games/oot-box.png" alt="Ocarina of Time Box Art" />
+    <img class="box" src="/img/games/oot-box.webp" alt="Ocarina of Time Box Art" />
 </div>
 
 <h1 id="intro">Introduction <a href="#intro">#</a></h1>
@@ -54,7 +54,7 @@ LayoutHelper::addMusic('/music/oot-theme.mp3', 'audio/mpeg', 'Kaelum Ross', 'htt
 
 <h1 id="gamecube">Gamecube Releases <a href="#gamecube">#</a></h1>
 <p class="side-img">
-    <img src="/img/games/oot-mq-case.png" alt="OoT MQ Case" loading="lazy" style="height: 220px;" />
+    <img src="/img/games/oot-mq-case.webp" alt="OoT MQ Case" loading="lazy" style="height: 220px;" />
     <span>
         I remember being so excited when we got this bonus game for pre-ordering <a href="/games/zelda-wind-waker">Wind Waker</a> at Walmart.
         This version of the game <em>might</em> be the first one I actually beat on my own. I've heard people say the gamecube releases were
@@ -68,12 +68,12 @@ LayoutHelper::addMusic('/music/oot-theme.mp3', 'audio/mpeg', 'Kaelum Ross', 'htt
         I probably played through the game on this copy a few times. It was also my introduction to <a href="/games/zelda-1">Zelda 1</a>,
         and <a href="/games/zelda-2">Zelda 2</a>.
     </span>
-    <img src="/img/games/zelda-collectors-edition-case.png" alt="Zelda Collector's Edition Case" loading="lazy" style="height: 220px;" />
+    <img src="/img/games/zelda-collectors-edition-case.webp" alt="Zelda Collector's Edition Case" loading="lazy" style="height: 220px;" />
 </p>
 
 <h1 id="quotes">Favorite Quotes <a href="#quotes">#</a></h1>
 <div class="side-img">
-    <img src="/img/games/oot-shiek.png" alt="Shiek" loading="lazy" style="height: 200px;" title="Shiek" />
+    <img src="/img/games/oot-shiek.webp" alt="Shiek" loading="lazy" style="height: 200px;" title="Shiek" />
     <div>
         <blockquote>The flow of time is always cruel... its speed seems different for each person, but no one can change it... A thing that does not change with time is a memory of younger days...</blockquote>
         <blockquote>The flow of time is always cruel... its speed seems different for each person, but no one can change it... A thing that does not change with time is a memory of younger days...</blockquote>
@@ -85,7 +85,7 @@ LayoutHelper::addMusic('/music/oot-theme.mp3', 'audio/mpeg', 'Kaelum Ross', 'htt
 </div>
 
 <div class="side-img">
-    <img src="/img/games/oot-ruto.png" alt="Ruto" loading="lazy" style="height: 200px;" title="Ruto" />
+    <img src="/img/games/oot-ruto.webp" alt="Ruto" loading="lazy" style="height: 200px;" title="Ruto" />
     <div>
         <blockquote>How inconsiderate! How could you leave me behind?! If you're a man, act like one! Take responsibility!</blockquote>
         <blockquote>You...You're late! What took you so long? You're useless! I was just lonely, that's all... Just a little!!</blockquote>
@@ -95,14 +95,14 @@ LayoutHelper::addMusic('/music/oot-theme.mp3', 'audio/mpeg', 'Kaelum Ross', 'htt
 </div>
 
 <div class="side-img">
-    <img src="/img/games/oot-gossip-stone.png" alt="Gossip Stone" style="height: 200px;" title="Gossip Stone" />
+    <img src="/img/games/oot-gossip-stone.webp" alt="Gossip Stone" style="height: 200px;" title="Gossip Stone" />
     <div>
         <blockquote>They say that players who select the &quot;HOLD&quot; option for &quot;Z TARGETING&quot; are the real &quot;Zelda players!&quot;</blockquote>
     </div>
 </div>
 
 <div class="side-img">
-    <img src="/img/games/oot-darunia.png" alt="Darunia" style="height: 200px;" title="Darunia" />
+    <img src="/img/games/oot-darunia.webp" alt="Darunia" style="height: 200px;" title="Darunia" />
     <div>
         <blockquote>Oh! Oh-oh! C'mon! Come on! Come on! Come on! HOT!!! What a hot beat! WHOOOOAH! YEEEEAH! YAHOOO!!</blockquote>
         <blockquote>Don't forget... Now you and I are now true Brothers!</blockquote>
