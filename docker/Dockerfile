@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-ARG PHP_IMAGE=php:8.5.1-fpm-alpine3.23
+ARG PHP_IMAGE=php:8.5.12-fpm-alpine3.23
 ARG NODE_IMAGE=node:24-alpine
 
 FROM ${NODE_IMAGE} AS assets-builder
